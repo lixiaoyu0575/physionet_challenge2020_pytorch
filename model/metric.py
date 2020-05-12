@@ -10,6 +10,7 @@ def accuracy(output, target):
     return correct / len(target)
 
 
+
 def top_k_acc(output, target, k=3):
     with torch.no_grad():
         pred = torch.topk(output, k, dim=1)[1]
