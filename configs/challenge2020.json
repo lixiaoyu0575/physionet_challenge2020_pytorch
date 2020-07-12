@@ -1,16 +1,15 @@
 {
-    "name": "Mnist_LeNet",
+    "name": "Challenge2020",
     "n_gpu": 2,
-
     "arch": {
-        "type": "MnistModel",
+        "type": "ResNetModel",
         "args": {}
     },
     "data_loader": {
-        "type": "MnistDataLoader",
+        "type": "ChallnegeDataLoader",
         "args":{
-            "data_dir": "data/",
-            "batch_size": 128,
+            "data_dir": "/home/yin/code/challenge2020data/Challenge2018_300hz/preprocessed_data_new/",
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2
