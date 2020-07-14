@@ -20,3 +20,43 @@ class MnistModel(BaseModel):
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+
+class CNNModel(BaseModel):
+    def __init__(self, num_classes=9):
+        super().__init__()
+        self.conv1 = nn.Conv1d(12, 12, kernel_size=16)
+        self.conv2 = nn.Conv1d(12, 12, kernel_size=16)
+        self.conv3 = nn.Conv1d(12, 12, kernel_size=16)
+        # self.batch_norm1 = nn.BatchNorm1d(3000)
+        # self.batch_norm2 = nn.BatchNorm1d(3000)
+        # self.batch_norm3 = nn.BatchNorm1d(3000)
+        self.conv2_drop = nn.Dropout()
+        self.fc1 = nn.Linear(12*2236, 50)
+        self.fc2 = nn.Linear(50, num_classes)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        # x = self.batch_norm1(x)
+        x = F.relu(x)
+        x = F.max_pool1d(x, 2)
+        x = F.dropout(x, 0.5, training=self.training)
+
+        x = self.conv2(x)
+        # x = self.batch_norm2(x)
+        x = F.relu(x)
+        x = F.max_pool1d(x, 2)
+        x = F.dropout(x, 0.5, training=self.training)
+
+        x = self.conv3(x)
+        # x = self.batch_norm3(x)
+        x = F.relu(x)
+        x = F.max_pool1d(x, 2)
+        x = F.dropout(x, 0.5, training=self.training)
+
+        # print(x.size())
+        x = x.view(-1, 12*2236)
+        x = F.relu(self.fc1(x))
+        # x = F.dropout(x, training=self.training)
+        x = self.fc2(x)
+        # return F.log_softmax(x, dim=1)
+        return x

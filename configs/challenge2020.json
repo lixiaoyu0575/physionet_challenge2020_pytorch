@@ -1,12 +1,12 @@
 {
     "name": "Challenge2020",
-    "n_gpu": 2,
+    "n_gpu": 1,
     "arch": {
-        "type": "ResNetModel",
+        "type": "CNNModel",
         "args": {}
     },
     "data_loader": {
-        "type": "ChallnegeDataLoader",
+        "type": "ChallengeDataLoader",
         "args":{
             "data_dir": "/home/yin/code/challenge2020data/Challenge2018_300hz/preprocessed_data_new/",
             "batch_size": 16,
@@ -23,9 +23,8 @@
             "amsgrad": true
         }
     },
-    "loss": "nll_loss",
+    "loss": "bce_loss",
     "metrics": [
-        "accuracy", "top_k_acc"
     ],
     "lr_scheduler": {
         "type": "StepLR",
