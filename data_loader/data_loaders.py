@@ -17,7 +17,7 @@ class MnistDataLoader(BaseDataLoader):
 
 class ChallengeDataLoader(BaseDataLoader):
     """
-    MNIST data loading demo using BaseDataLoader
+    challenge2020 data loading
     """
     def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, num_workers=1, training=True):
         self.data_dir = data_dir
