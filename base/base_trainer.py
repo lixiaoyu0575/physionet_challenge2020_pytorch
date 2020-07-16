@@ -2,7 +2,8 @@ import torch
 from abc import abstractmethod
 from numpy import inf
 from logger import TensorboardWriter
-
+import numpy as np
+from utils.util import *
 
 class BaseTrainer:
     """
@@ -11,6 +12,12 @@ class BaseTrainer:
     def __init__(self, model, criterion, metric_ftns, optimizer, config):
         self.config = config
         self.logger = config.get_logger('trainer', config['trainer']['verbosity'])
+
+        log_dict = {}
+        self.keys = ['loss', *[m.__name__ for m in metric_ftns]]
+        for key in self.keys:
+            log_dict[key] = []
+        self.log = log_dict
 
         # setup GPU device if available, move model into configured device
         self.device, device_ids = self._prepare_device(config['n_gpu'])
@@ -41,6 +48,7 @@ class BaseTrainer:
         self.start_epoch = 1
 
         self.checkpoint_dir = config.save_dir
+        self.log_dir = config.log_dir
 
         # setup visualization writer instance                
         self.writer = TensorboardWriter(config.log_dir, self.logger, cfg_trainer['tensorboard'])
@@ -62,6 +70,7 @@ class BaseTrainer:
         Full training logic
         """
         not_improved_count = 0
+        self.log['epoch'] = []
         for epoch in range(self.start_epoch, self.epochs + 1):
             result = self._train_epoch(epoch)
 
@@ -98,8 +107,18 @@ class BaseTrainer:
                                      "Training stops.".format(self.early_stop))
                     break
 
-            if epoch % self.save_period == 0:
+            if best == True:
                 self._save_checkpoint(epoch, save_best=best)
+            # if epoch % self.save_period == 0:
+            #     self._save_checkpoint(epoch, save_best=best)
+
+            for key in log.keys():
+                self.log[key].append(log[key])
+
+        for metric in self.keys:
+            metric_list = self.log[metric]
+            metric_val_list = self.log.get('val_' + metric)
+            plot_metric(np.array(metric_list), np.array(metric_val_list), metric=metric, save_path=str(self.log_dir))
 
     def _prepare_device(self, n_gpu_use):
         """

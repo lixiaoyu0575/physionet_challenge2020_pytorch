@@ -2,6 +2,7 @@ import os
 import numpy as np
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
 
 # Define the weights, the SNOMED CT code for the normal class, and equivalent SNOMED CT codes.
 weights_file = 'weights.csv'
@@ -112,10 +113,16 @@ channels = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5',
 
 def plot(data, header_data, label, label_file, save_path):
     fig, axs = plt.subplots(12, 1, sharey=True, figsize=(50, 50))
+
+    mm = MinMaxScaler()
+    data = data.swapaxes(0, 1)
+    data_scaled = mm.fit_transform(data)
+    data_scaled = data_scaled.swapaxes(0, 1)
     for i in range(12):
-        axs[i].plot(data[i, :])
+        # axs[i].set_autoscale_on(True)
+        axs[i].plot(data_scaled[i,:])
         axs[i].set_title(header_data[i+1])
-        plt.autoscale(enable=True, axis='both', tight=True)
+        axs[i].autoscale(enable=True, axis='both', tight=True)
 
     label = list(label)
     save_path_label = label[0]

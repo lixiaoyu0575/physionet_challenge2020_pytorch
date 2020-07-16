@@ -3,7 +3,7 @@ import torch
 from torchvision.utils import make_grid
 from base import BaseTrainer
 from utils import inf_loop, MetricTracker
-
+import torch.nn.functional as F
 
 class Trainer(BaseTrainer):
     """
@@ -29,6 +29,11 @@ class Trainer(BaseTrainer):
         self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
         self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
 
+        if self.do_validation:
+            keys_val = ['val_' + k for k in self.keys]
+            for key in keys_val:
+                self.log[key] = []
+
     def _train_epoch(self, epoch):
         """
         Training logic for an epoch
@@ -50,7 +55,7 @@ class Trainer(BaseTrainer):
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.train_metrics.update('loss', loss.item())
             for met in self.metric_ftns:
-                self.train_metrics.update(met.__name__, met(output, target))
+                self.train_metrics.update(met.__name__, met(self._to_np(get_pred(output)), self._to_np(target)))
 
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
@@ -90,7 +95,7 @@ class Trainer(BaseTrainer):
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.valid_metrics.update('loss', loss.item())
                 for met in self.metric_ftns:
-                    self.valid_metrics.update(met.__name__, met(output, target))
+                    self.valid_metrics.update(met.__name__, met(self._to_np(get_pred(output)), self._to_np(target)))
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard
@@ -107,3 +112,19 @@ class Trainer(BaseTrainer):
             current = batch_idx
             total = self.len_epoch
         return base.format(current, total, 100.0 * current / total)
+
+    def _to_np(self, tensor):
+        if self.device.type == 'cuda':
+            return tensor.cpu().detach().numpy()
+        else:
+            return tensor.detach().numpy()
+
+def get_pred(output, alpha=0.5):
+    output = F.sigmoid(output)
+    for i in range(output.shape[0]):
+        for j in range(output.shape[1]):
+            if output[i, j] >= alpha:
+                output[i, j] = 1
+            else:
+                output[i, j] = 0
+    return output
