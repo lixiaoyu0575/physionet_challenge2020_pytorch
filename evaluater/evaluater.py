@@ -25,7 +25,7 @@ class Evaluater(BaseEvaluater):
 
         with torch.no_grad():
             for batch_idx, (data, target) in enumerate(self.test_data_loader):
-                data, target = data.to(self.device), target.to(self.device)
+                data, target = data.to(self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
 
                 output = self.model(data)
 
@@ -33,7 +33,7 @@ class Evaluater(BaseEvaluater):
                 self.test_metrics.update('loss', loss.item())
 
                 for met in self.metric_ftns:
-                    self.test_metrics.update(met.__name__, met(self._to_np(get_pred(output)), self._to_np(target)))
+                    self.test_metrics.update(met.__name__, met(self._to_np(output), self._to_np(target)))
 
         result = self.test_metrics.result()
 

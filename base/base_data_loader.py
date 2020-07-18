@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -66,8 +67,8 @@ class BaseDataLoader(DataLoader):
         test_idx = idx_full[len_valid:len_valid+len_test]
         train_idx = np.delete(idx_full, np.arange(0, len_valid + len_test))
 
-        # if normalization:
-        #     self.data_normalization(train_idx, valid_idx, test_idx)
+        if normalization:
+            self.data_normalization(train_idx, valid_idx, test_idx)
 
         train_sampler = SubsetRandomSampler(train_idx)
         valid_sampler = SubsetRandomSampler(valid_idx)
@@ -97,3 +98,25 @@ class BaseDataLoader(DataLoader):
             test_data_loader = DataLoader(self.test_subset, **self.test_data_loader_init_kwargs)
             test_data_loader.n_samples = self.test_n_samples
             return test_data_loader
+
+    # for feature data
+    def data_normalization(self, train_idx, val_idx, test_idx):
+
+        X = self.dataset[:][0]
+        Y = self.dataset[:][1]
+
+        X_train = X[train_idx]
+        X_val = X[val_idx]
+        X_test = X[test_idx]
+
+        x_means, x_stds = X_train.mean(axis=0), X_train.var(axis=0) ** 0.5
+
+        X_normal = torch.zeros(*X.shape)
+
+        X_normal[train_idx] = (X_train - x_means) / x_stds
+
+        X_normal[val_idx] = (X_val - x_means) / x_stds
+
+        X_normal[test_idx] = (X_test - x_means) / x_stds
+
+        self.dataset = TensorDataset(X_normal, Y)

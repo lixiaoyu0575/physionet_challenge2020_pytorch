@@ -25,7 +25,7 @@ class ChallengeMetric():
     def __init__(self, input_directory):
 
         # challengeMetric initialization
-        weights_file = '/home/weiyuhua/Data/challenge2020/evaluation/weights.csv'
+        weights_file = '/home/weiyuhua/Data/evaluation/weights.csv'
         # weights_file = 'F:\challenge2020\evaluation\weights.csv'
         normal_class = '426783006'
         equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
@@ -51,7 +51,8 @@ class ChallengeMetric():
 
     # Compute recording-wise accuracy.
     def accuracy(self, outputs, labels):
-        num_recordings, num_classes = np.shape(labels)
+        outputs = self.get_pred(outputs)
+        num_recordings, self.num_classes = np.shape(labels)
 
         num_correct_recordings = 0
         for i in range(num_recordings):
@@ -69,12 +70,12 @@ class ChallengeMetric():
         #
         # If the normalize variable is set to true, then normalize the contributions
         # to the confusion matrix by the number of labels per recording.
-        num_recordings, num_classes = np.shape(labels)
+        num_recordings, self.num_classes = np.shape(labels)
 
         if not normalize:
-            A = np.zeros((num_classes, 2, 2))
+            A = np.zeros((self.num_classes, 2, 2))
             for i in range(num_recordings):
-                for j in range(num_classes):
+                for j in range(self.num_classes):
                     if labels[i, j]==1 and outputs[i, j]==1: # TP
                         A[j, 1, 1] += 1
                     elif labels[i, j]==0 and outputs[i, j]==1: # FP
@@ -86,10 +87,10 @@ class ChallengeMetric():
                     else: # This condition should not happen.
                         raise ValueError('Error in computing the confusion matrix.')
         else:
-            A = np.zeros((num_classes, 2, 2))
+            A = np.zeros((self.num_classes, 2, 2))
             for i in range(num_recordings):
                 normalization = float(max(np.sum(labels[i, :]), 1))
-                for j in range(num_classes):
+                for j in range(self.num_classes):
                     if labels[i, j]==1 and outputs[i, j]==1: # TP
                         A[j, 1, 1] += 1.0/normalization
                     elif labels[i, j]==0 and outputs[i, j]==1: # FP
@@ -105,12 +106,13 @@ class ChallengeMetric():
 
     # Compute macro F-measure.
     def f_measure(self, outputs, labels):
-        num_recordings, num_classes = np.shape(labels)
+        num_recordings, self.num_classes = np.shape(labels)
+        outputs = self.get_pred(outputs)
 
         A = self.confusion_matrices(outputs, labels)
 
-        f_measure = np.zeros(num_classes)
-        for k in range(num_classes):
+        f_measure = np.zeros(self.num_classes)
+        for k in range(self.num_classes):
             tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
             if 2 * tp + fp + fn:
                 f_measure[k] = float(2 * tp) / float(2 * tp + fp + fn)
@@ -129,13 +131,14 @@ class ChallengeMetric():
         return self.beta_measures(outputs, labels, beta)[1]
 
     def beta_measures(self, outputs, labels, beta=2):
-        num_recordings, num_classes = np.shape(labels)
+        num_recordings, self.num_classes = np.shape(labels)
+        outputs = self.get_pred(outputs)
 
         A = self.confusion_matrices(outputs, labels, normalize=True)
 
-        f_beta_measure = np.zeros(num_classes)
-        g_beta_measure = np.zeros(num_classes)
-        for k in range(num_classes):
+        f_beta_measure = np.zeros(self.num_classes)
+        g_beta_measure = np.zeros(self.num_classes)
+        for k in range(self.num_classes):
             tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
             if (1+beta**2)*tp + fp + beta**2*fn:
                 f_beta_measure[k] = float((1+beta**2)*tp) / float((1+beta**2)*tp + fp + beta**2*fn)
@@ -159,13 +162,13 @@ class ChallengeMetric():
         return self.auc(outputs, labels)[1]
 
     def auc(self, outputs, labels):
-        num_recordings, num_classes = np.shape(labels)
+        num_recordings, self.num_classes = np.shape(labels)
 
         # Compute and summarize the confusion matrices for each class across at distinct output values.
-        auroc = np.zeros(num_classes)
-        auprc = np.zeros(num_classes)
+        auroc = np.zeros(self.num_classes)
+        auprc = np.zeros(self.num_classes)
 
-        for k in range(num_classes):
+        for k in range(self.num_classes):
             # We only need to compute TPs, FPs, FNs, and TNs at distinct output values.
             thresholds = np.unique(outputs[:, k])
             thresholds = np.append(thresholds, thresholds[-1]+1)
@@ -240,18 +243,18 @@ class ChallengeMetric():
     def modified_confusion_matrix(self, outputs, labels):
         # Compute a binary multi-class, multi-label confusion matrix, where the rows
         # are the labels and the columns are the outputs.
-        num_recordings, num_classes = np.shape(labels)
-        A = np.zeros((num_classes, num_classes))
+        num_recordings, self.num_classes = np.shape(labels)
+        A = np.zeros((self.num_classes, self.num_classes))
 
         # Iterate over all of the recordings.
         for i in range(num_recordings):
             # Calculate the number of positive labels and/or outputs.
             normalization = float(max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1))
             # Iterate over all of the classes.
-            for j in range(num_classes):
+            for j in range(self.num_classes):
                 # Assign full and/or partial credit for each positive class.
                 if labels[i, j]:
-                    for k in range(num_classes):
+                    for k in range(self.num_classes):
                         if outputs[i, k]:
                             A[j, k] += 1.0/normalization
 
@@ -263,8 +266,9 @@ class ChallengeMetric():
         classes = self.classes
         normal_class = self.normal_class
         weights = self.weights
+        outputs = self.get_pred(outputs)
 
-        num_recordings, num_classes = np.shape(labels)
+        num_recordings, self.num_classes = np.shape(labels)
         normal_index = classes.index(normal_class)
 
         # Compute the observed score.
@@ -277,7 +281,7 @@ class ChallengeMetric():
         correct_score = np.nansum(weights * A)
 
         # Compute the score for the model that always chooses the normal class.
-        inactive_outputs = np.zeros((num_recordings, num_classes), dtype=np.bool)
+        inactive_outputs = np.zeros((num_recordings, self.num_classes), dtype=np.bool)
         inactive_outputs[:, normal_index] = 1
         A = self.modified_confusion_matrix(labels, inactive_outputs)
         inactive_score = np.nansum(weights * A)
@@ -288,3 +292,268 @@ class ChallengeMetric():
             normalized_score = float('nan')
 
         return normalized_score
+
+    def get_pred(self, outputs, alpha=0.5):
+        for i in range(outputs.shape[0]):
+            for j in range(outputs.shape[1]):
+                if outputs[i, j] >= alpha:
+                    outputs[i, j] = 1
+                else:
+                    outputs[i, j] = 0
+        return outputs
+
+# Challenge2020 official evaluation (unofficial stage)
+class ChallengeMetric2():
+
+    def __init__(self, num_classes):
+        self.num_classes = num_classes
+    # The compute_beta_score function computes the Fbeta-measure given an specific beta value
+    # and the G value define at the begining of the file.
+    #
+    # Inputs:
+    #   'labels' are the true classes of the recording
+    #
+    #   'output' are the output classes of your model
+    #
+    #   'beta' is the weight
+    #
+    # Outputs:
+    #
+    # fbeta_measure, Fbeta measure given an specific beta
+    # Gbeta_measure, Generalization of the Jaccard measure with a beta weigth
+    #
+    def accuracy(self, outputs, labels):
+        return self.beta_score(outputs, labels)[0]
+
+    def f_measure(self, outputs, labels):
+        return self.beta_score(outputs, labels)[1]
+
+    def f_beta(self, outputs, labels, beta=2):
+        return self.beta_score(outputs, labels, beta)[2]
+
+    def g_beta(self, outputs, labels, beta=2):
+        return self.beta_score(outputs, labels, beta)[3]
+
+    def beta_score(self, outputs, labels, beta=2, check_errors=True):
+
+        outputs = self.get_pred(outputs)
+        # Check inputs for errors.
+        if check_errors:
+            if len(outputs) != len(labels):
+                raise Exception('Numbers of outputs and labels must be the same.')
+
+        self.num_classes = labels.shape[1]
+        # Populate contingency table.
+        num_recordings = len(labels)
+
+        fbeta_l = np.zeros(self.num_classes)
+        gbeta_l = np.zeros(self.num_classes)
+        fmeasure_l = np.zeros(self.num_classes)
+        accuracy_l = np.zeros(self.num_classes)
+
+        f_beta = 0
+        g_beta = 0
+        f_measure = 0
+        accuracy = 0
+
+        # Weight function
+        C_l = np.ones(self.num_classes)
+
+        for j in range(self.num_classes):
+            tp = 0
+            fp = 0
+            fn = 0
+            tn = 0
+
+            for i in range(num_recordings):
+
+                num_labels = np.sum(labels[i])
+
+                if labels[i][j] and outputs[i][j]:
+                    tp += 1 / num_labels
+                elif not labels[i][j] and outputs[i][j]:
+                    fp += 1 / num_labels
+                elif labels[i][j] and not outputs[i][j]:
+                    fn += 1 / num_labels
+                elif not labels[i][j] and not outputs[i][j]:
+                    tn += 1 / num_labels
+
+            # Summarize contingency table.
+            if ((1 + beta ** 2) * tp + (fn * beta ** 2) + fp):
+                fbeta_l[j] = float((1 + beta ** 2) * tp) / float(((1 + beta ** 2) * tp) + (fn * beta ** 2) + fp)
+            else:
+                fbeta_l[j] = 1.0
+
+            if (tp + fp + beta * fn):
+                gbeta_l[j] = float(tp) / float(tp + fp + beta * fn)
+            else:
+                gbeta_l[j] = 1.0
+
+            if tp + fp + fn + tn:
+                accuracy_l[j] = float(tp + tn) / float(tp + fp + fn + tn)
+            else:
+                accuracy_l[j] = 1.0
+
+            if 2 * tp + fp + fn:
+                fmeasure_l[j] = float(2 * tp) / float(2 * tp + fp + fn)
+            else:
+                fmeasure_l[j] = 1.0
+
+        for i in range(self.num_classes):
+            f_beta += fbeta_l[i] * C_l[i]
+            g_beta += gbeta_l[i] * C_l[i]
+            f_measure += fmeasure_l[i] * C_l[i]
+            accuracy += accuracy_l[i] * C_l[i]
+
+        f_beta = float(f_beta) / float(self.num_classes)
+        g_beta = float(g_beta) / float(self.num_classes)
+        f_measure = float(f_measure) / float(self.num_classes)
+        accuracy = float(accuracy) / float(self.num_classes)
+
+        return accuracy, f_measure, f_beta, g_beta
+
+    # The compute_auc function computes AUROC and AUPRC as well as other summary
+    # statistics (TP, FP, FN, TN, TPR, TNR, PPV, NPV, etc.) that can be exposed
+    # from this function.
+    #
+    # Inputs:
+    #   'labels' are the true classes of the recording
+    #
+    #   'output' are the output classes of your model
+    #
+    #   'beta' is the weight
+    #
+    #
+    # Outputs:
+    #   'auroc' is a scalar that gives the AUROC of the algorithm using its
+    #   output probabilities, where specificity is interpolated for intermediate
+    #   sensitivity values.
+    #
+    #   'auprc' is a scalar that gives the AUPRC of the algorithm using its
+    #   output probabilities, where precision is a piecewise constant function of
+    #   recall.
+    #
+    def auroc(self, probabilities, labels):
+        return self.auc(probabilities, labels)[0]
+
+    def auprc(self, probabilities, labels):
+        return self.auc(probabilities, labels)[1]
+
+    def auc(self, probabilities, labels, check_errors=True):
+
+        # Check inputs for errors.
+        if check_errors:
+            if len(labels) != len(probabilities):
+                raise Exception('Numbers of outputs and labels must be the same.')
+
+        find_NaNs = np.isnan(probabilities)
+        probabilities[find_NaNs] = 0
+
+        self.num_classes = labels.shape[1]
+
+        auroc_l = np.zeros(self.num_classes)
+        auprc_l = np.zeros(self.num_classes)
+
+        auroc = 0
+        auprc = 0
+
+        # Weight function - this will change
+        C_l = np.ones(self.num_classes)
+
+        # Populate contingency table.
+        num_recordings = len(labels)
+
+        for k in range(self.num_classes):
+
+            # Find probabilities thresholds.
+            thresholds = np.unique(probabilities[:, k])[::-1]
+            if thresholds[0] != 1:
+                thresholds = np.insert(thresholds, 0, 1)
+            if thresholds[-1] == 0:
+                thresholds = thresholds[:-1]
+
+            m = len(thresholds)
+
+            # Populate contingency table across probabilities thresholds.
+            tp = np.zeros(m)
+            fp = np.zeros(m)
+            fn = np.zeros(m)
+            tn = np.zeros(m)
+
+            # Find indices that sort the predicted probabilities from largest to
+            # smallest.
+            idx = np.argsort(probabilities[:, k])[::-1]
+
+            i = 0
+            for j in range(m):
+                # Initialize contingency table for j-th probabilities threshold.
+                if j == 0:
+                    tp[j] = 0
+                    fp[j] = 0
+                    fn[j] = np.sum(labels[:, k])
+                    tn[j] = num_recordings - fn[j]
+                else:
+                    tp[j] = tp[j - 1]
+                    fp[j] = fp[j - 1]
+                    fn[j] = fn[j - 1]
+                    tn[j] = tn[j - 1]
+                # Update contingency table for i-th largest predicted probability.
+                while i < num_recordings and probabilities[idx[i], k] >= thresholds[j]:
+                    if labels[idx[i], k]:
+                        tp[j] += 1
+                        fn[j] -= 1
+                    else:
+                        fp[j] += 1
+                        tn[j] -= 1
+                    i += 1
+
+            # Summarize contingency table.
+            tpr = np.zeros(m)
+            tnr = np.zeros(m)
+            ppv = np.zeros(m)
+            npv = np.zeros(m)
+
+            for j in range(m):
+                if tp[j] + fn[j]:
+                    tpr[j] = float(tp[j]) / float(tp[j] + fn[j])
+                else:
+                    tpr[j] = 1
+                if fp[j] + tn[j]:
+                    tnr[j] = float(tn[j]) / float(fp[j] + tn[j])
+                else:
+                    tnr[j] = 1
+                if tp[j] + fp[j]:
+                    ppv[j] = float(tp[j]) / float(tp[j] + fp[j])
+                else:
+                    ppv[j] = 1
+                if fn[j] + tn[j]:
+                    npv[j] = float(tn[j]) / float(fn[j] + tn[j])
+                else:
+                    npv[j] = 1
+
+            # Compute AUROC as the area under a piecewise linear function with TPR /
+            # sensitivity (x-axis) and TNR / specificity (y-axis) and AUPRC as the area
+            # under a piecewise constant with TPR / recall (x-axis) and PPV / precision
+            # (y-axis).
+
+            for j in range(m - 1):
+                auroc_l[k] += 0.5 * (tpr[j + 1] - tpr[j]) * (tnr[j + 1] + tnr[j])
+                auprc_l[k] += (tpr[j + 1] - tpr[j]) * ppv[j + 1]
+
+        for i in range(self.num_classes):
+            auroc += auroc_l[i] * C_l[i]
+            auprc += auprc_l[i] * C_l[i]
+
+        auroc = float(auroc) / float(self.num_classes)
+        auprc = float(auprc) / float(self.num_classes)
+
+        return auroc, auprc
+
+    def get_pred(self, outputs, alpha=0.5):
+        for i in range(outputs.shape[0]):
+            for j in range(outputs.shape[1]):
+                if outputs[i, j] >= alpha:
+                    outputs[i, j] = 1
+                else:
+                    outputs[i, j] = 0
+        return outputs

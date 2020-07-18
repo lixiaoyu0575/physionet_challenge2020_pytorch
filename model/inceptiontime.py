@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from ptflops import get_model_complexity_info
 
 def correct_sizes(sizes):
     corrected_sizes = [s if s % 2 != 0 else s - 1 for s in sizes]
@@ -426,6 +427,7 @@ class InceptionTimeV1(nn.Module):
             return_indices=return_indices
         )
         self.fc = nn.Linear(in_features=4 * n_filters, out_features=num_classes)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, X):
         if self.return_indices:
@@ -438,6 +440,7 @@ class InceptionTimeV1(nn.Module):
             Z = self.inception_block_3(Z)
         Z = torch.mean(Z, dim=2)
         Z = self.fc(Z)
+        Z = self.sigmoid(Z)
         if self.return_indices:
             return Z, [i1, i2, i3]
         else:
@@ -489,6 +492,7 @@ class InceptionTimeV2(nn.Module):
             return_indices=return_indices
         )
         self.fc = nn.Linear(in_features=4 * n_filters, out_features=num_classes)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, X):
         if self.return_indices:
@@ -501,6 +505,7 @@ class InceptionTimeV2(nn.Module):
             Z = self.inception_block_3(Z)
         Z = torch.mean(Z, dim=2)
         Z = self.fc(Z)
+        Z = self.sigmoid(Z)
         if self.return_indices:
             return Z, [i1, i2, i3]
         else:
@@ -511,7 +516,9 @@ if __name__ == '__main__':
 
     x = torch.randn(1, 12, 18000)
     # m = InceptionTimeV1(in_channels=12, num_classes=9, n_filters=32, kernel_sizes=[9, 19, 39], bottleneck_channels=32)
-    m = InceptionTimeV2(in_channels=12, num_classes=9, n_filters=32, kernel_sizes=[9, 19, 39], bottleneck_channels=32)
+    m = InceptionTimeV2(in_channels=12, num_classes=108, n_filters=32, kernel_sizes=[9, 19, 39], bottleneck_channels=32)
+    flops, params = get_model_complexity_info(m, (12, 18000), as_strings=True, print_per_layer_stat=True)
+    print("%s |%s" % (flops, params))
     print(m)
     y = m(x)
     print('done')

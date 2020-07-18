@@ -97,6 +97,7 @@ class ResNeXt(nn.Module):
         # self.avgpool = nn.AvgPool1d(7, stride=1)
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.sigmoid = nn.Sigmoid()
 
         for m in self.modules():
             if isinstance(m, nn.Conv1d):
@@ -137,6 +138,7 @@ class ResNeXt(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        x = self.sigmoid(x)
 
         return x
 

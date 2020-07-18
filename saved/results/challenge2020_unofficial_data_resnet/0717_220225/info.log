@@ -1,0 +1,9 @@
+2020-07-17 23:08:18,630 - evaluater - INFO - Loading checkpoint: saved/models/challenge2020_unofficial_data_resnet/0717_220225/model_best.pth ...
+2020-07-17 23:08:18,898 - evaluater - INFO - Checkpoint loaded from epoch 38
+2020-07-17 23:08:22,249 - evaluater - INFO -     f_measure      : 0.7569526540468772
+2020-07-17 23:08:22,249 - evaluater - INFO -     g_beta         : 0.6862236484614507
+2020-07-17 23:08:22,249 - evaluater - INFO -     auprc          : 0.6784904422307524
+2020-07-17 23:08:22,249 - evaluater - INFO -     accuracy       : 0.958517914815202
+2020-07-17 23:08:22,249 - evaluater - INFO -     loss           : 0.1304182460488275
+2020-07-17 23:08:22,249 - evaluater - INFO -     f_beta         : 0.7570032579661391
+2020-07-17 23:08:22,249 - evaluater - INFO -     auroc          : 0.7363371985465009

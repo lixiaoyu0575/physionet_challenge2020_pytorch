@@ -59,3 +59,34 @@ class CNNModel(BaseModel):
         x = self.fc2(x)
         # return F.log_softmax(x, dim=1)
         return x
+
+class MLP(BaseModel):
+    def __init__(self, input_dim, num_classes, n_hid, activation='ReLU'):
+        super().__init__()
+        self.input_dim = input_dim
+        self.num_classes = num_classes
+        self.n_hid = n_hid
+
+        fc = []
+        fc.append(nn.Linear(self.input_dim, self.n_hid[0]))
+        for i in range(1, len(self.n_hid)):
+            fc.append(nn.Linear(self.n_hid[i-1], self.n_hid[i]))
+        fc.append(nn.Linear(self.n_hid[-1], self.num_classes))
+
+        self.fc = nn.ModuleList(fc)
+
+        # Non linearity
+        if activation == 'ReLU':
+            self.act = nn.ReLU(inplace=True)
+        elif activation == 'Tanh':
+            self.act = nn.Tanh()
+        elif activation == 'Sigmoid':
+            self.act = nn.Sigmoid()
+
+    def forward(self, x):
+        x = x.view(-1, self.input_dim)  # view(batch_size, input_dim)
+        # -----------------
+        for i in range(len(self.fc) - 1):
+            x = self.act(self.fc[i](x))
+        y = self.fc[-1](x)
+        return  y

@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 from scipy.io import loadmat
 import torch
 from torchvision import datasets, transforms
@@ -37,6 +38,7 @@ class ChallengeDataLoader(BaseDataLoader):
         # self.dataset = datasets.MNIST(self.data_dir, train=training, download=True, transform=trsfm)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, test_split, num_workers)
 
+# official data
 class ChallengeDataLoader2(BaseDataLoader):
     """
     challenge2020 data loading
@@ -115,6 +117,198 @@ class ChallengeDataLoader2(BaseDataLoader):
 
         recordings_preprocessed = recordings_scaled
         return recordings_preprocessed, labels
+
+    def augmentation(self, recordings, labels):
+
+        recordings_augmented = recordings
+        return recordings_augmented, labels
+
+# unofficial data
+class ChallengeDataLoader3(BaseDataLoader):
+    """
+    challenge2020 data loading
+    """
+    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, test_split=0.0, num_workers=1, training=True):
+        self.data_dir = data_dir
+        print('Loading data...')
+
+        # Find the label files.
+        print('Finding label...')
+        label_files = load_label_files(data_dir)
+
+        # Load the labels and classes.
+        classes = self.get_classes(label_files)
+
+        num_files = len(label_files)
+        recordings = list()
+        labels_onehot = list()
+
+        for i in range(num_files):
+            recording, header = self.load_challenge_data(label_files[i])
+
+            ##########################
+            mask = np.zeros((12, 18000))
+            if recording.shape[1] <= 18000:
+                mask[:, :recording.shape[1]] = recording
+            else:
+                mask[:, :] = recording[:, :18000]
+            ##########################
+
+            recordings.append(mask)
+
+            _, _, label = self.get_true_labels(label_files[i], classes)
+            labels_onehot.append(label)
+
+        recordings = np.array(recordings)
+        labels_onehot = np.array(labels_onehot)
+
+        recordings_preprocessed, labels_onehot = self.preprocessing(recordings, labels_onehot)
+        recordings_augmented, labels_onehot = self.augmentation(recordings_preprocessed, labels_onehot)
+
+        X = torch.from_numpy(recordings_augmented).float()
+        Y = torch.from_numpy(labels_onehot)
+
+        self.dataset = TensorDataset(X, Y)
+
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, test_split, num_workers)
+
+    # Find unique number of classes
+    def get_classes(self, files):
+
+        classes = set()
+        for input_file in files:
+            with open(input_file, 'r') as f:
+                for lines in f:
+                    if lines.startswith('#Dx'):
+                        tmp = lines.split(': ')[1].split(',')
+                        for c in tmp:
+                            classes.add(c.strip())
+
+        return sorted(classes)
+
+    # Find unique true labels
+    def get_true_labels(self, input_file, classes):
+
+        classes_label = classes
+        single_recording_labels = np.zeros(len(classes), dtype=int)
+
+        with open(input_file, 'r') as f:
+            first_line = f.readline()
+            recording_label = first_line.split(' ')[0]
+            print(recording_label)
+            for lines in f:
+                if lines.startswith('#Dx'):
+                    tmp = lines.split(': ')[1].split(',')
+                    for c in tmp:
+                        idx = classes.index(c.strip())
+                        single_recording_labels[idx] = 1
+
+        return recording_label, classes_label, single_recording_labels
+
+    # Load challenge data.
+    def load_challenge_data(self, header_file):
+        with open(header_file, 'r') as f:
+            header = f.readlines()
+        mat_file = header_file.replace('.hea', '.mat')
+        x = loadmat(mat_file)
+        recording = np.asarray(x['val'], dtype=np.float64)
+        return recording, header
+
+    def preprocessing(self, recordings, labels):
+
+        mm = MinMaxScaler()
+        recordings = recordings.swapaxes(1, 2)
+        for i in range(len(recordings)):
+            recordings[i] = mm.fit_transform(recordings[i])
+        recordings_scaled = recordings.swapaxes(1, 2)
+
+        recordings_preprocessed = recordings_scaled
+        return recordings_preprocessed, labels
+
+    def augmentation(self, recordings, labels):
+
+        recordings_augmented = recordings
+        return recordings_augmented, labels
+
+# feature data of unofficial data
+class ChallengeDataLoader4(BaseDataLoader):
+    """
+    challenge2020 data loading
+    """
+    def __init__(self, data_dir, batch_size, shuffle=True, validation_split=0.0, test_split=0.0, num_workers=1, training=True):
+        self.data_dir = data_dir
+        print('Loading data...')
+
+        # Find the label files.
+        print('Finding label...')
+        label_files = load_label_files(data_dir)
+
+        # Load the labels and classes.
+        classes = self.get_classes(label_files)
+
+        num_files = len(label_files)
+        recordings_feature = self.load_challenge_feature_data(data_dir)
+        labels_onehot = list()
+
+        for i in range(num_files):
+            _, _, label = self.get_true_labels(label_files[i], classes)
+            labels_onehot.append(label)
+
+        labels_onehot = np.array(labels_onehot)
+
+        recordings_feature_preprocessed, labels_onehot = self.preprocessing(recordings_feature, labels_onehot)
+        recordings_feature_augmented, labels_onehot = self.augmentation(recordings_feature_preprocessed, labels_onehot)
+
+        X = torch.from_numpy(recordings_feature_augmented).float()
+        Y = torch.from_numpy(labels_onehot)
+
+        self.dataset = TensorDataset(X, Y)
+
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, test_split, num_workers, normalization=True)
+
+    # Find unique number of classes
+    def get_classes(self, files):
+
+        classes = set()
+        for input_file in files:
+            with open(input_file, 'r') as f:
+                for lines in f:
+                    if lines.startswith('#Dx'):
+                        tmp = lines.split(': ')[1].split(',')
+                        for c in tmp:
+                            classes.add(c.strip())
+
+        return sorted(classes)
+
+    # Find unique true labels
+    def get_true_labels(self, input_file, classes):
+
+        classes_label = classes
+        single_recording_labels = np.zeros(len(classes), dtype=int)
+
+        with open(input_file, 'r') as f:
+            first_line = f.readline()
+            recording_label = first_line.split(' ')[0]
+            print(recording_label)
+            for lines in f:
+                if lines.startswith('#Dx'):
+                    tmp = lines.split(': ')[1].split(',')
+                    for c in tmp:
+                        idx = classes.index(c.strip())
+                        single_recording_labels[idx] = 1
+
+        return recording_label, classes_label, single_recording_labels
+
+    # Load challenge data.
+    def load_challenge_feature_data(self, data_dir):
+        file_name = 'OUT_FEATURE.csv'
+        feature_data =  np.array(pd.read_csv(os.path.join(data_dir, file_name), header=None))[1:]
+        feature_data = feature_data.reshape((feature_data.shape[0], 1, feature_data.shape[1]))
+        return feature_data
+
+    def preprocessing(self, recordings, labels):
+
+        return recordings, labels
 
     def augmentation(self, recordings, labels):
 
