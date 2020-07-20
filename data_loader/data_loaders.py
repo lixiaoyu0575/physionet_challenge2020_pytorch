@@ -9,6 +9,8 @@ from base import BaseDataLoader
 from utils.dataset import ECGDataset
 from sklearn.preprocessing import MinMaxScaler
 from utils.dataset import load_label_files, load_labels
+from scipy.signal import savgol_filter, medfilt, wiener
+from data_loader.preprocessing import cheby_lowpass_filter, butter_lowpass_filter, plot
 
 class MnistDataLoader(BaseDataLoader):
     """
@@ -220,10 +222,19 @@ class ChallengeDataLoader3(BaseDataLoader):
         recordings = recordings.swapaxes(1, 2)
         for i in range(len(recordings)):
             recordings[i] = mm.fit_transform(recordings[i])
-        recordings_scaled = recordings.swapaxes(1, 2)
+        recordings = recordings.swapaxes(1, 2)
 
-        recordings_preprocessed = recordings_scaled
-        return recordings_preprocessed, labels
+        recordings_filted = np.zeros((recordings.shape[0], recordings.shape[1], recordings.shape[2]))
+        for i in range(recordings.shape[0]):
+            for j in range(recordings.shape[1]):
+                # butter_lowpass_filter\cheby_lowpass_filter\savgol_filter...
+                recordings_filted[i, j, :] = butter_lowpass_filter(recordings[i, j, :], cutoff=30)
+
+        # for i in range(recordings.shape[0]):
+        #     plot(recordings[i], recordings_filted[i], save_file='data_loader/denoising/%d.png' %(i+1))
+        #     if i == 50:
+        #         exit(1)
+        return recordings_filted, labels
 
     def augmentation(self, recordings, labels):
 
@@ -250,11 +261,28 @@ class ChallengeDataLoader4(BaseDataLoader):
         recordings_feature = self.load_challenge_feature_data(data_dir)
         labels_onehot = list()
 
+        nan_array = np.isnan(recordings_feature)
+        print("nan value: ")
+        print(np.isnan(recordings_feature).any())
+
         for i in range(num_files):
             _, _, label = self.get_true_labels(label_files[i], classes)
             labels_onehot.append(label)
 
         labels_onehot = np.array(labels_onehot)
+
+        nan_idx = []
+        for i in range(num_files):
+            if np.isnan(recordings_feature[i, :]).any():
+                nan_idx.append(i)
+
+        recordings_feature = np.delete(recordings_feature, nan_idx, axis=0)
+        labels_onehot = np.delete(labels_onehot, nan_idx, axis=0)
+
+        recordings_feature = recordings_feature.reshape((recordings_feature.shape[0], 1, recordings_feature.shape[1]))
+
+        print("remove nan value: ")
+        print(np.isnan(recordings_feature).any())
 
         recordings_feature_preprocessed, labels_onehot = self.preprocessing(recordings_feature, labels_onehot)
         recordings_feature_augmented, labels_onehot = self.augmentation(recordings_feature_preprocessed, labels_onehot)
@@ -303,7 +331,7 @@ class ChallengeDataLoader4(BaseDataLoader):
     def load_challenge_feature_data(self, data_dir):
         file_name = 'OUT_FEATURE.csv'
         feature_data =  np.array(pd.read_csv(os.path.join(data_dir, file_name), header=None))[1:]
-        feature_data = feature_data.reshape((feature_data.shape[0], 1, feature_data.shape[1]))
+        # feature_data = feature_data.reshape((feature_data.shape[0], 1, feature_data.shape[1]))
         return feature_data
 
     def preprocessing(self, recordings, labels):

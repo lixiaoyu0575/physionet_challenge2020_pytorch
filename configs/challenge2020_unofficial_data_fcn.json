@@ -1,18 +1,19 @@
 {
-    "name": "challenge2020_unofficial_feature_mlp_1000x3",
+    "name": "challenge2020_unofficial_data_fcn",
     "n_gpu": 1,
     "arch": {
-        "type": "MLP",
+        "type": "TCN",
         "args": {
-            "input_dim":5508,
-            "num_classes": 9,
-            "n_hid":[1000, 1000, 1000]
+            "input_size": 12,
+            "output_size": 9,
+            "num_channels": [32, 32, 32, 32],
+            "kernel_size": 16,
+            "dropout": 0.2
         }
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader4",
-
+        "type": "ChallengeDataLoader3",
         "args":{
             "data_dir": "/home/weiyuhua/Data/raw-data",
             "batch_size": 16,

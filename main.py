@@ -5,10 +5,12 @@ import numpy as np
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
-import model.model as module_arch
+import model.model as module_arch_model
 import model.resnet as moudle_arch_resnet
 import model.resnext as moudle_arch_resnext
 import model.inceptiontime as moudle_arch_inceptiontime
+import model.fcn as moudle_arch_fcn
+import model.tcn as moudle_arch_tcn
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -22,6 +24,16 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 np.random.seed(SEED)
 
+# model selection
+files_models = {
+    "fcn": ['FCN'],
+    "inceptiontime": ['InceptionTimeV1', 'InceptionTimeV2'],
+    "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
+    "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
+    "model": ['CNN', 'MLP'],
+    "tcn": ['TCN']
+}
+
 def main(config):
     logger = config.get_logger('train')
 
@@ -31,9 +43,12 @@ def main(config):
     test_data_loader = data_loader.test_data_loader
 
     # build model architecture, then print to console
-    model = config.init_obj('arch', module_arch)
-    # model = config.init_obj('arch', moudle_arch_resnet)
-    logger.info(model)
+    global model
+    for file, types in files_models.items():
+        for type in types:
+            if config["arch"]["type"] == type:
+                model = config.init_obj('arch', eval("moudle_arch_" + file))
+                logger.info(model)
 
     # get function handles of loss and metrics
     criterion = getattr(module_loss, config['loss'])

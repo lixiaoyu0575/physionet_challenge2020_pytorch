@@ -5,6 +5,7 @@ from torch.utils.data.dataloader import default_collate
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data.dataset import Subset
 from torch.utils.data import TensorDataset
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 class BaseDataLoader(DataLoader):
     """
@@ -105,18 +106,18 @@ class BaseDataLoader(DataLoader):
         X = self.dataset[:][0]
         Y = self.dataset[:][1]
 
-        X_train = X[train_idx]
-        X_val = X[val_idx]
-        X_test = X[test_idx]
+        ## max_min
+        # mm = MinMaxScaler()
+        # X = mm.fit_transform(X[:, 0, :])
+        # X = X.reshape((X.shape[0], 1, X.shape[1]))
 
-        x_means, x_stds = X_train.mean(axis=0), X_train.var(axis=0) ** 0.5
+        # StandardScaler
+        std = StandardScaler()
+        X = std.fit_transform(X[:, 0, :])
+        X = X.reshape((X.shape[0], 1, X.shape[1]))
 
-        X_normal = torch.zeros(*X.shape)
+        print("after std, nan:")
+        print(np.isnan(X).any())
 
-        X_normal[train_idx] = (X_train - x_means) / x_stds
-
-        X_normal[val_idx] = (X_val - x_means) / x_stds
-
-        X_normal[test_idx] = (X_test - x_means) / x_stds
-
-        self.dataset = TensorDataset(X_normal, Y)
+        X = torch.from_numpy(X).float()
+        self.dataset = TensorDataset(X, Y)

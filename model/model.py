@@ -20,7 +20,7 @@ class MnistModel(BaseModel):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-class CNNModel(BaseModel):
+class CNN(BaseModel):
     def __init__(self, num_classes=9):
         super().__init__()
         self.conv1 = nn.Conv1d(12, 12, kernel_size=16)
@@ -74,7 +74,7 @@ class MLP(BaseModel):
         fc.append(nn.Linear(self.n_hid[-1], self.num_classes))
 
         self.fc = nn.ModuleList(fc)
-
+        self.sigmiod = nn.Sigmoid()
         # Non linearity
         if activation == 'ReLU':
             self.act = nn.ReLU(inplace=True)
@@ -89,4 +89,5 @@ class MLP(BaseModel):
         for i in range(len(self.fc) - 1):
             x = self.act(self.fc[i](x))
         y = self.fc[-1](x)
+        y = self.sigmiod(y)
         return  y

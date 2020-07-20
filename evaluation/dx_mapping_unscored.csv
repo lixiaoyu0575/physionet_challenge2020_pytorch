@@ -28,7 +28,7 @@ early repolarization,428417006,ERe,0,0,0,0,0,140,140
 fusion beats,13640000,FB,0,0,7,0,0,0,7
 heart failure,84114007,HF,0,0,0,7,0,0,7
 heart valve disorder,368009,HVD,0,0,0,6,0,0,6
-high t-voltage,251259000,HTV,0,1,0,0,0,0,1
+high t-voltage,25125000,HTV,0,1,0,0,0,0,1
 idioventricular rhythm,49260003,IR,0,0,2,0,0,0,2
 incomplete left bundle branch block,251120003,ILBBB,0,42,0,0,77,86,205
 indeterminate cardiac axis,251200008,ICA,0,0,0,0,156,0,156
