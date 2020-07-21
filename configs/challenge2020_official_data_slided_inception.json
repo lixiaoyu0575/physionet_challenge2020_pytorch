@@ -1,21 +1,22 @@
 {
-    "name": "challenge2020_official_data_tcn",
+    "name": "challenge2020_official_data_slided_inception",
     "n_gpu": 1,
     "arch": {
-        "type": "TCN",
+        "type": "InceptionTimeV1",
         "args": {
-           "input_size": 12,
-            "output_size": 108,
-            "num_channels": [32, 32, 32, 32],
-            "kernel_size": 7,
-            "dropout": 0.2
+            "in_channels": 12,
+            "num_classes": 108,
+            "n_filters": 32,
+            "kernel_sizes": [3, 7, 15],
+            "bottleneck_channels": 32
         }
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader2",
+        "type": "ChallengeDataLoader1",
         "args":{
-            "data_dir": "/home/weiyuhua/Data/challenge2020/",
+            "label_dir": "/home/weiyuhua/Data/challenge2020",
+            "data_dir": "/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100",
             "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.05,
@@ -50,7 +51,7 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 1,
 
         "save_dir": "saved/",
         "save_period": 1,

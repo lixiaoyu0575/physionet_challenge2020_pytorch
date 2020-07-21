@@ -121,3 +121,65 @@ class BaseDataLoader(DataLoader):
 
         X = torch.from_numpy(X).float()
         self.dataset = TensorDataset(X, Y)
+
+class BaseDataLoader2(DataLoader):
+    """
+    Base class for all data loaders
+    """
+
+    def __init__(self, dataset, batch_size, shuffle, train_idx, valid_idx, test_idx, num_workers,
+                 collate_fn=default_collate, normalization=False):
+        self.train_idx = train_idx
+        self.valid_idx = valid_idx
+        self.test_idx = test_idx
+        self.shuffle = shuffle
+        self.dataset = dataset
+        self.batch_idx = 0
+        self.n_samples = len(self.dataset)
+
+        self.sampler, self.valid_sampler, self.test_sampler = self._split_sampler(self.train_idx, self.valid_idx,
+                                                                                  self.test_idx)
+
+        self.init_kwargs = {
+            'dataset': self.dataset,
+            'batch_size': batch_size,
+            'shuffle': self.shuffle,
+            'collate_fn': collate_fn,
+            'num_workers': num_workers
+        }
+        super().__init__(sampler=self.sampler, **self.init_kwargs)
+
+        self.valid_data_loader = self.split_validation()
+        self.test_data_loader = self.split_test()
+
+    def _split_sampler(self, train_idx, valid_idx, test_idx):
+        if valid_idx is None and test_idx is None:
+            return None, None, None
+
+        train_sampler = SubsetRandomSampler(train_idx)
+        valid_sampler = SubsetRandomSampler(valid_idx)
+        test_sampler = SubsetRandomSampler(test_idx)
+
+        # turn off shuffle option which is mutually exclusive with sampler
+        self.shuffle = False
+        self.n_samples = len(train_idx)
+        self.valid_n_samples = len(valid_idx)
+        self.test_n_samples = len(test_idx)
+
+        return train_sampler, valid_sampler, test_sampler
+
+    def split_validation(self):
+        if self.valid_idx is None:
+            return None
+        else:
+            valid_data_loader = DataLoader(sampler=self.valid_sampler, **self.init_kwargs)
+            valid_data_loader.n_samples = self.valid_n_samples
+            return valid_data_loader
+
+    def split_test(self):
+        if self.test_idx is None:
+            return None
+        else:
+            test_data_loader = DataLoader(sampler=self.test_sampler, **self.init_kwargs)
+            test_data_loader.n_samples = self.test_n_samples
+            return test_data_loader

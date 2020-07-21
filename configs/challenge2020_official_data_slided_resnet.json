@@ -1,21 +1,18 @@
 {
-    "name": "challenge2020_official_data_tcn",
+    "name": "challenge2020_official_data_slided_resnet",
     "n_gpu": 1,
     "arch": {
-        "type": "TCN",
+        "type": "resnet34",
         "args": {
-           "input_size": 12,
-            "output_size": 108,
-            "num_channels": [32, 32, 32, 32],
-            "kernel_size": 7,
-            "dropout": 0.2
+          "num_classes":108
         }
     },
 
-    "data_loader": {
-        "type": "ChallengeDataLoader2",
+   "data_loader": {
+        "type": "ChallengeDataLoader1",
         "args":{
-            "data_dir": "/home/weiyuhua/Data/challenge2020/",
+            "label_dir": "/home/weiyuhua/Data/challenge2020",
+            "data_dir": "/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100",
             "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.05,
@@ -34,7 +31,7 @@
     "loss": "bce_loss",
     "metrics":
     [
-        "accuracy",
+       "accuracy",
         "f_measure",
         "macro_f_beta_measure",
         "macro_g_beta_measure",

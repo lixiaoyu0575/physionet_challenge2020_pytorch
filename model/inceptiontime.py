@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from ptflops import get_model_complexity_info
+import torch.nn.init as init
 
 def correct_sizes(sizes):
     corrected_sizes = [s if s % 2 != 0 else s - 1 for s in sizes]
@@ -493,6 +494,37 @@ class InceptionTimeV2(nn.Module):
         )
         self.fc = nn.Linear(in_features=4 * n_filters, out_features=num_classes)
         self.sigmoid = nn.Sigmoid()
+        # self.weight_init()
+
+    def weight_init(self, mode='kaiming'):
+        if mode == 'kaiming':
+            initializer = self.kaiming_init
+        elif mode == 'normal':
+            initializer = self.normal_init
+
+        for block in self._modules:
+            for m in self._modules[block]:
+                initializer(m)
+
+    def kaiming_init(self, m):
+        if isinstance(m, (nn.Linear, nn.Conv2d)):
+            init.kaiming_normal_(m.weight)
+            if m.bias is not None:
+                m.bias.data.fill_(0)
+        elif isinstance(m, (nn.BatchNorm1d, nn.BatchNorm2d)):
+            m.weight.data.fill_(1)
+            if m.bias is not None:
+                m.bias.data.fill_(0)
+
+    def normal_init(self, m):
+        if isinstance(m, (nn.Linear, nn.Conv2d)):
+            init.normal_(m.weight, 0, 0.02)
+            if m.bias is not None:
+                m.bias.data.fill_(0)
+        elif isinstance(m, (nn.BatchNorm1d, nn.BatchNorm2d)):
+            m.weight.data.fill_(1)
+            if m.bias is not None:
+                m.bias.data.fill_(0)
 
     def forward(self, X):
         if self.return_indices:
