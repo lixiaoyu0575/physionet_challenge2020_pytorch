@@ -1,14 +1,6 @@
 import os
 import numpy as np
-from scipy.io import loadmat
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
-
-# Define the weights, the SNOMED CT code for the normal class, and equivalent SNOMED CT codes.
-weights_file = 'weights.csv'
-normal_class = '426783006'
-equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
-
+from scipy.io import loadmat, savemat
 # Find Challenge files.
 def load_label_files(label_directory):
     label_files = list()
@@ -96,12 +88,12 @@ def load_labels(label_files, normal_class, equivalent_classes_collection):
     return classes, labels_onehot, labels
 
 # Load Data from input directory
-def load_challenge_data(label_filename):
+def load_challenge_data(label_filename, input_directory_label, input_directory_data):
 
     filename = label_filename.replace('.hea','.mat')
-    input_header_file = os.path.join(label_filename)
+    input_header_file = os.path.join(input_directory_label, label_filename)
 
-    x = loadmat(filename)
+    x = loadmat(os.path.join(input_directory_data, filename))
     data = np.asarray(x['val'], dtype=np.float64)
 
     with open(input_header_file,'r') as f:
@@ -110,66 +102,3 @@ def load_challenge_data(label_filename):
 
 # Plot Ecg
 channels = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6']
-
-def plot(data, header_data, label, label_file, save_path):
-    fig, axs = plt.subplots(12, 1, sharey=True, figsize=(50, 50))
-
-    mm = MinMaxScaler()
-    data = data.swapaxes(0, 1)
-    data_scaled = mm.fit_transform(data)
-    data_scaled = data_scaled.swapaxes(0, 1)
-    for i in range(12):
-        # axs[i].set_autoscale_on(True)
-        axs[i].plot(data_scaled[i,:])
-        axs[i].set_title(header_data[i+1])
-        axs[i].autoscale(enable=True, axis='both', tight=True)
-
-    label = list(label)
-    save_path_label = label[0]
-    if len(label) > 1:
-        for i in range(len(label)-1):
-            save_path_label += ' %s' %(label[i+1])
-
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
-
-    file = os.path.basename(label_file)
-    name, ext = os.path.splitext(file)
-
-    save_path_label = os.path.join(save_path, save_path_label)
-
-    if not os.path.exists(save_path_label):
-        os.mkdir(save_path_label)
-
-    plt.savefig(os.path.join(save_path_label, '%s.png' %(name)))
-    plt.close()
-
-if __name__ == '__main__':
-
-
-    # Define the weights, the SNOMED CT code for the normal class, and equivalent SNOMED CT codes.
-    weights_file = 'weights.csv'
-    normal_class = '426783006'
-    equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
-
-    input_directory  = '/home/weiyuhua/Data/challenge2020'
-    save_path = '/home/weiyuhua/Data/challenge2020_plots'
-
-    # Find the label files.
-    print('Finding label and output files...')
-    label_files = load_label_files(input_directory)
-
-    # Load the labels and classes.
-    print('Loading labels and outputs...')
-    label_classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
-
-    num_files = len(label_files)
-    print("num_files:", num_files)
-
-    # Load data and plot
-    for i, (f, label) in enumerate(zip(label_files, labels)):
-        print('    {}/{}...'.format(i + 1, num_files))
-        tmp_label_file = os.path.join(input_directory, f)
-        data, header_data = load_challenge_data(tmp_label_file)
-        plot(data, header_data, label, tmp_label_file, save_path)
-
