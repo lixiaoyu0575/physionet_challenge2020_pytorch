@@ -6,11 +6,11 @@ import data_loader.data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
 import model.model as module_arch_model
-import model.resnet as moudle_arch_resnet
-import model.resnext as moudle_arch_resnext
-import model.inceptiontime as moudle_arch_inceptiontime
-import model.fcn as moudle_arch_fcn
-import model.tcn as moudle_arch_tcn
+import model.resnet as module_arch_resnet
+import model.resnext as module_arch_resnext
+import model.inceptiontime as module_arch_inceptiontime
+import model.fcn as module_arch_fcn
+import model.tcn as module_arch_tcn
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -47,7 +47,7 @@ def main(config):
     for file, types in files_models.items():
         for type in types:
             if config["arch"]["type"] == type:
-                model = config.init_obj('arch', eval("moudle_arch_" + file))
+                model = config.init_obj('arch', eval("module_arch_" + file))
                 logger.info(model)
 
     # get function handles of loss and metrics

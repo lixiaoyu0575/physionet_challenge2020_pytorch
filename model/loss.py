@@ -12,6 +12,7 @@ def bce_with_logits_loss(output, target):
 
 def bce_loss(output, target):
     loss = torch.nn.BCELoss()
+    # print(output)
     return loss(output, target)
 
 def focal_loss(outputs, targets, alpha=1, gamma=2, logits=False, reduce=True):

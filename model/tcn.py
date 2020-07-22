@@ -71,5 +71,6 @@ class TCN(nn.Module):
     def forward(self, inputs):
         """Inputs have to have dimension (N, C_in, L_in)"""
         y1 = self.tcn(inputs)  # input should have dimension (N, C, L)
-        o = self.linear(y1[:, :, -1])
+        # o = self.linear(y1[:, :, -1])   # return sequence = False
+        o = self.linear(torch.mean(y1, dim=2))
         return self.sigmoid(o)

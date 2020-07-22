@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from .utils import ConvBlock
+from .util import ConvBlock
 
 class FCN(nn.Module):
     """A PyTorch implementation of the FCN Baseline

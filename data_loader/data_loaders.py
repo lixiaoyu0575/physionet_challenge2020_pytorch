@@ -72,16 +72,31 @@ class ChallengeDataLoader1(BaseDataLoader2):
         labels_onehot_new = list()
         labels_new = list()
 
+        bb = []
+        dd = []
+
         for i in range(num_files):
             if i in short_signals_ids:
                 continue
             recording, header = load_challenge_data(label_files[i], data_dir)
+            recording[np.isnan(recording)] = 0
             recordings.append(recording)
+
+            rr = np.array(recording)
+            if np.isnan(rr).any():
+                print(i)
+                bb.append(i)
+                dd.append(rr)
+
             labels_onehot_new.append(labels_onehot[i])
             labels_new.append(labels[i])
 
         # shuffle
         recordings_shuffled, labels_onehot_shuffled, labels_shuffled = self.shuffle(recordings, labels_onehot_new, labels_new)
+
+        for i in range(len(recordings_shuffled)):
+            if np.isnan(recordings_shuffled[i]).any():
+                print(i)
 
         # slided data
         recordings_all = list()
@@ -100,6 +115,18 @@ class ChallengeDataLoader1(BaseDataLoader2):
         recordings_preprocessed, labels_onehot = self.preprocessing(recordings_all, labels_onehot_all)
         recordings_augmented, labels_onehot = self.augmentation(recordings_preprocessed, labels_onehot_all)
 
+        print(np.isnan(recordings_augmented).any())
+
+        num = recordings_augmented.shape[0]
+        c = []
+        a = []
+        for i in range(num):
+            if np.isnan(recordings_augmented[i]).any():
+                print(' {}/{}'.format(i, num))
+                c.append(i)
+                a.append(recordings_augmented[i])
+        print(c)
+        print(a)
         X = torch.from_numpy(recordings_augmented).float()
         Y = torch.from_numpy(labels_onehot)
 

@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from scipy.io import loadmat, savemat
-from process.utils import load_challenge_data, load_labels, load_label_files
+from process.util import load_challenge_data, load_labels, load_label_files
 import time
 
 def IRLbl(labels):
@@ -149,6 +149,10 @@ if __name__ == '__main__':
         file = os.path.basename(f)
         name, ext = os.path.splitext(file)
         data, header_data = load_challenge_data(file, input_directory_label, input_directory_data)
+        c = []
+        if np.isnan(data).any():
+            print(i)
+            c.append(i)
         dataset.append(data)
         file_name.append(name)
 

@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 from base import BaseModel
+from ptflops import get_model_complexity_info
 
 class MnistModel(BaseModel):
     def __init__(self, num_classes=10):
@@ -23,42 +24,43 @@ class MnistModel(BaseModel):
 class CNN(BaseModel):
     def __init__(self, num_classes=9):
         super().__init__()
-        self.conv1 = nn.Conv1d(12, 12, kernel_size=16)
-        self.conv2 = nn.Conv1d(12, 12, kernel_size=16)
-        self.conv3 = nn.Conv1d(12, 12, kernel_size=16)
-        # self.batch_norm1 = nn.BatchNorm1d(3000)
-        # self.batch_norm2 = nn.BatchNorm1d(3000)
-        # self.batch_norm3 = nn.BatchNorm1d(3000)
+        self.conv1 = nn.Conv1d(12, 32, kernel_size=16)
+        self.conv2 = nn.Conv1d(32, 64, kernel_size=16)
+        self.conv3 = nn.Conv1d(64, 128, kernel_size=16)
+        self.batch_norm1 = nn.BatchNorm1d(32)
+        self.batch_norm2 = nn.BatchNorm1d(64)
+        self.batch_norm3 = nn.BatchNorm1d(128)
         self.conv2_drop = nn.Dropout()
-        self.fc1 = nn.Linear(12*2236, 50)
+        self.fc1 = nn.Linear(128, 50)
         self.fc2 = nn.Linear(50, num_classes)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.conv1(x)
-        # x = self.batch_norm1(x)
+        x = self.batch_norm1(x)
         x = F.relu(x)
         x = F.max_pool1d(x, 2)
-        x = F.dropout(x, 0.5, training=self.training)
+        x = F.dropout(x, 0.2, training=self.training)
 
         x = self.conv2(x)
-        # x = self.batch_norm2(x)
+        x = self.batch_norm2(x)
         x = F.relu(x)
         x = F.max_pool1d(x, 2)
-        x = F.dropout(x, 0.5, training=self.training)
+        x = F.dropout(x, 0.2, training=self.training)
 
         x = self.conv3(x)
-        # x = self.batch_norm3(x)
+        x = self.batch_norm3(x)
         x = F.relu(x)
         x = F.max_pool1d(x, 2)
-        x = F.dropout(x, 0.5, training=self.training)
+        x = F.dropout(x, 0.2, training=self.training)
 
-        # print(x.size())
-        x = x.view(-1, 12*2236)
+        print(x.size())
+        x = torch.mean(x, dim=2)
         x = F.relu(self.fc1(x))
-        # x = F.dropout(x, training=self.training)
+        x = F.dropout(x, 0.2, training=self.training)
         x = self.fc2(x)
-        # return F.log_softmax(x, dim=1)
-        return x
+        y = self.sigmoid(x)
+        return y
 
 class MLP(BaseModel):
     def __init__(self, input_dim, num_classes, n_hid, activation='ReLU'):
@@ -91,3 +93,13 @@ class MLP(BaseModel):
         y = self.fc[-1](x)
         y = self.sigmiod(y)
         return  y
+
+import torch
+if __name__ == '__main__':
+    x = torch.randn(1, 12, 3000)
+    m = CNN(num_classes=108)
+    flops, params = get_model_complexity_info(m, (12, 18000), as_strings=True, print_per_layer_stat=True)
+    print("%s |%s" % (flops, params))
+    print(m)
+    y = m(x)
+    print('done')

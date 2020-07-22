@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.io import loadmat, savemat
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
-from process.utils import load_challenge_data, load_labels, load_label_files
+from process.util import load_challenge_data, load_labels, load_label_files
 
 def plot(data, header_data, label, label_file, save_path):
     fig, axs = plt.subplots(12, 1, sharey=True, figsize=(50, 50))

@@ -7,7 +7,7 @@ Similar repo: https://github.com/wtomin/Multitask-Emotion-Recognition-with-Incom
 """
 import numpy as np
 import time
-from process.utils import load_label_files, load_labels, load_challenge_data
+from process.util import load_label_files, load_labels, load_challenge_data
 
 def IRLbl(labels):
     # imbalance ratio per label
