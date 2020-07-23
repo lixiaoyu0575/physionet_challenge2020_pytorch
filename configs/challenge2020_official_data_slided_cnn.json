@@ -1,26 +1,23 @@
 {
-    "name": "challenge2020_unofficial_data_inception_len=3000",
+    "name": "challenge2020_official_data_slided_cnn",
     "n_gpu": 1,
     "arch": {
-        "type": "InceptionTimeV2",
+        "type": "CNN",
         "args": {
-            "in_channels": 12,
-            "num_classes": 9,
-            "n_filters": 32,
-            "kernel_sizes": [9, 19, 39],
-            "bottleneck_channels": 32
+           "num_classes": 108
         }
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader3",
+        "type": "ChallengeDataLoader1",
         "args":{
-            "data_dir": "/home/weiyuhua/Data/raw-data",
-            "batch_size": 16,
+            "label_dir": "/DATASET/challenge2020/All_data",
+            "data_dir": "/DATASET/challenge2020/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100",
+            "batch_size": 128,
             "shuffle": true,
-            "validation_split": 0.1,
-            "test_split": 0.1,
-            "num_workers": 0
+            "validation_split": 0.05,
+            "test_split": 0.05,
+            "num_workers": 6
         }
     },
     "optimizer": {
@@ -36,10 +33,11 @@
     [
         "accuracy",
         "f_measure",
-        "f_beta",
-        "g_beta",
-        "auroc",
-        "auprc"
+        "macro_f_beta_measure",
+        "macro_g_beta_measure",
+        "macro_auroc",
+        "macro_auprc",
+        "challenge_metric"
     ],
     "lr_scheduler": {
         "type": "StepLR",

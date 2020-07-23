@@ -55,8 +55,8 @@ def main(config):
 
     # get function handles of metrics
 
-    challenge_metrics = ChallengeMetric(config['data_loader']['args']['label_dir'])
-    # challenge_metrics = ChallengeMetric2(num_classes=9)
+    # challenge_metrics = ChallengeMetric(config['data_loader']['args']['label_dir'])
+    challenge_metrics = ChallengeMetric2(num_classes=9)
 
     metrics = [getattr(challenge_metrics, met) for met in config['metrics']]
 

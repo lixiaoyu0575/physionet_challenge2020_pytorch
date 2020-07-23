@@ -1,0 +1,43 @@
+{
+  "optimizer": {
+    "type": "Adam",
+    "args": {
+      "lr": 0.001,
+      "weight_decay": 0,
+      "amsgrad": true
+    }
+  },
+   "SGD": {
+    "type": "SGD",
+    "args": {
+      "lr": 0.001,
+      "momentum": 0.9,
+      "weight_decay": 0
+    }
+  },
+   "AdaDelta": {
+    "type": "AdaDelta",
+    "args": {
+      "lr": 0.001,
+      "rho": 0.9,
+      "eps": 1e-06,
+      "weight_decay": 0
+    }
+  },
+   "RMSProp": {
+    "type": "RMSProp",
+    "args": {
+      "lr": 0.001,
+      "alpha": 0.99,
+      "eps": 1e-8,
+      "weight_decay": 0
+    }
+  },
+   "Adamax": {
+    "type": "Adamax",
+    "args": {
+      "lr": 0.001,
+      "weight_decay": 0
+    }
+  }
+}

@@ -54,7 +54,7 @@ class CNN(BaseModel):
         x = F.max_pool1d(x, 2)
         x = F.dropout(x, 0.2, training=self.training)
 
-        print(x.size())
+        # print(x.size())
         x = torch.mean(x, dim=2)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, 0.2, training=self.training)

@@ -1,5 +1,5 @@
 {
-    "name": "challenge2020_unofficial_data_inception_len=3000",
+    "name": "challenge2020_unofficial_data_aug_inception_len=3000",
     "n_gpu": 1,
     "arch": {
         "type": "InceptionTimeV2",
@@ -13,14 +13,47 @@
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader3",
+        "type": "ChallengeDataLoader4",
         "args":{
             "data_dir": "/home/weiyuhua/Data/raw-data",
             "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.1,
             "test_split": 0.1,
-            "num_workers": 0
+            "num_workers": 0,
+            "augmentations": {
+                "Jitter": {
+                    "args": {
+                        "sigma": 0.05
+                    }
+                },
+                "Scaling": {
+                    "args": {
+                        "sigma": 0.1
+                    }
+                },
+                "MagWarp": {
+                    "args":{
+                        "sigma": 0.1
+                    }
+                },
+                "TimeWarp": {
+                    "args": {
+                        "sigma": 0.2
+                    }
+                },
+                "Permutation":{
+                    "args": {
+                        "nPerm": 4,
+                        "minSegLength": 10
+                    }
+                },
+                "RandSampling":{
+                    "args": {
+                        "nSample": 1000
+                    }
+                }
+            }
         }
     },
     "optimizer": {

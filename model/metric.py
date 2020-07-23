@@ -25,7 +25,7 @@ class ChallengeMetric():
     def __init__(self, input_directory):
 
         # challengeMetric initialization
-        weights_file = '/home/weiyuhua/Data/evaluation/weights.csv'
+        weights_file = 'evaluation/weights.csv'
         # weights_file = 'F:\challenge2020\evaluation\weights.csv'
         normal_class = '426783006'
         equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]

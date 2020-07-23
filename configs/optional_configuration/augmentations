@@ -1,0 +1,36 @@
+{
+  "augmentations":
+  {
+    "Jitter": {
+      "args": {
+        "sigma": 0.05
+      }
+    },
+    "Scaling": {
+      "args": {
+        "sigma": 0.1
+      }
+    },
+    "MagWarp": {
+      "args": {
+        "sigma": 0.1
+      }
+    },
+    "TimeWarp": {
+      "args": {
+        "sigma": 0.2
+      }
+    },
+    "Permutation": {
+      "args": {
+        "nPerm": 4,
+        "minSegLength": 10
+      }
+    },
+    "RandSampling": {
+      "args": {
+        "nSample": 1000
+      }
+    }
+  }
+}
