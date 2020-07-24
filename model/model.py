@@ -22,9 +22,9 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class CNN(BaseModel):
-    def __init__(self, num_classes=9):
+    def __init__(self, in_channels=12, num_classes=9, ):
         super().__init__()
-        self.conv1 = nn.Conv1d(12, 32, kernel_size=16)
+        self.conv1 = nn.Conv1d(in_channels, 32, kernel_size=16)
         self.conv2 = nn.Conv1d(32, 64, kernel_size=16)
         self.conv3 = nn.Conv1d(64, 128, kernel_size=16)
         self.batch_norm1 = nn.BatchNorm1d(32)

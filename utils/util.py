@@ -105,3 +105,21 @@ def plot_metric(metric_train, metric_val, metric, save_path):
         item.set_fontsize(textsize)
         item.set_weight('normal')
     plt.savefig(save_path + '/' + metric + '.png', bbox_extra_artists=(lgd,), bbox_inches='tight')
+
+def plot_lr(lr, save_path):
+    textsize = 15
+    marker = 5
+    plt.figure()
+    fig, ax1 = plt.subplots()
+    ax1.plot(lr, 'r')
+    ax1.set_ylabel('lr')
+    plt.xlabel('epoch')
+    plt.grid(b=True, which='major', color='k', linestyle='-')
+    plt.grid(b=True, which='minor', color='k', linestyle='--')
+    ax = plt.gca()
+    plt.title('lr')
+    for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+                 ax.get_xticklabels() + ax.get_yticklabels()):
+        item.set_fontsize(textsize)
+        item.set_weight('normal')
+    plt.savefig(save_path + '/lr.png')

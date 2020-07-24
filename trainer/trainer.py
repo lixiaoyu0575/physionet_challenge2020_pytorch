@@ -4,6 +4,7 @@ from torchvision.utils import make_grid
 from base import BaseTrainer
 from utils import inf_loop, MetricTracker
 import torch.nn.functional as F
+from scipy.io import loadmat
 
 class Trainer(BaseTrainer):
     """
@@ -34,6 +35,13 @@ class Trainer(BaseTrainer):
             for key in keys_val:
                 self.log[key] = []
 
+
+        self.only_scored_classes = config['trainer'].get('only_scored_class', False)
+        if self.only_scored_classes:
+            # Only consider classes that are scored with the Challenge metric.
+            indices = loadmat('evaluation/scored_classes_indices.mat')['val']
+            self.indices = indices.reshape([indices.shape[1],]).astype(bool)
+
     def _train_epoch(self, epoch):
         """
         Training logic for an epoch
@@ -48,7 +56,13 @@ class Trainer(BaseTrainer):
 
             self.optimizer.zero_grad()
             output = self.model(data)
-            loss = self.criterion(output, target)
+
+            if self.only_scored_classes:
+                # Only consider classes that are scored with the Challenge metric.
+                loss = self.criterion(output[:, self.indices], target[:, self.indices])
+            else:
+                loss = self.criterion(output, target)
+
             loss.backward()
             self.optimizer.step()
 
@@ -90,7 +104,12 @@ class Trainer(BaseTrainer):
                 data, target = data.to(device=self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
 
                 output = self.model(data)
-                loss = self.criterion(output, target)
+
+                if self.only_scored_classes:
+                    # Only consider classes that are scored with the Challenge metric.
+                    loss = self.criterion(output[:, self.indices], target[:, self.indices])
+                else:
+                    loss = self.criterion(output, target)
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.valid_metrics.update('loss', loss.item())

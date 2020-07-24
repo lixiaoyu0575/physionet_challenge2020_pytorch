@@ -26,7 +26,6 @@ class ChallengeMetric():
 
         # challengeMetric initialization
         weights_file = 'evaluation/weights.csv'
-        # weights_file = 'F:\challenge2020\evaluation\weights.csv'
         normal_class = '426783006'
         equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
 
@@ -45,14 +44,23 @@ class ChallengeMetric():
         print('Loading weights...')
         weights = load_weights(weights_file, classes)
 
+        # Only consider classes that are scored with the Challenge metric.
+        indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
+        classes = [x for i, x in enumerate(classes) if indices[i]]
+        weights = weights[np.ix_(indices, indices)]
+        
         self.weights = weights
+        self.indices = indices
         self.classes = classes
         self.normal_class = normal_class
 
     # Compute recording-wise accuracy.
     def accuracy(self, outputs, labels):
         outputs = self.get_pred(outputs)
-        num_recordings, self.num_classes = np.shape(labels)
+        outputs = outputs[:, self.indices]
+        labels = labels[:, self.indices]
+        
+        num_recordings, num_classes = np.shape(labels)
 
         num_correct_recordings = 0
         for i in range(num_recordings):
@@ -70,12 +78,12 @@ class ChallengeMetric():
         #
         # If the normalize variable is set to true, then normalize the contributions
         # to the confusion matrix by the number of labels per recording.
-        num_recordings, self.num_classes = np.shape(labels)
+        num_recordings, num_classes = np.shape(labels)
 
         if not normalize:
-            A = np.zeros((self.num_classes, 2, 2))
+            A = np.zeros((num_classes, 2, 2))
             for i in range(num_recordings):
-                for j in range(self.num_classes):
+                for j in range(num_classes):
                     if labels[i, j]==1 and outputs[i, j]==1: # TP
                         A[j, 1, 1] += 1
                     elif labels[i, j]==0 and outputs[i, j]==1: # FP
@@ -87,10 +95,10 @@ class ChallengeMetric():
                     else: # This condition should not happen.
                         raise ValueError('Error in computing the confusion matrix.')
         else:
-            A = np.zeros((self.num_classes, 2, 2))
+            A = np.zeros((num_classes, 2, 2))
             for i in range(num_recordings):
                 normalization = float(max(np.sum(labels[i, :]), 1))
-                for j in range(self.num_classes):
+                for j in range(num_classes):
                     if labels[i, j]==1 and outputs[i, j]==1: # TP
                         A[j, 1, 1] += 1.0/normalization
                     elif labels[i, j]==0 and outputs[i, j]==1: # FP
@@ -106,13 +114,15 @@ class ChallengeMetric():
 
     # Compute macro F-measure.
     def f_measure(self, outputs, labels):
-        num_recordings, self.num_classes = np.shape(labels)
         outputs = self.get_pred(outputs)
-
+        outputs = outputs[:, self.indices]
+        labels = labels[:, self.indices]
+        num_recordings, num_classes = np.shape(labels)
+        
         A = self.confusion_matrices(outputs, labels)
 
-        f_measure = np.zeros(self.num_classes)
-        for k in range(self.num_classes):
+        f_measure = np.zeros(num_classes)
+        for k in range(num_classes):
             tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
             if 2 * tp + fp + fn:
                 f_measure[k] = float(2 * tp) / float(2 * tp + fp + fn)
@@ -131,14 +141,16 @@ class ChallengeMetric():
         return self.beta_measures(outputs, labels, beta)[1]
 
     def beta_measures(self, outputs, labels, beta=2):
-        num_recordings, self.num_classes = np.shape(labels)
         outputs = self.get_pred(outputs)
-
+        outputs = outputs[:, self.indices]
+        labels = labels[:, self.indices]
+        num_recordings, num_classes = np.shape(labels)
+        
         A = self.confusion_matrices(outputs, labels, normalize=True)
 
-        f_beta_measure = np.zeros(self.num_classes)
-        g_beta_measure = np.zeros(self.num_classes)
-        for k in range(self.num_classes):
+        f_beta_measure = np.zeros(num_classes)
+        g_beta_measure = np.zeros(num_classes)
+        for k in range(num_classes):
             tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
             if (1+beta**2)*tp + fp + beta**2*fn:
                 f_beta_measure[k] = float((1+beta**2)*tp) / float((1+beta**2)*tp + fp + beta**2*fn)
@@ -162,13 +174,15 @@ class ChallengeMetric():
         return self.auc(outputs, labels)[1]
 
     def auc(self, outputs, labels):
-        num_recordings, self.num_classes = np.shape(labels)
+        outputs = outputs[:, self.indices]
+        labels = labels[:, self.indices]
+        num_recordings, num_classes = np.shape(labels)
 
         # Compute and summarize the confusion matrices for each class across at distinct output values.
-        auroc = np.zeros(self.num_classes)
-        auprc = np.zeros(self.num_classes)
+        auroc = np.zeros(num_classes)
+        auprc = np.zeros(num_classes)
 
-        for k in range(self.num_classes):
+        for k in range(num_classes):
             # We only need to compute TPs, FPs, FNs, and TNs at distinct output values.
             thresholds = np.unique(outputs[:, k])
             thresholds = np.append(thresholds, thresholds[-1]+1)
@@ -243,18 +257,19 @@ class ChallengeMetric():
     def modified_confusion_matrix(self, outputs, labels):
         # Compute a binary multi-class, multi-label confusion matrix, where the rows
         # are the labels and the columns are the outputs.
-        num_recordings, self.num_classes = np.shape(labels)
-        A = np.zeros((self.num_classes, self.num_classes))
+        num_recordings, num_classes = np.shape(labels)
+        
+        A = np.zeros((num_classes, num_classes))
 
         # Iterate over all of the recordings.
         for i in range(num_recordings):
             # Calculate the number of positive labels and/or outputs.
             normalization = float(max(np.sum(np.any((labels[i, :], outputs[i, :]), axis=0)), 1))
             # Iterate over all of the classes.
-            for j in range(self.num_classes):
+            for j in range(num_classes):
                 # Assign full and/or partial credit for each positive class.
                 if labels[i, j]:
-                    for k in range(self.num_classes):
+                    for k in range(num_classes):
                         if outputs[i, k]:
                             A[j, k] += 1.0/normalization
 
@@ -263,28 +278,27 @@ class ChallengeMetric():
     # Compute the evaluation metric for the Challenge.
     def challenge_metric(self, outputs, labels):
 
-        classes = self.classes
-        normal_class = self.normal_class
-        weights = self.weights
         outputs = self.get_pred(outputs)
+        outputs = outputs[:, self.indices]
+        labels = labels[:, self.indices]
 
-        num_recordings, self.num_classes = np.shape(labels)
-        normal_index = classes.index(normal_class)
+        num_recordings, num_classes = np.shape(labels)
+        normal_index = self.classes.index(self.normal_class)
 
         # Compute the observed score.
         A = self.modified_confusion_matrix(outputs, labels)
-        observed_score = np.nansum(weights * A)
+        observed_score = np.nansum(self.weights * A)
 
         # Compute the score for the model that always chooses the correct label(s).
         correct_outputs = labels
         A = self.modified_confusion_matrix(labels, correct_outputs)
-        correct_score = np.nansum(weights * A)
+        correct_score = np.nansum(self.weights * A)
 
         # Compute the score for the model that always chooses the normal class.
-        inactive_outputs = np.zeros((num_recordings, self.num_classes), dtype=np.bool)
+        inactive_outputs = np.zeros((num_recordings, num_classes), dtype=np.bool)
         inactive_outputs[:, normal_index] = 1
         A = self.modified_confusion_matrix(labels, inactive_outputs)
-        inactive_score = np.nansum(weights * A)
+        inactive_score = np.nansum(self.weights * A)
 
         if correct_score != inactive_score:
             normalized_score = float(observed_score - inactive_score) / float(correct_score - inactive_score)

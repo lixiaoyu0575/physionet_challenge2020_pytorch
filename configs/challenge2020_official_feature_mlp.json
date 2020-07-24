@@ -1,33 +1,32 @@
 {
-    "name": "challenge2020_official_data_slided_inception_updated_metric_CosineAnnealingWarmRestarts",
+    "name": "challenge2020_official_feature_mlp_1000x3",
     "n_gpu": 1,
     "arch": {
-        "type": "InceptionTimeV2",
+        "type": "MLP",
         "args": {
-            "in_channels": 12,
+            "input_dim":2414,
             "num_classes": 108,
-            "n_filters": 32,
-            "kernel_sizes": [3, 7, 15],
-            "bottleneck_channels": 32
+            "n_hid":[1000, 1000, 1000]
         }
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader1",
+        "type": "ChallengeDataLoader5",
+
         "args":{
+            "data_dir": "/home/weiyuhua/Data/Out_Feature_New_Data.csv",
             "label_dir": "/home/weiyuhua/Data/challenge2020",
-            "data_dir": "/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100",
-            "batch_size": 128,
+            "batch_size": 64,
             "shuffle": true,
-            "validation_split": 0.05,
-            "test_split": 0.05,
-            "num_workers": 6
+            "validation_split": 0.1,
+            "test_split": 0.1,
+            "num_workers": 4
         }
     },
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 0.01,
+            "lr": 0.001,
             "weight_decay": 0,
             "amsgrad": true
         }
@@ -44,11 +43,10 @@
         "challenge_metric"
     ],
     "lr_scheduler": {
-       "type": "CosineAnnealingWarmRestarts",
+        "type": "StepLR",
         "args": {
-            "T_0": 10,
-            "T_mult": 1,
-            "eta_min": 0
+            "step_size": 50,
+            "gamma": 0.1
         }
     },
     "trainer": {
@@ -57,7 +55,7 @@
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
-        
+
         "monitor": "min val_loss",
         "early_stop": 10,
 

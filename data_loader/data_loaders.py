@@ -8,7 +8,7 @@ from torch.utils.data import TensorDataset
 from base import BaseDataLoader, BaseDataLoader2
 from utils.dataset import ECGDataset
 from sklearn.preprocessing import MinMaxScaler
-from utils.dataset import load_label_files, load_labels
+from utils.dataset import load_label_files, load_labels, load_weights
 from scipy.signal import savgol_filter, medfilt, wiener
 from data_loader.preprocessing import cheby_lowpass_filter, butter_lowpass_filter, plot
 from data_loader.util import load_challenge_data, get_classes, CustomTensorDataset
@@ -53,6 +53,7 @@ class ChallengeDataLoader1(BaseDataLoader2):
         self.data_dir = data_dir
         print('Loading data...')
 
+        weights_file = 'evaluation/weights.csv'
         normal_class = '426783006'
         equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
 
@@ -63,6 +64,16 @@ class ChallengeDataLoader1(BaseDataLoader2):
         # Load the labels and classes.
         print('Loading labels...')
         classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
+
+        # # Load the weights for the Challenge metric.
+        # print('Loading weights...')
+        # weights = load_weights(weights_file, classes)
+        #
+        # # Classes that are scored with the Challenge metric.
+        # indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
+        #
+        # from scipy.io import savemat
+        # savemat('evaluation/scored_classes_indices.mat', {'val': indices})
 
         # Load short signals and remove from labels
         short_signals = loadmat(os.path.join(data_dir, 'short_signals.mat'))['val']
@@ -479,8 +490,103 @@ class ChallengeDataLoader4(BaseDataLoader):
         recordings_augmented = recordings
         return recordings_augmented, labels
 
-# feature data of unofficial data
+# feature data of official data
 class ChallengeDataLoader5(BaseDataLoader):
+    """
+    challenge2020 data loading
+    """
+    def __init__(self, label_dir, data_dir, batch_size, shuffle=True, validation_split=0.0, test_split=0.0, num_workers=1, training=True):
+        self.label_dir =label_dir
+        self.data_dir = data_dir
+
+        print('Loading data...')
+
+        normal_class = '426783006'
+        equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
+
+        # Find the label files.
+        print('Finding label...')
+        feature_df = self.load_challenge_feature_data(data_dir)
+
+        file_names = feature_df.ix[:, 0].values
+        label_files = self.get_label_files(label_dir, file_names)
+
+        num_files = len(label_files)
+
+        # Load the labels and classes.
+        print('Loading labels...')
+        classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
+
+        # Load feature data
+        # Convert 'Sex' to int
+        def convert(sex):
+            if sex == 'Male':
+                return 1
+            else:
+                return 0
+
+        feature_df.ix[:, 2] = feature_df.ix[:, 2].apply(convert)
+
+        recordings_feature = feature_df.ix[:, 1:]
+
+        recordings_feature = np.array(recordings_feature)
+
+        nan_array = np.isnan(recordings_feature)
+        print("nan value: ")
+        print(np.isnan(recordings_feature).any())
+
+        nan_idx = []
+        for i in range(num_files):
+            if np.isnan(recordings_feature[i, :]).any():
+                nan_idx.append(i)
+
+        recordings_feature = np.delete(recordings_feature, nan_idx, axis=0)
+        labels_onehot = np.delete(labels_onehot, nan_idx, axis=0)
+
+        recordings_feature = recordings_feature.reshape((recordings_feature.shape[0], 1, recordings_feature.shape[1]))
+
+        print("remove nan value: ")
+        print(np.isnan(recordings_feature).any())
+
+        recordings_feature_preprocessed, labels_onehot = self.preprocessing(recordings_feature, labels_onehot)
+        recordings_feature_augmented, labels_onehot = self.augmentation(recordings_feature_preprocessed, labels_onehot)
+
+        X = torch.from_numpy(recordings_feature_augmented).float()
+        Y = torch.from_numpy(labels_onehot)
+
+        self.dataset = TensorDataset(X, Y)
+
+        super().__init__(self.dataset, batch_size, shuffle, validation_split, test_split, num_workers, normalization=True)
+
+    # Load challenge data.
+    def load_challenge_feature_data(self, data_dir):
+        feature_df =  pd.read_csv(data_dir, header=None)
+        return feature_df
+
+    # get label_files
+    def get_label_files(self, label_dir, file_names):
+        label_files = list()
+        for f in sorted(file_names):
+            F = os.path.join(label_dir, f)
+            F = F + '.hea'
+            if os.path.isfile(F):
+                label_files.append(F)
+        if label_files:
+            return label_files
+        else:
+            raise IOError('No label or output files found.')
+
+    def preprocessing(self, recordings, labels):
+
+        return recordings, labels
+
+    def augmentation(self, recordings, labels):
+
+        recordings_augmented = recordings
+        return recordings_augmented, labels
+
+# feature data of unofficial data
+class ChallengeDataLoader6(BaseDataLoader):
     """
     challenge2020 data loading
     """
