@@ -1,0 +1,614 @@
+2020-07-22 19:26:54,180 - train - INFO - InceptionTimeV2(
+  (inception_block_1): InceptionTimeBlockV2(
+    (activation): ReLU()
+    (inception_1): InceptionTimeMoudule(
+      (bottleneck): Conv1d(12, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(12, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_2): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_3): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_4): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_5): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_6): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (residual): Sequential(
+      (0): Conv1d(12, 128, kernel_size=(1,), stride=(8,))
+      (1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (inception_block_2): InceptionTimeBlockV2(
+    (activation): ReLU()
+    (inception_1): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_2): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_3): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_4): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_5): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_6): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (residual): Sequential(
+      (0): Conv1d(128, 128, kernel_size=(1,), stride=(8,))
+      (1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (inception_block_3): InceptionTimeBlockV2(
+    (activation): ReLU()
+    (inception_1): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_2): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_3): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_4): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_5): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(2,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(2,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(2,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(2,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (inception_6): InceptionTimeMoudule(
+      (bottleneck): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (conv_from_bottleneck_1): Conv1d(32, 32, kernel_size=(3,), stride=(1,), padding=(1,), bias=False)
+      (conv_from_bottleneck_2): Conv1d(32, 32, kernel_size=(7,), stride=(1,), padding=(3,), bias=False)
+      (conv_from_bottleneck_3): Conv1d(32, 32, kernel_size=(15,), stride=(1,), padding=(7,), bias=False)
+      (max_pool): MaxPool1d(kernel_size=3, stride=1, padding=1, dilation=1, ceil_mode=False)
+      (conv_from_maxpool): Conv1d(128, 32, kernel_size=(1,), stride=(1,), bias=False)
+      (batch_norm): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (activation): ReLU()
+    )
+    (residual): Sequential(
+      (0): Conv1d(128, 128, kernel_size=(1,), stride=(8,))
+      (1): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (fc): Linear(in_features=128, out_features=108, bias=True)
+  (sigmoid): Sigmoid()
+)
+2020-07-22 19:27:38,010 - trainer - WARNING - Warning: visualization (Tensorboard) is configured to use, but currently not installed on this machine. Please install TensorboardX with 'pip install tensorboardx', upgrade PyTorch to version >= 1.1 to use 'torch.utils.tensorboard' or turn off the option in the 'config.json' file.
+2020-07-22 19:34:31,841 - trainer - INFO -     epoch          : 1
+2020-07-22 19:34:31,843 - trainer - INFO -     loss           : 0.10707997711499533
+2020-07-22 19:34:31,843 - trainer - INFO -     accuracy       : 0.11531845238095238
+2020-07-22 19:34:31,843 - trainer - INFO -     f_measure      : 0.018765715707490808
+2020-07-22 19:34:31,843 - trainer - INFO -     macro_f_beta_measure: 0.01638543804855858
+2020-07-22 19:34:31,843 - trainer - INFO -     macro_g_beta_measure: 0.010840885267209065
+2020-07-22 19:34:31,843 - trainer - INFO -     macro_auroc    : 0.6977885146539162
+2020-07-22 19:34:31,843 - trainer - INFO -     macro_auprc    : 0.15673630778296144
+2020-07-22 19:34:31,843 - trainer - INFO -     challenge_metric: -0.26291529593859386
+2020-07-22 19:34:31,843 - trainer - INFO -     val_loss       : 0.06890404880756423
+2020-07-22 19:34:31,844 - trainer - INFO -     val_accuracy   : 0.1290625
+2020-07-22 19:34:31,844 - trainer - INFO -     val_f_measure  : 0.03656115862924883
+2020-07-22 19:34:31,844 - trainer - INFO -     val_macro_f_beta_measure: 0.03131563623752968
+2020-07-22 19:34:31,844 - trainer - INFO -     val_macro_g_beta_measure: 0.020016691499066337
+2020-07-22 19:34:31,844 - trainer - INFO -     val_macro_auroc: 0.7564808305754376
+2020-07-22 19:34:31,844 - trainer - INFO -     val_macro_auprc: 0.2111588598065919
+2020-07-22 19:34:31,844 - trainer - INFO -     val_challenge_metric: -0.17229141624841088
+2020-07-22 19:34:31,884 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch1.pth ...
+2020-07-22 19:34:31,904 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:41:17,173 - trainer - INFO -     epoch          : 2
+2020-07-22 19:41:17,173 - trainer - INFO -     loss           : 0.0632892460823059
+2020-07-22 19:41:17,173 - trainer - INFO -     accuracy       : 0.1370059523809524
+2020-07-22 19:41:17,174 - trainer - INFO -     f_measure      : 0.05379594937435879
+2020-07-22 19:41:17,174 - trainer - INFO -     macro_f_beta_measure: 0.04209320351646531
+2020-07-22 19:41:17,174 - trainer - INFO -     macro_g_beta_measure: 0.0249704684665631
+2020-07-22 19:41:17,174 - trainer - INFO -     macro_auroc    : 0.8572039033955956
+2020-07-22 19:41:17,174 - trainer - INFO -     macro_auprc    : 0.3008098105708196
+2020-07-22 19:41:17,174 - trainer - INFO -     challenge_metric: -0.19365431114147255
+2020-07-22 19:41:17,174 - trainer - INFO -     val_loss       : 0.06177032614747683
+2020-07-22 19:41:17,174 - trainer - INFO -     val_accuracy   : 0.16066964285714286
+2020-07-22 19:41:17,174 - trainer - INFO -     val_f_measure  : 0.08133082984513862
+2020-07-22 19:41:17,174 - trainer - INFO -     val_macro_f_beta_measure: 0.06381722699983787
+2020-07-22 19:41:17,174 - trainer - INFO -     val_macro_g_beta_measure: 0.03736153782586083
+2020-07-22 19:41:17,174 - trainer - INFO -     val_macro_auroc: 0.8448082966256655
+2020-07-22 19:41:17,174 - trainer - INFO -     val_macro_auprc: 0.3464560649287563
+2020-07-22 19:41:17,174 - trainer - INFO -     val_challenge_metric: -0.09620430463836296
+2020-07-22 19:41:17,204 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch2.pth ...
+2020-07-22 19:41:17,228 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:48:07,503 - trainer - INFO -     epoch          : 3
+2020-07-22 19:48:07,503 - trainer - INFO -     loss           : 0.05435481755932172
+2020-07-22 19:48:07,503 - trainer - INFO -     accuracy       : 0.19619345238095237
+2020-07-22 19:48:07,503 - trainer - INFO -     f_measure      : 0.12020346787265167
+2020-07-22 19:48:07,503 - trainer - INFO -     macro_f_beta_measure: 0.10189570088856836
+2020-07-22 19:48:07,503 - trainer - INFO -     macro_g_beta_measure: 0.06572094967715647
+2020-07-22 19:48:07,503 - trainer - INFO -     macro_auroc    : 0.9099197927216134
+2020-07-22 19:48:07,504 - trainer - INFO -     macro_auprc    : 0.4210834857760945
+2020-07-22 19:48:07,504 - trainer - INFO -     challenge_metric: 0.03221978659180337
+2020-07-22 19:48:07,504 - trainer - INFO -     val_loss       : 0.05542414511243502
+2020-07-22 19:48:07,504 - trainer - INFO -     val_accuracy   : 0.22147321428571431
+2020-07-22 19:48:07,504 - trainer - INFO -     val_f_measure  : 0.13223893469254744
+2020-07-22 19:48:07,504 - trainer - INFO -     val_macro_f_beta_measure: 0.11474162920506321
+2020-07-22 19:48:07,504 - trainer - INFO -     val_macro_g_beta_measure: 0.0714801096315214
+2020-07-22 19:48:07,504 - trainer - INFO -     val_macro_auroc: 0.867815428854896
+2020-07-22 19:48:07,504 - trainer - INFO -     val_macro_auprc: 0.38622458507875884
+2020-07-22 19:48:07,504 - trainer - INFO -     val_challenge_metric: 0.08331260781743968
+2020-07-22 19:48:07,535 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch3.pth ...
+2020-07-22 19:48:07,561 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:54:53,648 - trainer - INFO -     epoch          : 4
+2020-07-22 19:54:53,662 - trainer - INFO -     loss           : 0.04831459950407346
+2020-07-22 19:54:53,662 - trainer - INFO -     accuracy       : 0.259172619047619
+2020-07-22 19:54:53,662 - trainer - INFO -     f_measure      : 0.19455474874974324
+2020-07-22 19:54:53,662 - trainer - INFO -     macro_f_beta_measure: 0.17258283958263038
+2020-07-22 19:54:53,662 - trainer - INFO -     macro_g_beta_measure: 0.12347580437963564
+2020-07-22 19:54:53,662 - trainer - INFO -     macro_auroc    : 0.9341054858252428
+2020-07-22 19:54:53,662 - trainer - INFO -     macro_auprc    : 0.5087656346080074
+2020-07-22 19:54:53,663 - trainer - INFO -     challenge_metric: 0.1956662154385358
+2020-07-22 19:54:53,663 - trainer - INFO -     val_loss       : 0.0522126860561825
+2020-07-22 19:54:53,663 - trainer - INFO -     val_accuracy   : 0.2513392857142857
+2020-07-22 19:54:53,663 - trainer - INFO -     val_f_measure  : 0.162853989883706
+2020-07-22 19:54:53,663 - trainer - INFO -     val_macro_f_beta_measure: 0.14973380255125782
+2020-07-22 19:54:53,663 - trainer - INFO -     val_macro_g_beta_measure: 0.09797799294231153
+2020-07-22 19:54:53,663 - trainer - INFO -     val_macro_auroc: 0.8718662748741418
+2020-07-22 19:54:53,663 - trainer - INFO -     val_macro_auprc: 0.443068850443123
+2020-07-22 19:54:53,663 - trainer - INFO -     val_challenge_metric: 0.25563486397163465
+2020-07-22 19:54:53,693 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch4.pth ...
+2020-07-22 19:54:53,715 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:01:38,439 - trainer - INFO -     epoch          : 5
+2020-07-22 20:01:38,439 - trainer - INFO -     loss           : 0.04420996933182081
+2020-07-22 20:01:38,440 - trainer - INFO -     accuracy       : 0.2944494047619048
+2020-07-22 20:01:38,440 - trainer - INFO -     f_measure      : 0.2407884248278278
+2020-07-22 20:01:38,440 - trainer - INFO -     macro_f_beta_measure: 0.21860663198649521
+2020-07-22 20:01:38,440 - trainer - INFO -     macro_g_beta_measure: 0.1630467803088952
+2020-07-22 20:01:38,440 - trainer - INFO -     macro_auroc    : 0.9471452289242881
+2020-07-22 20:01:38,440 - trainer - INFO -     macro_auprc    : 0.5708795192550458
+2020-07-22 20:01:38,440 - trainer - INFO -     challenge_metric: 0.26973321848452086
+2020-07-22 20:01:38,440 - trainer - INFO -     val_loss       : 0.05287278993498711
+2020-07-22 20:01:38,440 - trainer - INFO -     val_accuracy   : 0.2533035714285714
+2020-07-22 20:01:38,440 - trainer - INFO -     val_f_measure  : 0.17313929885743148
+2020-07-22 20:01:38,440 - trainer - INFO -     val_macro_f_beta_measure: 0.16228346233912572
+2020-07-22 20:01:38,440 - trainer - INFO -     val_macro_g_beta_measure: 0.10697275833483658
+2020-07-22 20:01:38,440 - trainer - INFO -     val_macro_auroc: 0.8894438661184131
+2020-07-22 20:01:38,441 - trainer - INFO -     val_macro_auprc: 0.4770697308410063
+2020-07-22 20:01:38,441 - trainer - INFO -     val_challenge_metric: 0.2585628006944371
+2020-07-22 20:08:28,685 - trainer - INFO -     epoch          : 6
+2020-07-22 20:08:28,686 - trainer - INFO -     loss           : 0.04136725468436877
+2020-07-22 20:08:28,686 - trainer - INFO -     accuracy       : 0.3159166666666667
+2020-07-22 20:08:28,686 - trainer - INFO -     f_measure      : 0.2817830591669063
+2020-07-22 20:08:28,686 - trainer - INFO -     macro_f_beta_measure: 0.2591065700422315
+2020-07-22 20:08:28,686 - trainer - INFO -     macro_g_beta_measure: 0.198061011407862
+2020-07-22 20:08:28,686 - trainer - INFO -     macro_auroc    : 0.9555108591331488
+2020-07-22 20:08:28,686 - trainer - INFO -     macro_auprc    : 0.6301074520827445
+2020-07-22 20:08:28,686 - trainer - INFO -     challenge_metric: 0.3121280483666933
+2020-07-22 20:08:28,686 - trainer - INFO -     val_loss       : 0.04935279116034508
+2020-07-22 20:08:28,686 - trainer - INFO -     val_accuracy   : 0.27559523809523806
+2020-07-22 20:08:28,686 - trainer - INFO -     val_f_measure  : 0.20671107160173122
+2020-07-22 20:08:28,687 - trainer - INFO -     val_macro_f_beta_measure: 0.19709238576627794
+2020-07-22 20:08:28,687 - trainer - INFO -     val_macro_g_beta_measure: 0.1326338022887032
+2020-07-22 20:08:28,687 - trainer - INFO -     val_macro_auroc: 0.8981983853597323
+2020-07-22 20:08:28,687 - trainer - INFO -     val_macro_auprc: 0.4807208019253914
+2020-07-22 20:08:28,687 - trainer - INFO -     val_challenge_metric: 0.26899890674780785
+2020-07-22 20:08:28,715 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch6.pth ...
+2020-07-22 20:08:28,739 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:15:18,565 - trainer - INFO -     epoch          : 7
+2020-07-22 20:15:18,565 - trainer - INFO -     loss           : 0.03864431694149971
+2020-07-22 20:15:18,565 - trainer - INFO -     accuracy       : 0.3401160714285714
+2020-07-22 20:15:18,566 - trainer - INFO -     f_measure      : 0.32669678630069876
+2020-07-22 20:15:18,566 - trainer - INFO -     macro_f_beta_measure: 0.3022334215144892
+2020-07-22 20:15:18,566 - trainer - INFO -     macro_g_beta_measure: 0.2361275042546175
+2020-07-22 20:15:18,566 - trainer - INFO -     macro_auroc    : 0.9606833427460985
+2020-07-22 20:15:18,566 - trainer - INFO -     macro_auprc    : 0.6736906065401026
+2020-07-22 20:15:18,566 - trainer - INFO -     challenge_metric: 0.3580594326300398
+2020-07-22 20:15:18,566 - trainer - INFO -     val_loss       : 0.049061503083932964
+2020-07-22 20:15:18,566 - trainer - INFO -     val_accuracy   : 0.2786458333333333
+2020-07-22 20:15:18,566 - trainer - INFO -     val_f_measure  : 0.23287816788432242
+2020-07-22 20:15:18,566 - trainer - INFO -     val_macro_f_beta_measure: 0.22242397452395626
+2020-07-22 20:15:18,566 - trainer - INFO -     val_macro_g_beta_measure: 0.1550917104520412
+2020-07-22 20:15:18,566 - trainer - INFO -     val_macro_auroc: 0.8937616973167705
+2020-07-22 20:15:18,566 - trainer - INFO -     val_macro_auprc: 0.5032456471506643
+2020-07-22 20:15:18,567 - trainer - INFO -     val_challenge_metric: 0.29866189504192564
+2020-07-22 20:15:18,595 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch7.pth ...
+2020-07-22 20:15:18,619 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:22:10,426 - trainer - INFO -     epoch          : 8
+2020-07-22 20:22:10,426 - trainer - INFO -     loss           : 0.036747799172997475
+2020-07-22 20:22:10,426 - trainer - INFO -     accuracy       : 0.35363690476190474
+2020-07-22 20:22:10,426 - trainer - INFO -     f_measure      : 0.3727599405502135
+2020-07-22 20:22:10,426 - trainer - INFO -     macro_f_beta_measure: 0.3454471715160929
+2020-07-22 20:22:10,426 - trainer - INFO -     macro_g_beta_measure: 0.2743786157913229
+2020-07-22 20:22:10,427 - trainer - INFO -     macro_auroc    : 0.9643813808352655
+2020-07-22 20:22:10,427 - trainer - INFO -     macro_auprc    : 0.7043401955364433
+2020-07-22 20:22:10,427 - trainer - INFO -     challenge_metric: 0.38011863257802647
+2020-07-22 20:22:10,427 - trainer - INFO -     val_loss       : 0.05095846791352544
+2020-07-22 20:22:10,427 - trainer - INFO -     val_accuracy   : 0.2835267857142857
+2020-07-22 20:22:10,427 - trainer - INFO -     val_f_measure  : 0.22873068654780807
+2020-07-22 20:22:10,427 - trainer - INFO -     val_macro_f_beta_measure: 0.22055933339228295
+2020-07-22 20:22:10,427 - trainer - INFO -     val_macro_g_beta_measure: 0.1489309201081046
+2020-07-22 20:22:10,427 - trainer - INFO -     val_macro_auroc: 0.8886785484476882
+2020-07-22 20:22:10,427 - trainer - INFO -     val_macro_auprc: 0.4953000061107157
+2020-07-22 20:22:10,427 - trainer - INFO -     val_challenge_metric: 0.24478243808263547
+2020-07-22 20:29:01,145 - trainer - INFO -     epoch          : 9
+2020-07-22 20:29:01,145 - trainer - INFO -     loss           : 0.035188592523336414
+2020-07-22 20:29:01,145 - trainer - INFO -     accuracy       : 0.36975
+2020-07-22 20:29:01,145 - trainer - INFO -     f_measure      : 0.4253885400643197
+2020-07-22 20:29:01,145 - trainer - INFO -     macro_f_beta_measure: 0.3958781941095345
+2020-07-22 20:29:01,146 - trainer - INFO -     macro_g_beta_measure: 0.321266493310278
+2020-07-22 20:29:01,146 - trainer - INFO -     macro_auroc    : 0.9674879657987875
+2020-07-22 20:29:01,146 - trainer - INFO -     macro_auprc    : 0.7291648848181127
+2020-07-22 20:29:01,146 - trainer - INFO -     challenge_metric: 0.40153253363601465
+2020-07-22 20:29:01,146 - trainer - INFO -     val_loss       : 0.050769047190745674
+2020-07-22 20:29:01,146 - trainer - INFO -     val_accuracy   : 0.28861607142857143
+2020-07-22 20:29:01,146 - trainer - INFO -     val_f_measure  : 0.2559562077310428
+2020-07-22 20:29:01,146 - trainer - INFO -     val_macro_f_beta_measure: 0.2484383536086739
+2020-07-22 20:29:01,146 - trainer - INFO -     val_macro_g_beta_measure: 0.1699670693361732
+2020-07-22 20:29:01,146 - trainer - INFO -     val_macro_auroc: 0.8915786892665564
+2020-07-22 20:29:01,146 - trainer - INFO -     val_macro_auprc: 0.5033541806472823
+2020-07-22 20:29:01,146 - trainer - INFO -     val_challenge_metric: 0.39336715253659693
+2020-07-22 20:35:52,189 - trainer - INFO -     epoch          : 10
+2020-07-22 20:35:52,189 - trainer - INFO -     loss           : 0.034306503280997276
+2020-07-22 20:35:52,189 - trainer - INFO -     accuracy       : 0.3834375
+2020-07-22 20:35:52,189 - trainer - INFO -     f_measure      : 0.45354623328076693
+2020-07-22 20:35:52,190 - trainer - INFO -     macro_f_beta_measure: 0.4234197992422799
+2020-07-22 20:35:52,190 - trainer - INFO -     macro_g_beta_measure: 0.34655812977844014
+2020-07-22 20:35:52,190 - trainer - INFO -     macro_auroc    : 0.9686505095255549
+2020-07-22 20:35:52,190 - trainer - INFO -     macro_auprc    : 0.7401170777451251
+2020-07-22 20:35:52,190 - trainer - INFO -     challenge_metric: 0.4156781318543339
+2020-07-22 20:35:52,190 - trainer - INFO -     val_loss       : 0.04818582073563621
+2020-07-22 20:35:52,190 - trainer - INFO -     val_accuracy   : 0.3159226190476191
+2020-07-22 20:35:52,190 - trainer - INFO -     val_f_measure  : 0.24339786684351344
+2020-07-22 20:35:52,190 - trainer - INFO -     val_macro_f_beta_measure: 0.23660008817478406
+2020-07-22 20:35:52,190 - trainer - INFO -     val_macro_g_beta_measure: 0.16408595245208482
+2020-07-22 20:35:52,190 - trainer - INFO -     val_macro_auroc: 0.9016066800944346
+2020-07-22 20:35:52,190 - trainer - INFO -     val_macro_auprc: 0.5279488136297817
+2020-07-22 20:35:52,191 - trainer - INFO -     val_challenge_metric: 0.3656578018434457
+2020-07-22 20:35:52,219 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch10.pth ...
+2020-07-22 20:35:52,243 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:42:43,446 - trainer - INFO -     epoch          : 11
+2020-07-22 20:42:43,446 - trainer - INFO -     loss           : 0.0328213103612264
+2020-07-22 20:42:43,446 - trainer - INFO -     accuracy       : 0.3986517857142857
+2020-07-22 20:42:43,446 - trainer - INFO -     f_measure      : 0.4851917995971875
+2020-07-22 20:42:43,446 - trainer - INFO -     macro_f_beta_measure: 0.45465838173039824
+2020-07-22 20:42:43,446 - trainer - INFO -     macro_g_beta_measure: 0.3753411995869961
+2020-07-22 20:42:43,447 - trainer - INFO -     macro_auroc    : 0.9718517952074358
+2020-07-22 20:42:43,447 - trainer - INFO -     macro_auprc    : 0.7590449392217691
+2020-07-22 20:42:43,447 - trainer - INFO -     challenge_metric: 0.4349121055173655
+2020-07-22 20:42:43,447 - trainer - INFO -     val_loss       : 0.04898589423724583
+2020-07-22 20:42:43,447 - trainer - INFO -     val_accuracy   : 0.31498511904761906
+2020-07-22 20:42:43,447 - trainer - INFO -     val_f_measure  : 0.2437234993112945
+2020-07-22 20:42:43,447 - trainer - INFO -     val_macro_f_beta_measure: 0.23408822134259838
+2020-07-22 20:42:43,447 - trainer - INFO -     val_macro_g_beta_measure: 0.16602703633651061
+2020-07-22 20:42:43,447 - trainer - INFO -     val_macro_auroc: 0.90819144796692
+2020-07-22 20:42:43,447 - trainer - INFO -     val_macro_auprc: 0.5289135223840535
+2020-07-22 20:42:43,447 - trainer - INFO -     val_challenge_metric: 0.38254637453511464
+2020-07-22 20:49:30,236 - trainer - INFO -     epoch          : 12
+2020-07-22 20:49:30,237 - trainer - INFO -     loss           : 0.031885853131612144
+2020-07-22 20:49:30,237 - trainer - INFO -     accuracy       : 0.4102767857142857
+2020-07-22 20:49:30,237 - trainer - INFO -     f_measure      : 0.5048909171508422
+2020-07-22 20:49:30,237 - trainer - INFO -     macro_f_beta_measure: 0.47435404001403747
+2020-07-22 20:49:30,237 - trainer - INFO -     macro_g_beta_measure: 0.39415316365232145
+2020-07-22 20:49:30,237 - trainer - INFO -     macro_auroc    : 0.9731003942654449
+2020-07-22 20:49:30,237 - trainer - INFO -     macro_auprc    : 0.772439661875187
+2020-07-22 20:49:30,237 - trainer - INFO -     challenge_metric: 0.45157894898567896
+2020-07-22 20:49:30,237 - trainer - INFO -     val_loss       : 0.04814556081380163
+2020-07-22 20:49:30,237 - trainer - INFO -     val_accuracy   : 0.3230654761904762
+2020-07-22 20:49:30,237 - trainer - INFO -     val_f_measure  : 0.26152946564342217
+2020-07-22 20:49:30,237 - trainer - INFO -     val_macro_f_beta_measure: 0.24894735576368077
+2020-07-22 20:49:30,237 - trainer - INFO -     val_macro_g_beta_measure: 0.17008158769082757
+2020-07-22 20:49:30,237 - trainer - INFO -     val_macro_auroc: 0.9028783886043454
+2020-07-22 20:49:30,237 - trainer - INFO -     val_macro_auprc: 0.5409858517995683
+2020-07-22 20:49:30,237 - trainer - INFO -     val_challenge_metric: 0.3790141504989034
+2020-07-22 20:49:30,258 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_inception/0722_192512/checkpoint-epoch12.pth ...
+2020-07-22 20:49:30,295 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:56:12,100 - trainer - INFO -     epoch          : 13
+2020-07-22 20:56:12,101 - trainer - INFO -     loss           : 0.030665088400244712
+2020-07-22 20:56:12,101 - trainer - INFO -     accuracy       : 0.42342857142857143
+2020-07-22 20:56:12,101 - trainer - INFO -     f_measure      : 0.5286442212055646
+2020-07-22 20:56:12,101 - trainer - INFO -     macro_f_beta_measure: 0.4970835383969051
+2020-07-22 20:56:12,101 - trainer - INFO -     macro_g_beta_measure: 0.4147553919097573
+2020-07-22 20:56:12,101 - trainer - INFO -     macro_auroc    : 0.975052140701125
+2020-07-22 20:56:12,101 - trainer - INFO -     macro_auprc    : 0.7855763343262891
+2020-07-22 20:56:12,101 - trainer - INFO -     challenge_metric: 0.4642182785751097
+2020-07-22 20:56:12,101 - trainer - INFO -     val_loss       : 0.051548700424886885
+2020-07-22 20:56:12,101 - trainer - INFO -     val_accuracy   : 0.3098214285714286
+2020-07-22 20:56:12,101 - trainer - INFO -     val_f_measure  : 0.26164090637225523
+2020-07-22 20:56:12,101 - trainer - INFO -     val_macro_f_beta_measure: 0.2542059984288231
+2020-07-22 20:56:12,101 - trainer - INFO -     val_macro_g_beta_measure: 0.17728996497826208
+2020-07-22 20:56:12,102 - trainer - INFO -     val_macro_auroc: 0.8986475840317985
+2020-07-22 20:56:12,102 - trainer - INFO -     val_macro_auprc: 0.5323133328804814
+2020-07-22 20:56:12,102 - trainer - INFO -     val_challenge_metric: 0.3912556704787762
+2020-07-22 21:02:52,012 - trainer - INFO -     epoch          : 14
+2020-07-22 21:02:52,013 - trainer - INFO -     loss           : 0.02974580901861191
+2020-07-22 21:02:52,013 - trainer - INFO -     accuracy       : 0.4346041666666667
+2020-07-22 21:02:52,013 - trainer - INFO -     f_measure      : 0.5505697249958486
+2020-07-22 21:02:52,013 - trainer - INFO -     macro_f_beta_measure: 0.5189556665070146
+2020-07-22 21:02:52,013 - trainer - INFO -     macro_g_beta_measure: 0.43645658343289023
+2020-07-22 21:02:52,013 - trainer - INFO -     macro_auroc    : 0.9766932543055395
+2020-07-22 21:02:52,013 - trainer - INFO -     macro_auprc    : 0.7958388027669043
+2020-07-22 21:02:52,013 - trainer - INFO -     challenge_metric: 0.47824399061745
+2020-07-22 21:02:52,014 - trainer - INFO -     val_loss       : 0.05009932869247028
+2020-07-22 21:02:52,014 - trainer - INFO -     val_accuracy   : 0.31797619047619047
+2020-07-22 21:02:52,014 - trainer - INFO -     val_f_measure  : 0.2561740087044595
+2020-07-22 21:02:52,014 - trainer - INFO -     val_macro_f_beta_measure: 0.24552925240297221
+2020-07-22 21:02:52,014 - trainer - INFO -     val_macro_g_beta_measure: 0.1647321052086934
+2020-07-22 21:02:52,014 - trainer - INFO -     val_macro_auroc: 0.9023218706513951
+2020-07-22 21:02:52,014 - trainer - INFO -     val_macro_auprc: 0.5272864813246289
+2020-07-22 21:02:52,014 - trainer - INFO -     val_challenge_metric: 0.37261267038120516
+2020-07-22 21:09:31,349 - trainer - INFO -     epoch          : 15
+2020-07-22 21:09:31,349 - trainer - INFO -     loss           : 0.028851588522394497
+2020-07-22 21:09:31,349 - trainer - INFO -     accuracy       : 0.44747023809523806
+2020-07-22 21:09:31,350 - trainer - INFO -     f_measure      : 0.5709869676806795
+2020-07-22 21:09:31,350 - trainer - INFO -     macro_f_beta_measure: 0.5395658392110351
+2020-07-22 21:09:31,350 - trainer - INFO -     macro_g_beta_measure: 0.45570793093777306
+2020-07-22 21:09:31,350 - trainer - INFO -     macro_auroc    : 0.9777685080300298
+2020-07-22 21:09:31,350 - trainer - INFO -     macro_auprc    : 0.807894256154314
+2020-07-22 21:09:31,350 - trainer - INFO -     challenge_metric: 0.4915264150173445
+2020-07-22 21:09:31,350 - trainer - INFO -     val_loss       : 0.051066034606524875
+2020-07-22 21:09:31,350 - trainer - INFO -     val_accuracy   : 0.3161458333333333
+2020-07-22 21:09:31,350 - trainer - INFO -     val_f_measure  : 0.27196428076200485
+2020-07-22 21:09:31,350 - trainer - INFO -     val_macro_f_beta_measure: 0.2602711781128916
+2020-07-22 21:09:31,350 - trainer - INFO -     val_macro_g_beta_measure: 0.18118521099551074
+2020-07-22 21:09:31,350 - trainer - INFO -     val_macro_auroc: 0.8951045206669482
+2020-07-22 21:09:31,350 - trainer - INFO -     val_macro_auprc: 0.5303632785139395
+2020-07-22 21:09:31,351 - trainer - INFO -     val_challenge_metric: 0.3474944127920197
+2020-07-22 21:16:11,721 - trainer - INFO -     epoch          : 16
+2020-07-22 21:16:11,722 - trainer - INFO -     loss           : 0.02862543157239755
+2020-07-22 21:16:11,722 - trainer - INFO -     accuracy       : 0.4515892857142857
+2020-07-22 21:16:11,722 - trainer - INFO -     f_measure      : 0.5806423387613682
+2020-07-22 21:16:11,722 - trainer - INFO -     macro_f_beta_measure: 0.5493621090403388
+2020-07-22 21:16:11,722 - trainer - INFO -     macro_g_beta_measure: 0.4649064484675458
+2020-07-22 21:16:11,722 - trainer - INFO -     macro_auroc    : 0.9786703529290264
+2020-07-22 21:16:11,722 - trainer - INFO -     macro_auprc    : 0.8129675549801655
+2020-07-22 21:16:11,722 - trainer - INFO -     challenge_metric: 0.4954439185612245
+2020-07-22 21:16:11,723 - trainer - INFO -     val_loss       : 0.04928928454007421
+2020-07-22 21:16:11,723 - trainer - INFO -     val_accuracy   : 0.3198809523809524
+2020-07-22 21:16:11,723 - trainer - INFO -     val_f_measure  : 0.27635872200487066
+2020-07-22 21:16:11,723 - trainer - INFO -     val_macro_f_beta_measure: 0.2637131515807462
+2020-07-22 21:16:11,723 - trainer - INFO -     val_macro_g_beta_measure: 0.1853164416307877
+2020-07-22 21:16:11,723 - trainer - INFO -     val_macro_auroc: 0.9049881569194506
+2020-07-22 21:16:11,723 - trainer - INFO -     val_macro_auprc: 0.5349261798303444
+2020-07-22 21:16:11,723 - trainer - INFO -     val_challenge_metric: 0.3556038997059466
+2020-07-22 21:22:49,186 - trainer - INFO -     epoch          : 17
+2020-07-22 21:22:49,187 - trainer - INFO -     loss           : 0.027718627293904622
+2020-07-22 21:22:49,187 - trainer - INFO -     accuracy       : 0.4605892857142857
+2020-07-22 21:22:49,187 - trainer - INFO -     f_measure      : 0.5966171102404292
+2020-07-22 21:22:49,187 - trainer - INFO -     macro_f_beta_measure: 0.5662025175910508
+2020-07-22 21:22:49,187 - trainer - INFO -     macro_g_beta_measure: 0.48169533153144006
+2020-07-22 21:22:49,187 - trainer - INFO -     macro_auroc    : 0.9799273765076049
+2020-07-22 21:22:49,187 - trainer - INFO -     macro_auprc    : 0.8204830759166647
+2020-07-22 21:22:49,187 - trainer - INFO -     challenge_metric: 0.5085130655900159
+2020-07-22 21:22:49,188 - trainer - INFO -     val_loss       : 0.049228171507517494
+2020-07-22 21:22:49,188 - trainer - INFO -     val_accuracy   : 0.3310267857142857
+2020-07-22 21:22:49,188 - trainer - INFO -     val_f_measure  : 0.28479530829849625
+2020-07-22 21:22:49,188 - trainer - INFO -     val_macro_f_beta_measure: 0.27748264574688025
+2020-07-22 21:22:49,188 - trainer - INFO -     val_macro_g_beta_measure: 0.19073818372157186
+2020-07-22 21:22:49,188 - trainer - INFO -     val_macro_auroc: 0.9082416156382742
+2020-07-22 21:22:49,188 - trainer - INFO -     val_macro_auprc: 0.549163492199608
+2020-07-22 21:22:49,188 - trainer - INFO -     val_challenge_metric: 0.41177526157896066
+2020-07-22 21:29:31,245 - trainer - INFO -     epoch          : 18
+2020-07-22 21:29:31,245 - trainer - INFO -     loss           : 0.026684519241253535
+2020-07-22 21:29:31,245 - trainer - INFO -     accuracy       : 0.47038690476190476
+2020-07-22 21:29:31,245 - trainer - INFO -     f_measure      : 0.6140691474940114
+2020-07-22 21:29:31,246 - trainer - INFO -     macro_f_beta_measure: 0.5829506451548446
+2020-07-22 21:29:31,246 - trainer - INFO -     macro_g_beta_measure: 0.49712648468841
+2020-07-22 21:29:31,246 - trainer - INFO -     macro_auroc    : 0.981755655090939
+2020-07-22 21:29:31,246 - trainer - INFO -     macro_auprc    : 0.8315416160864463
+2020-07-22 21:29:31,246 - trainer - INFO -     challenge_metric: 0.5218532552818567
+2020-07-22 21:29:31,246 - trainer - INFO -     val_loss       : 0.050617753040222896
+2020-07-22 21:29:31,246 - trainer - INFO -     val_accuracy   : 0.3282738095238095
+2020-07-22 21:29:31,246 - trainer - INFO -     val_f_measure  : 0.27291487006176535
+2020-07-22 21:29:31,246 - trainer - INFO -     val_macro_f_beta_measure: 0.26124221567481776
+2020-07-22 21:29:31,246 - trainer - INFO -     val_macro_g_beta_measure: 0.17969005644012687
+2020-07-22 21:29:31,246 - trainer - INFO -     val_macro_auroc: 0.9079797621129517
+2020-07-22 21:29:31,246 - trainer - INFO -     val_macro_auprc: 0.5459743001902981
+2020-07-22 21:29:31,246 - trainer - INFO -     val_challenge_metric: 0.43262215290013933
+2020-07-22 21:36:13,586 - trainer - INFO -     epoch          : 19
+2020-07-22 21:36:13,587 - trainer - INFO -     loss           : 0.026020637492338815
+2020-07-22 21:36:13,587 - trainer - INFO -     accuracy       : 0.47967261904761904
+2020-07-22 21:36:13,587 - trainer - INFO -     f_measure      : 0.6256704728806993
+2020-07-22 21:36:13,587 - trainer - INFO -     macro_f_beta_measure: 0.5949425532406354
+2020-07-22 21:36:13,587 - trainer - INFO -     macro_g_beta_measure: 0.5096976095177779
+2020-07-22 21:36:13,587 - trainer - INFO -     macro_auroc    : 0.9828178031862024
+2020-07-22 21:36:13,587 - trainer - INFO -     macro_auprc    : 0.8388931057917559
+2020-07-22 21:36:13,587 - trainer - INFO -     challenge_metric: 0.5381481755065398
+2020-07-22 21:36:13,587 - trainer - INFO -     val_loss       : 0.05129158816167286
+2020-07-22 21:36:13,587 - trainer - INFO -     val_accuracy   : 0.3217857142857143
+2020-07-22 21:36:13,587 - trainer - INFO -     val_f_measure  : 0.2724605626916065
+2020-07-22 21:36:13,587 - trainer - INFO -     val_macro_f_beta_measure: 0.2634896239739441
+2020-07-22 21:36:13,588 - trainer - INFO -     val_macro_g_beta_measure: 0.17615811424602695
+2020-07-22 21:36:13,588 - trainer - INFO -     val_macro_auroc: 0.896667947228536
+2020-07-22 21:36:13,588 - trainer - INFO -     val_macro_auprc: 0.534409092545902
+2020-07-22 21:36:13,588 - trainer - INFO -     val_challenge_metric: 0.4003718253488685
+2020-07-22 21:42:53,136 - trainer - INFO -     epoch          : 20
+2020-07-22 21:42:53,136 - trainer - INFO -     loss           : 0.025783169801036517
+2020-07-22 21:42:53,136 - trainer - INFO -     accuracy       : 0.48119345238095235
+2020-07-22 21:42:53,136 - trainer - INFO -     f_measure      : 0.6295484755265796
+2020-07-22 21:42:53,136 - trainer - INFO -     macro_f_beta_measure: 0.5989486365043619
+2020-07-22 21:42:53,136 - trainer - INFO -     macro_g_beta_measure: 0.5127406909201246
+2020-07-22 21:42:53,136 - trainer - INFO -     macro_auroc    : 0.9831324419833217
+2020-07-22 21:42:53,136 - trainer - INFO -     macro_auprc    : 0.8405147167426156
+2020-07-22 21:42:53,136 - trainer - INFO -     challenge_metric: 0.5392004152489408
+2020-07-22 21:42:53,136 - trainer - INFO -     val_loss       : 0.05236669239543733
+2020-07-22 21:42:53,136 - trainer - INFO -     val_accuracy   : 0.3266071428571428
+2020-07-22 21:42:53,136 - trainer - INFO -     val_f_measure  : 0.2808333779378944
+2020-07-22 21:42:53,136 - trainer - INFO -     val_macro_f_beta_measure: 0.26663889485265413
+2020-07-22 21:42:53,136 - trainer - INFO -     val_macro_g_beta_measure: 0.18287759887072336
+2020-07-22 21:42:53,136 - trainer - INFO -     val_macro_auroc: 0.9033106279637414
+2020-07-22 21:42:53,136 - trainer - INFO -     val_macro_auprc: 0.5497881844480126
+2020-07-22 21:42:53,137 - trainer - INFO -     val_challenge_metric: 0.4260494721099217
+2020-07-22 21:49:33,203 - trainer - INFO -     epoch          : 21
+2020-07-22 21:49:33,203 - trainer - INFO -     loss           : 0.024927826950947442
+2020-07-22 21:49:33,203 - trainer - INFO -     accuracy       : 0.4922559523809524
+2020-07-22 21:49:33,203 - trainer - INFO -     f_measure      : 0.6466979458384285
+2020-07-22 21:49:33,203 - trainer - INFO -     macro_f_beta_measure: 0.6168689175063128
+2020-07-22 21:49:33,203 - trainer - INFO -     macro_g_beta_measure: 0.5309197490278047
+2020-07-22 21:49:33,203 - trainer - INFO -     macro_auroc    : 0.9838703821137115
+2020-07-22 21:49:33,204 - trainer - INFO -     macro_auprc    : 0.84873469693498
+2020-07-22 21:49:33,204 - trainer - INFO -     challenge_metric: 0.548927763773136
+2020-07-22 21:49:33,204 - trainer - INFO -     val_loss       : 0.05095197207161358
+2020-07-22 21:49:33,204 - trainer - INFO -     val_accuracy   : 0.32497023809523806
+2020-07-22 21:49:33,204 - trainer - INFO -     val_f_measure  : 0.29969466196960215
+2020-07-22 21:49:33,204 - trainer - INFO -     val_macro_f_beta_measure: 0.292589929181768
+2020-07-22 21:49:33,204 - trainer - INFO -     val_macro_g_beta_measure: 0.20407042312324192
+2020-07-22 21:49:33,204 - trainer - INFO -     val_macro_auroc: 0.9074956547154546
+2020-07-22 21:49:33,204 - trainer - INFO -     val_macro_auprc: 0.5539071997172174
+2020-07-22 21:49:33,204 - trainer - INFO -     val_challenge_metric: 0.39354643077948526
+2020-07-22 21:56:13,815 - trainer - INFO -     epoch          : 22
+2020-07-22 21:56:13,815 - trainer - INFO -     loss           : 0.024613274241487185
+2020-07-22 21:56:13,815 - trainer - INFO -     accuracy       : 0.4934375
+2020-07-22 21:56:13,816 - trainer - INFO -     f_measure      : 0.6483101234848789
+2020-07-22 21:56:13,816 - trainer - INFO -     macro_f_beta_measure: 0.61784884303692
+2020-07-22 21:56:13,816 - trainer - INFO -     macro_g_beta_measure: 0.53087284360663
+2020-07-22 21:56:13,816 - trainer - INFO -     macro_auroc    : 0.9846109013911655
+2020-07-22 21:56:13,816 - trainer - INFO -     macro_auprc    : 0.8515966292180324
+2020-07-22 21:56:13,816 - trainer - INFO -     challenge_metric: 0.5493239855340872
+2020-07-22 21:56:13,816 - trainer - INFO -     val_loss       : 0.05164016251053129
+2020-07-22 21:56:13,816 - trainer - INFO -     val_accuracy   : 0.32433035714285713
+2020-07-22 21:56:13,816 - trainer - INFO -     val_f_measure  : 0.2908618488469007
+2020-07-22 21:56:13,816 - trainer - INFO -     val_macro_f_beta_measure: 0.2822106962995849
+2020-07-22 21:56:13,816 - trainer - INFO -     val_macro_g_beta_measure: 0.18958894910425297
+2020-07-22 21:56:13,816 - trainer - INFO -     val_macro_auroc: 0.8956635536846679
+2020-07-22 21:56:13,816 - trainer - INFO -     val_macro_auprc: 0.5453725173878199
+2020-07-22 21:56:13,816 - trainer - INFO -     val_challenge_metric: 0.42234300314366924
+2020-07-22 22:02:54,500 - trainer - INFO -     epoch          : 23
+2020-07-22 22:02:54,501 - trainer - INFO -     loss           : 0.023596837773919105
+2020-07-22 22:02:54,501 - trainer - INFO -     accuracy       : 0.5056577380952381
+2020-07-22 22:02:54,501 - trainer - INFO -     f_measure      : 0.6636530748163977
+2020-07-22 22:02:54,501 - trainer - INFO -     macro_f_beta_measure: 0.6343191287058962
+2020-07-22 22:02:54,501 - trainer - INFO -     macro_g_beta_measure: 0.5487488321466573
+2020-07-22 22:02:54,501 - trainer - INFO -     macro_auroc    : 0.9857447835434657
+2020-07-22 22:02:54,501 - trainer - INFO -     macro_auprc    : 0.8610069303214665
+2020-07-22 22:02:54,501 - trainer - INFO -     challenge_metric: 0.56709965223673
+2020-07-22 22:02:54,501 - trainer - INFO -     val_loss       : 0.05414216823521115
+2020-07-22 22:02:54,501 - trainer - INFO -     val_accuracy   : 0.3160565476190476
+2020-07-22 22:02:54,502 - trainer - INFO -     val_f_measure  : 0.2862085357673005
+2020-07-22 22:02:54,502 - trainer - INFO -     val_macro_f_beta_measure: 0.2789482498138913
+2020-07-22 22:02:54,502 - trainer - INFO -     val_macro_g_beta_measure: 0.19193056403449468
+2020-07-22 22:02:54,502 - trainer - INFO -     val_macro_auroc: 0.894647354734914
+2020-07-22 22:02:54,502 - trainer - INFO -     val_macro_auprc: 0.5336769364645308
+2020-07-22 22:02:54,502 - trainer - INFO -     val_challenge_metric: 0.43259185476047035
+2020-07-22 22:02:54,502 - trainer - INFO - Validation performance didn't improve for 10 epochs. Training stops.

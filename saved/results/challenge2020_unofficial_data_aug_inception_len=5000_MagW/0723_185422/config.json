@@ -1,0 +1,76 @@
+{
+    "optimizer": {
+        "args": {
+            "lr": 0.001,
+            "amsgrad": true,
+            "weight_decay": 0
+        },
+        "type": "Adam"
+    },
+    "n_gpu": 1,
+    "arch": {
+        "args": {
+            "num_classes": 9,
+            "in_channels": 12,
+            "kernel_sizes": [
+                9,
+                19,
+                39
+            ],
+            "bottleneck_channels": 32,
+            "n_filters": 32
+        },
+        "type": "InceptionTimeV2"
+    },
+    "metrics": [
+        "accuracy",
+        "f_measure",
+        "f_beta",
+        "g_beta",
+        "auroc",
+        "auprc"
+    ],
+    "name": "challenge2020_unofficial_data_aug_inception_len=3000_MagW",
+    "lr_scheduler": {
+        "args": {
+            "gamma": 0.1,
+            "step_size": 50
+        },
+        "type": "StepLR"
+    },
+    "loss": "bce_loss",
+    "data_loader": {
+        "args": {
+            "shuffle": true,
+            "num_workers": 0,
+            "test_split": 0.1,
+            "data_dir": "/home/weiyuhua/Data/raw-data",
+            "validation_split": 0.1,
+            "batch_size": 16,
+            "augmentations": {
+                "MagWarp": {
+                    "args": {
+                        "sigma": 0.1
+                    }
+                }
+            }
+        },
+        "type": "ChallengeDataLoader4"
+    },
+    "evaluater": {
+        "result_dir": "saved/",
+        "visualization": {
+            "scatter": true
+        },
+        "verbosity": 2
+    },
+    "trainer": {
+        "early_stop": 10,
+        "save_dir": "saved/",
+        "save_period": 1,
+        "epochs": 100,
+        "monitor": "min val_loss",
+        "verbosity": 2,
+        "tensorboard": true
+    }
+}

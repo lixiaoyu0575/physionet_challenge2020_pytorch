@@ -1,0 +1,76 @@
+{
+    "evaluater": {
+        "result_dir": "saved/",
+        "verbosity": 2,
+        "visualization": {
+            "scatter": true
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args": {
+            "lr": 0.001,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "trainer": {
+        "verbosity": 2,
+        "early_stop": 10,
+        "epochs": 100,
+        "save_period": 1,
+        "save_dir": "saved/",
+        "tensorboard": true,
+        "monitor": "min val_loss"
+    },
+    "metrics": [
+        "accuracy",
+        "f_measure",
+        "f_beta",
+        "g_beta",
+        "auroc",
+        "auprc"
+    ],
+    "arch": {
+        "type": "InceptionTimeV2",
+        "args": {
+            "in_channels": 12,
+            "kernel_sizes": [
+                9,
+                19,
+                39
+            ],
+            "n_filters": 32,
+            "bottleneck_channels": 32,
+            "num_classes": 9
+        }
+    },
+    "lr_scheduler": {
+        "type": "StepLR",
+        "args": {
+            "step_size": 50,
+            "gamma": 0.1
+        }
+    },
+    "name": "challenge2020_unofficial_data_aug_inception_len=3000_scale",
+    "n_gpu": 1,
+    "loss": "bce_loss",
+    "data_loader": {
+        "type": "ChallengeDataLoader4",
+        "args": {
+            "validation_split": 0.1,
+            "data_dir": "/home/weiyuhua/Data/raw-data",
+            "num_workers": 0,
+            "batch_size": 16,
+            "test_split": 0.1,
+            "augmentations": {
+                "Scaling": {
+                    "args": {
+                        "sigma": 0.1
+                    }
+                }
+            },
+            "shuffle": true
+        }
+    }
+}

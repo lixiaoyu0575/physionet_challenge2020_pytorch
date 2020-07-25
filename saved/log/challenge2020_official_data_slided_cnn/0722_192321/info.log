@@ -1,0 +1,1275 @@
+2020-07-22 19:25:22,475 - train - INFO - CNN(
+  (conv1): Conv1d(12, 32, kernel_size=(16,), stride=(1,))
+  (conv2): Conv1d(32, 64, kernel_size=(16,), stride=(1,))
+  (conv3): Conv1d(64, 128, kernel_size=(16,), stride=(1,))
+  (batch_norm1): BatchNorm1d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (batch_norm2): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (batch_norm3): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (conv2_drop): Dropout(p=0.5)
+  (fc1): Linear(in_features=128, out_features=50, bias=True)
+  (fc2): Linear(in_features=50, out_features=108, bias=True)
+  (sigmoid): Sigmoid()
+)
+Trainable parameters: 182614
+2020-07-22 19:25:28,931 - trainer - WARNING - Warning: visualization (Tensorboard) is configured to use, but currently not installed on this machine. Please install TensorboardX with 'pip install tensorboardx', upgrade PyTorch to version >= 1.1 to use 'torch.utils.tensorboard' or turn off the option in the 'config.json' file.
+2020-07-22 19:31:25,709 - trainer - INFO -     epoch          : 1
+2020-07-22 19:31:25,711 - trainer - INFO -     loss           : 0.11654267074664434
+2020-07-22 19:31:25,712 - trainer - INFO -     accuracy       : 0.09533928571428572
+2020-07-22 19:31:25,712 - trainer - INFO -     f_measure      : 0.014416597382051099
+2020-07-22 19:31:25,712 - trainer - INFO -     macro_f_beta_measure: 0.013144541458531127
+2020-07-22 19:31:25,712 - trainer - INFO -     macro_g_beta_measure: 0.008072644175728378
+2020-07-22 19:31:25,712 - trainer - INFO -     macro_auroc    : 0.6181532328359581
+2020-07-22 19:31:25,712 - trainer - INFO -     macro_auprc    : 0.10419655106532497
+2020-07-22 19:31:25,712 - trainer - INFO -     challenge_metric: -0.3581924837280762
+2020-07-22 19:31:25,712 - trainer - INFO -     val_loss       : 0.09760678311189015
+2020-07-22 19:31:25,712 - trainer - INFO -     val_accuracy   : 0.1265625
+2020-07-22 19:31:25,712 - trainer - INFO -     val_f_measure  : 0.023933767774150884
+2020-07-22 19:31:25,713 - trainer - INFO -     val_macro_f_beta_measure: 0.01974463129609284
+2020-07-22 19:31:25,713 - trainer - INFO -     val_macro_g_beta_measure: 0.013030674627292224
+2020-07-22 19:31:25,713 - trainer - INFO -     val_macro_auroc: 0.6783132359392801
+2020-07-22 19:31:25,713 - trainer - INFO -     val_macro_auprc: 0.17248908610295596
+2020-07-22 19:31:25,713 - trainer - INFO -     val_challenge_metric: -0.2545099892701057
+2020-07-22 19:31:25,746 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch1.pth ...
+2020-07-22 19:31:25,756 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:37:08,432 - trainer - INFO -     epoch          : 2
+2020-07-22 19:37:08,432 - trainer - INFO -     loss           : 0.075564796179533
+2020-07-22 19:37:08,433 - trainer - INFO -     accuracy       : 0.11896428571428572
+2020-07-22 19:37:08,433 - trainer - INFO -     f_measure      : 0.021916538137535226
+2020-07-22 19:37:08,433 - trainer - INFO -     macro_f_beta_measure: 0.017887595841684315
+2020-07-22 19:37:08,433 - trainer - INFO -     macro_g_beta_measure: 0.01156763176158444
+2020-07-22 19:37:08,433 - trainer - INFO -     macro_auroc    : 0.7165320713783505
+2020-07-22 19:37:08,433 - trainer - INFO -     macro_auprc    : 0.1441426563388513
+2020-07-22 19:37:08,433 - trainer - INFO -     challenge_metric: -0.25714688525615215
+2020-07-22 19:37:08,433 - trainer - INFO -     val_loss       : 0.0774404342685427
+2020-07-22 19:37:08,433 - trainer - INFO -     val_accuracy   : 0.12677083333333333
+2020-07-22 19:37:08,433 - trainer - INFO -     val_f_measure  : 0.028197928032609284
+2020-07-22 19:37:08,433 - trainer - INFO -     val_macro_f_beta_measure: 0.0228956275454611
+2020-07-22 19:37:08,433 - trainer - INFO -     val_macro_g_beta_measure: 0.015287700311780075
+2020-07-22 19:37:08,433 - trainer - INFO -     val_macro_auroc: 0.7449942030206268
+2020-07-22 19:37:08,434 - trainer - INFO -     val_macro_auprc: 0.21403604688672717
+2020-07-22 19:37:08,434 - trainer - INFO -     val_challenge_metric: -0.2465148222564422
+2020-07-22 19:37:08,441 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch2.pth ...
+2020-07-22 19:37:08,448 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:42:20,146 - trainer - INFO -     epoch          : 3
+2020-07-22 19:42:20,147 - trainer - INFO -     loss           : 0.07232827244202296
+2020-07-22 19:42:20,147 - trainer - INFO -     accuracy       : 0.12166666666666667
+2020-07-22 19:42:20,147 - trainer - INFO -     f_measure      : 0.028981970346752754
+2020-07-22 19:42:20,147 - trainer - INFO -     macro_f_beta_measure: 0.023265920809067534
+2020-07-22 19:42:20,147 - trainer - INFO -     macro_g_beta_measure: 0.014646403413228924
+2020-07-22 19:42:20,147 - trainer - INFO -     macro_auroc    : 0.7699118860047566
+2020-07-22 19:42:20,147 - trainer - INFO -     macro_auprc    : 0.18166050723641824
+2020-07-22 19:42:20,147 - trainer - INFO -     challenge_metric: -0.23069114422252177
+2020-07-22 19:42:20,147 - trainer - INFO -     val_loss       : 0.07805972936607543
+2020-07-22 19:42:20,147 - trainer - INFO -     val_accuracy   : 0.12657738095238097
+2020-07-22 19:42:20,147 - trainer - INFO -     val_f_measure  : 0.03639951061272036
+2020-07-22 19:42:20,148 - trainer - INFO -     val_macro_f_beta_measure: 0.029035579790816494
+2020-07-22 19:42:20,148 - trainer - INFO -     val_macro_g_beta_measure: 0.01860074982950104
+2020-07-22 19:42:20,148 - trainer - INFO -     val_macro_auroc: 0.7583117785870609
+2020-07-22 19:42:20,148 - trainer - INFO -     val_macro_auprc: 0.22124542474268155
+2020-07-22 19:42:20,148 - trainer - INFO -     val_challenge_metric: -0.2515974125611371
+2020-07-22 19:47:31,022 - trainer - INFO -     epoch          : 4
+2020-07-22 19:47:31,022 - trainer - INFO -     loss           : 0.06981715268890062
+2020-07-22 19:47:31,023 - trainer - INFO -     accuracy       : 0.12438690476190475
+2020-07-22 19:47:31,023 - trainer - INFO -     f_measure      : 0.03724998892002689
+2020-07-22 19:47:31,023 - trainer - INFO -     macro_f_beta_measure: 0.029527257003519932
+2020-07-22 19:47:31,023 - trainer - INFO -     macro_g_beta_measure: 0.018051164695870307
+2020-07-22 19:47:31,023 - trainer - INFO -     macro_auroc    : 0.8004511487557534
+2020-07-22 19:47:31,023 - trainer - INFO -     macro_auprc    : 0.21794651879664548
+2020-07-22 19:47:31,023 - trainer - INFO -     challenge_metric: -0.21665924729608135
+2020-07-22 19:47:31,023 - trainer - INFO -     val_loss       : 0.07267665792079199
+2020-07-22 19:47:31,023 - trainer - INFO -     val_accuracy   : 0.13034226190476192
+2020-07-22 19:47:31,023 - trainer - INFO -     val_f_measure  : 0.048619352622294144
+2020-07-22 19:47:31,023 - trainer - INFO -     val_macro_f_beta_measure: 0.03952306293361051
+2020-07-22 19:47:31,023 - trainer - INFO -     val_macro_g_beta_measure: 0.02334271958285831
+2020-07-22 19:47:31,023 - trainer - INFO -     val_macro_auroc: 0.7985100996535686
+2020-07-22 19:47:31,023 - trainer - INFO -     val_macro_auprc: 0.2761276143975444
+2020-07-22 19:47:31,024 - trainer - INFO -     val_challenge_metric: -0.2120375478075576
+2020-07-22 19:47:31,031 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch4.pth ...
+2020-07-22 19:47:31,038 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:52:42,589 - trainer - INFO -     epoch          : 5
+2020-07-22 19:52:42,602 - trainer - INFO -     loss           : 0.0681690388917923
+2020-07-22 19:52:42,602 - trainer - INFO -     accuracy       : 0.12916666666666668
+2020-07-22 19:52:42,602 - trainer - INFO -     f_measure      : 0.046083036779359654
+2020-07-22 19:52:42,602 - trainer - INFO -     macro_f_beta_measure: 0.03682419194927307
+2020-07-22 19:52:42,603 - trainer - INFO -     macro_g_beta_measure: 0.02298598599507389
+2020-07-22 19:52:42,603 - trainer - INFO -     macro_auroc    : 0.8139147201222323
+2020-07-22 19:52:42,603 - trainer - INFO -     macro_auprc    : 0.24420312820720844
+2020-07-22 19:52:42,603 - trainer - INFO -     challenge_metric: -0.20171583995456482
+2020-07-22 19:52:42,603 - trainer - INFO -     val_loss       : 0.06765007138961837
+2020-07-22 19:52:42,603 - trainer - INFO -     val_accuracy   : 0.14607142857142857
+2020-07-22 19:52:42,603 - trainer - INFO -     val_f_measure  : 0.05806561492822241
+2020-07-22 19:52:42,603 - trainer - INFO -     val_macro_f_beta_measure: 0.04777125121915278
+2020-07-22 19:52:42,603 - trainer - INFO -     val_macro_g_beta_measure: 0.02935699507074168
+2020-07-22 19:52:42,603 - trainer - INFO -     val_macro_auroc: 0.8003179544252219
+2020-07-22 19:52:42,603 - trainer - INFO -     val_macro_auprc: 0.27250867597252293
+2020-07-22 19:52:42,603 - trainer - INFO -     val_challenge_metric: -0.17274220313635077
+2020-07-22 19:52:42,611 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch5.pth ...
+2020-07-22 19:52:42,617 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 19:57:43,944 - trainer - INFO -     epoch          : 6
+2020-07-22 19:57:43,944 - trainer - INFO -     loss           : 0.06683191541830699
+2020-07-22 19:57:43,944 - trainer - INFO -     accuracy       : 0.13327083333333334
+2020-07-22 19:57:43,944 - trainer - INFO -     f_measure      : 0.054727353311736976
+2020-07-22 19:57:43,944 - trainer - INFO -     macro_f_beta_measure: 0.043922572521965825
+2020-07-22 19:57:43,944 - trainer - INFO -     macro_g_beta_measure: 0.02797885810998821
+2020-07-22 19:57:43,944 - trainer - INFO -     macro_auroc    : 0.8271370206586809
+2020-07-22 19:57:43,944 - trainer - INFO -     macro_auprc    : 0.2660031411242027
+2020-07-22 19:57:43,944 - trainer - INFO -     challenge_metric: -0.18289312600856333
+2020-07-22 19:57:43,945 - trainer - INFO -     val_loss       : 0.06654904215108781
+2020-07-22 19:57:43,945 - trainer - INFO -     val_accuracy   : 0.14299107142857143
+2020-07-22 19:57:43,945 - trainer - INFO -     val_f_measure  : 0.05931920735530612
+2020-07-22 19:57:43,945 - trainer - INFO -     val_macro_f_beta_measure: 0.047621724789395505
+2020-07-22 19:57:43,945 - trainer - INFO -     val_macro_g_beta_measure: 0.028423483846866115
+2020-07-22 19:57:43,945 - trainer - INFO -     val_macro_auroc: 0.8128311436334134
+2020-07-22 19:57:43,945 - trainer - INFO -     val_macro_auprc: 0.3003419200857766
+2020-07-22 19:57:43,945 - trainer - INFO -     val_challenge_metric: -0.1814317056150077
+2020-07-22 19:57:43,964 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch6.pth ...
+2020-07-22 19:57:43,971 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:02:53,465 - trainer - INFO -     epoch          : 7
+2020-07-22 20:02:53,465 - trainer - INFO -     loss           : 0.06552375269929568
+2020-07-22 20:02:53,465 - trainer - INFO -     accuracy       : 0.13967261904761905
+2020-07-22 20:02:53,465 - trainer - INFO -     f_measure      : 0.06415583263770026
+2020-07-22 20:02:53,466 - trainer - INFO -     macro_f_beta_measure: 0.052269779833417296
+2020-07-22 20:02:53,466 - trainer - INFO -     macro_g_beta_measure: 0.03446003805474491
+2020-07-22 20:02:53,466 - trainer - INFO -     macro_auroc    : 0.8366801032565279
+2020-07-22 20:02:53,466 - trainer - INFO -     macro_auprc    : 0.2841447365162973
+2020-07-22 20:02:53,466 - trainer - INFO -     challenge_metric: -0.16522673464873056
+2020-07-22 20:02:53,466 - trainer - INFO -     val_loss       : 0.06605799744526546
+2020-07-22 20:02:53,466 - trainer - INFO -     val_accuracy   : 0.1498809523809524
+2020-07-22 20:02:53,466 - trainer - INFO -     val_f_measure  : 0.06896838038213043
+2020-07-22 20:02:53,466 - trainer - INFO -     val_macro_f_beta_measure: 0.05554467576223962
+2020-07-22 20:02:53,466 - trainer - INFO -     val_macro_g_beta_measure: 0.03383888735682208
+2020-07-22 20:02:53,466 - trainer - INFO -     val_macro_auroc: 0.8186672846642404
+2020-07-22 20:02:53,466 - trainer - INFO -     val_macro_auprc: 0.31881118198170355
+2020-07-22 20:02:53,466 - trainer - INFO -     val_challenge_metric: -0.1756684050335388
+2020-07-22 20:02:53,474 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch7.pth ...
+2020-07-22 20:02:53,480 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:08:06,317 - trainer - INFO -     epoch          : 8
+2020-07-22 20:08:06,317 - trainer - INFO -     loss           : 0.06445605875054995
+2020-07-22 20:08:06,317 - trainer - INFO -     accuracy       : 0.14360416666666667
+2020-07-22 20:08:06,317 - trainer - INFO -     f_measure      : 0.07404496778320645
+2020-07-22 20:08:06,317 - trainer - INFO -     macro_f_beta_measure: 0.06058160971311983
+2020-07-22 20:08:06,317 - trainer - INFO -     macro_g_beta_measure: 0.04023617919779931
+2020-07-22 20:08:06,318 - trainer - INFO -     macro_auroc    : 0.8445407623345044
+2020-07-22 20:08:06,318 - trainer - INFO -     macro_auprc    : 0.29926171577014793
+2020-07-22 20:08:06,318 - trainer - INFO -     challenge_metric: -0.15342968392020334
+2020-07-22 20:08:06,318 - trainer - INFO -     val_loss       : 0.06538909212464378
+2020-07-22 20:08:06,318 - trainer - INFO -     val_accuracy   : 0.1507440476190476
+2020-07-22 20:08:06,318 - trainer - INFO -     val_f_measure  : 0.06477746172705734
+2020-07-22 20:08:06,318 - trainer - INFO -     val_macro_f_beta_measure: 0.051655260982975806
+2020-07-22 20:08:06,318 - trainer - INFO -     val_macro_g_beta_measure: 0.03249716404351808
+2020-07-22 20:08:06,318 - trainer - INFO -     val_macro_auroc: 0.8258822626952016
+2020-07-22 20:08:06,318 - trainer - INFO -     val_macro_auprc: 0.32282816976766754
+2020-07-22 20:08:06,318 - trainer - INFO -     val_challenge_metric: -0.18313093978401374
+2020-07-22 20:08:06,325 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch8.pth ...
+2020-07-22 20:08:06,331 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:13:17,646 - trainer - INFO -     epoch          : 9
+2020-07-22 20:13:17,647 - trainer - INFO -     loss           : 0.06327219976981481
+2020-07-22 20:13:17,647 - trainer - INFO -     accuracy       : 0.14883928571428573
+2020-07-22 20:13:17,647 - trainer - INFO -     f_measure      : 0.08510417263943044
+2020-07-22 20:13:17,647 - trainer - INFO -     macro_f_beta_measure: 0.07111691835724308
+2020-07-22 20:13:17,647 - trainer - INFO -     macro_g_beta_measure: 0.048984356667102456
+2020-07-22 20:13:17,647 - trainer - INFO -     macro_auroc    : 0.8532305410471303
+2020-07-22 20:13:17,647 - trainer - INFO -     macro_auprc    : 0.315626873517937
+2020-07-22 20:13:17,647 - trainer - INFO -     challenge_metric: -0.13894297826338498
+2020-07-22 20:13:17,647 - trainer - INFO -     val_loss       : 0.06444114783690089
+2020-07-22 20:13:17,647 - trainer - INFO -     val_accuracy   : 0.15392857142857141
+2020-07-22 20:13:17,647 - trainer - INFO -     val_f_measure  : 0.07479064528475754
+2020-07-22 20:13:17,648 - trainer - INFO -     val_macro_f_beta_measure: 0.060075710933861604
+2020-07-22 20:13:17,648 - trainer - INFO -     val_macro_g_beta_measure: 0.0377207607409719
+2020-07-22 20:13:17,648 - trainer - INFO -     val_macro_auroc: 0.8270007236104716
+2020-07-22 20:13:17,648 - trainer - INFO -     val_macro_auprc: 0.3236576814904526
+2020-07-22 20:13:17,648 - trainer - INFO -     val_challenge_metric: -0.14645098994308567
+2020-07-22 20:13:17,655 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch9.pth ...
+2020-07-22 20:13:17,661 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:18:29,839 - trainer - INFO -     epoch          : 10
+2020-07-22 20:18:29,839 - trainer - INFO -     loss           : 0.06253143372138341
+2020-07-22 20:18:29,839 - trainer - INFO -     accuracy       : 0.15348511904761905
+2020-07-22 20:18:29,839 - trainer - INFO -     f_measure      : 0.09401536700660533
+2020-07-22 20:18:29,839 - trainer - INFO -     macro_f_beta_measure: 0.07920017190776298
+2020-07-22 20:18:29,839 - trainer - INFO -     macro_g_beta_measure: 0.05568022940006538
+2020-07-22 20:18:29,840 - trainer - INFO -     macro_auroc    : 0.8588416364214001
+2020-07-22 20:18:29,840 - trainer - INFO -     macro_auprc    : 0.3248083338972389
+2020-07-22 20:18:29,840 - trainer - INFO -     challenge_metric: -0.13087575623714037
+2020-07-22 20:18:29,840 - trainer - INFO -     val_loss       : 0.06368837753931682
+2020-07-22 20:18:29,840 - trainer - INFO -     val_accuracy   : 0.16071428571428573
+2020-07-22 20:18:29,840 - trainer - INFO -     val_f_measure  : 0.08316971914670453
+2020-07-22 20:18:29,840 - trainer - INFO -     val_macro_f_beta_measure: 0.07001875791811321
+2020-07-22 20:18:29,840 - trainer - INFO -     val_macro_g_beta_measure: 0.04418370076456478
+2020-07-22 20:18:29,840 - trainer - INFO -     val_macro_auroc: 0.8290839548450493
+2020-07-22 20:18:29,840 - trainer - INFO -     val_macro_auprc: 0.32702471633443014
+2020-07-22 20:18:29,840 - trainer - INFO -     val_challenge_metric: -0.1270537941732949
+2020-07-22 20:18:29,847 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch10.pth ...
+2020-07-22 20:18:29,854 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:23:41,693 - trainer - INFO -     epoch          : 11
+2020-07-22 20:23:41,693 - trainer - INFO -     loss           : 0.06149181841810544
+2020-07-22 20:23:41,693 - trainer - INFO -     accuracy       : 0.15936607142857143
+2020-07-22 20:23:41,693 - trainer - INFO -     f_measure      : 0.10150875484307591
+2020-07-22 20:23:41,693 - trainer - INFO -     macro_f_beta_measure: 0.08639024903836341
+2020-07-22 20:23:41,694 - trainer - INFO -     macro_g_beta_measure: 0.061280078021348765
+2020-07-22 20:23:41,694 - trainer - INFO -     macro_auroc    : 0.8652428608641195
+2020-07-22 20:23:41,694 - trainer - INFO -     macro_auprc    : 0.3381732486590236
+2020-07-22 20:23:41,694 - trainer - INFO -     challenge_metric: -0.12592613261579033
+2020-07-22 20:23:41,694 - trainer - INFO -     val_loss       : 0.06347995943256787
+2020-07-22 20:23:41,694 - trainer - INFO -     val_accuracy   : 0.1654017857142857
+2020-07-22 20:23:41,694 - trainer - INFO -     val_f_measure  : 0.10118211266335149
+2020-07-22 20:23:41,694 - trainer - INFO -     val_macro_f_beta_measure: 0.08292091346461213
+2020-07-22 20:23:41,694 - trainer - INFO -     val_macro_g_beta_measure: 0.05340754605855215
+2020-07-22 20:23:41,694 - trainer - INFO -     val_macro_auroc: 0.8392653566225389
+2020-07-22 20:23:41,694 - trainer - INFO -     val_macro_auprc: 0.34646158410863964
+2020-07-22 20:23:41,694 - trainer - INFO -     val_challenge_metric: -0.10007855355874382
+2020-07-22 20:23:41,702 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch11.pth ...
+2020-07-22 20:23:41,709 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:28:56,245 - trainer - INFO -     epoch          : 12
+2020-07-22 20:28:56,245 - trainer - INFO -     loss           : 0.060645793904860815
+2020-07-22 20:28:56,246 - trainer - INFO -     accuracy       : 0.16197619047619047
+2020-07-22 20:28:56,246 - trainer - INFO -     f_measure      : 0.1074050782995296
+2020-07-22 20:28:56,246 - trainer - INFO -     macro_f_beta_measure: 0.09205884171498925
+2020-07-22 20:28:56,246 - trainer - INFO -     macro_g_beta_measure: 0.06534873976859738
+2020-07-22 20:28:56,246 - trainer - INFO -     macro_auroc    : 0.8699509217244026
+2020-07-22 20:28:56,246 - trainer - INFO -     macro_auprc    : 0.3460569579880775
+2020-07-22 20:28:56,246 - trainer - INFO -     challenge_metric: -0.11157661320169197
+2020-07-22 20:28:56,246 - trainer - INFO -     val_loss       : 0.06221696024849301
+2020-07-22 20:28:56,246 - trainer - INFO -     val_accuracy   : 0.16260416666666666
+2020-07-22 20:28:56,246 - trainer - INFO -     val_f_measure  : 0.08995842443094096
+2020-07-22 20:28:56,246 - trainer - INFO -     val_macro_f_beta_measure: 0.07415925349732146
+2020-07-22 20:28:56,246 - trainer - INFO -     val_macro_g_beta_measure: 0.048098206631942364
+2020-07-22 20:28:56,246 - trainer - INFO -     val_macro_auroc: 0.8387433400267187
+2020-07-22 20:28:56,246 - trainer - INFO -     val_macro_auprc: 0.3356810423946678
+2020-07-22 20:28:56,247 - trainer - INFO -     val_challenge_metric: -0.11945278899507784
+2020-07-22 20:28:56,254 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch12.pth ...
+2020-07-22 20:28:56,261 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:34:07,874 - trainer - INFO -     epoch          : 13
+2020-07-22 20:34:07,874 - trainer - INFO -     loss           : 0.0598836232026418
+2020-07-22 20:34:07,874 - trainer - INFO -     accuracy       : 0.16633333333333333
+2020-07-22 20:34:07,875 - trainer - INFO -     f_measure      : 0.11525140723541823
+2020-07-22 20:34:07,875 - trainer - INFO -     macro_f_beta_measure: 0.09934894586323918
+2020-07-22 20:34:07,875 - trainer - INFO -     macro_g_beta_measure: 0.07125865705055795
+2020-07-22 20:34:07,875 - trainer - INFO -     macro_auroc    : 0.8759196619652159
+2020-07-22 20:34:07,875 - trainer - INFO -     macro_auprc    : 0.3589477158369596
+2020-07-22 20:34:07,875 - trainer - INFO -     challenge_metric: -0.10217448921581422
+2020-07-22 20:34:07,875 - trainer - INFO -     val_loss       : 0.06206960763250079
+2020-07-22 20:34:07,875 - trainer - INFO -     val_accuracy   : 0.15776785714285713
+2020-07-22 20:34:07,875 - trainer - INFO -     val_f_measure  : 0.09071837236157596
+2020-07-22 20:34:07,875 - trainer - INFO -     val_macro_f_beta_measure: 0.0732681307923527
+2020-07-22 20:34:07,875 - trainer - INFO -     val_macro_g_beta_measure: 0.04704764118918676
+2020-07-22 20:34:07,875 - trainer - INFO -     val_macro_auroc: 0.8474933259456886
+2020-07-22 20:34:07,875 - trainer - INFO -     val_macro_auprc: 0.35319353493221156
+2020-07-22 20:34:07,875 - trainer - INFO -     val_challenge_metric: -0.13850648602728904
+2020-07-22 20:34:07,883 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch13.pth ...
+2020-07-22 20:34:07,889 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:39:19,032 - trainer - INFO -     epoch          : 14
+2020-07-22 20:39:19,033 - trainer - INFO -     loss           : 0.05929144512613614
+2020-07-22 20:39:19,033 - trainer - INFO -     accuracy       : 0.16917261904761904
+2020-07-22 20:39:19,033 - trainer - INFO -     f_measure      : 0.12162150277093792
+2020-07-22 20:39:19,033 - trainer - INFO -     macro_f_beta_measure: 0.10491126979799763
+2020-07-22 20:39:19,033 - trainer - INFO -     macro_g_beta_measure: 0.07625473582726294
+2020-07-22 20:39:19,033 - trainer - INFO -     macro_auroc    : 0.8796440247521129
+2020-07-22 20:39:19,033 - trainer - INFO -     macro_auprc    : 0.366625483164119
+2020-07-22 20:39:19,033 - trainer - INFO -     challenge_metric: -0.09514766051960154
+2020-07-22 20:39:19,033 - trainer - INFO -     val_loss       : 0.061491204159600396
+2020-07-22 20:39:19,033 - trainer - INFO -     val_accuracy   : 0.16226190476190477
+2020-07-22 20:39:19,033 - trainer - INFO -     val_f_measure  : 0.09746358746796414
+2020-07-22 20:39:19,033 - trainer - INFO -     val_macro_f_beta_measure: 0.08035559733637387
+2020-07-22 20:39:19,034 - trainer - INFO -     val_macro_g_beta_measure: 0.051915658706947566
+2020-07-22 20:39:19,034 - trainer - INFO -     val_macro_auroc: 0.8511784053035802
+2020-07-22 20:39:19,034 - trainer - INFO -     val_macro_auprc: 0.3577971983026061
+2020-07-22 20:39:19,034 - trainer - INFO -     val_challenge_metric: -0.1229360234913036
+2020-07-22 20:39:19,053 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch14.pth ...
+2020-07-22 20:39:19,060 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:44:31,004 - trainer - INFO -     epoch          : 15
+2020-07-22 20:44:31,005 - trainer - INFO -     loss           : 0.058630735963582994
+2020-07-22 20:44:31,005 - trainer - INFO -     accuracy       : 0.17214583333333333
+2020-07-22 20:44:31,005 - trainer - INFO -     f_measure      : 0.1250144606732291
+2020-07-22 20:44:31,005 - trainer - INFO -     macro_f_beta_measure: 0.10777602832156269
+2020-07-22 20:44:31,005 - trainer - INFO -     macro_g_beta_measure: 0.07743312574657377
+2020-07-22 20:44:31,005 - trainer - INFO -     macro_auroc    : 0.8838689288815428
+2020-07-22 20:44:31,005 - trainer - INFO -     macro_auprc    : 0.3750098354811824
+2020-07-22 20:44:31,005 - trainer - INFO -     challenge_metric: -0.08794503003640546
+2020-07-22 20:44:31,005 - trainer - INFO -     val_loss       : 0.06049937133987745
+2020-07-22 20:44:31,005 - trainer - INFO -     val_accuracy   : 0.168125
+2020-07-22 20:44:31,005 - trainer - INFO -     val_f_measure  : 0.10561064714573831
+2020-07-22 20:44:31,005 - trainer - INFO -     val_macro_f_beta_measure: 0.08853516007316777
+2020-07-22 20:44:31,006 - trainer - INFO -     val_macro_g_beta_measure: 0.0578056881963636
+2020-07-22 20:44:31,006 - trainer - INFO -     val_macro_auroc: 0.856310679928177
+2020-07-22 20:44:31,006 - trainer - INFO -     val_macro_auprc: 0.3658316600681176
+2020-07-22 20:44:31,006 - trainer - INFO -     val_challenge_metric: -0.0928744039680767
+2020-07-22 20:44:31,013 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch15.pth ...
+2020-07-22 20:44:31,019 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:49:36,280 - trainer - INFO -     epoch          : 16
+2020-07-22 20:49:36,280 - trainer - INFO -     loss           : 0.05817463219165802
+2020-07-22 20:49:36,280 - trainer - INFO -     accuracy       : 0.17766666666666667
+2020-07-22 20:49:36,280 - trainer - INFO -     f_measure      : 0.1314200943703785
+2020-07-22 20:49:36,280 - trainer - INFO -     macro_f_beta_measure: 0.11363030453232378
+2020-07-22 20:49:36,280 - trainer - INFO -     macro_g_beta_measure: 0.0829740961115307
+2020-07-22 20:49:36,281 - trainer - INFO -     macro_auroc    : 0.8872751828796207
+2020-07-22 20:49:36,281 - trainer - INFO -     macro_auprc    : 0.3833971198709378
+2020-07-22 20:49:36,281 - trainer - INFO -     challenge_metric: -0.0780582936195465
+2020-07-22 20:49:36,281 - trainer - INFO -     val_loss       : 0.0598062358441807
+2020-07-22 20:49:36,281 - trainer - INFO -     val_accuracy   : 0.17364583333333333
+2020-07-22 20:49:36,281 - trainer - INFO -     val_f_measure  : 0.10581911104507839
+2020-07-22 20:49:36,281 - trainer - INFO -     val_macro_f_beta_measure: 0.08811483516377297
+2020-07-22 20:49:36,281 - trainer - INFO -     val_macro_g_beta_measure: 0.05775180116869051
+2020-07-22 20:49:36,281 - trainer - INFO -     val_macro_auroc: 0.8590540628963554
+2020-07-22 20:49:36,281 - trainer - INFO -     val_macro_auprc: 0.3790409000615699
+2020-07-22 20:49:36,281 - trainer - INFO -     val_challenge_metric: -0.0657729156168467
+2020-07-22 20:49:36,288 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch16.pth ...
+2020-07-22 20:49:36,295 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 20:54:38,444 - trainer - INFO -     epoch          : 17
+2020-07-22 20:54:38,444 - trainer - INFO -     loss           : 0.05793051688869794
+2020-07-22 20:54:38,444 - trainer - INFO -     accuracy       : 0.17647916666666666
+2020-07-22 20:54:38,444 - trainer - INFO -     f_measure      : 0.13166351342307875
+2020-07-22 20:54:38,444 - trainer - INFO -     macro_f_beta_measure: 0.11401023290838443
+2020-07-22 20:54:38,444 - trainer - INFO -     macro_g_beta_measure: 0.08298787701538311
+2020-07-22 20:54:38,444 - trainer - INFO -     macro_auroc    : 0.888228914624507
+2020-07-22 20:54:38,444 - trainer - INFO -     macro_auprc    : 0.387486463926863
+2020-07-22 20:54:38,444 - trainer - INFO -     challenge_metric: -0.07918691368175561
+2020-07-22 20:54:38,444 - trainer - INFO -     val_loss       : 0.06050183730466025
+2020-07-22 20:54:38,445 - trainer - INFO -     val_accuracy   : 0.1740625
+2020-07-22 20:54:38,445 - trainer - INFO -     val_f_measure  : 0.10871520171131593
+2020-07-22 20:54:38,445 - trainer - INFO -     val_macro_f_beta_measure: 0.09082047282633203
+2020-07-22 20:54:38,445 - trainer - INFO -     val_macro_g_beta_measure: 0.05852084545412457
+2020-07-22 20:54:38,445 - trainer - INFO -     val_macro_auroc: 0.857425814127239
+2020-07-22 20:54:38,445 - trainer - INFO -     val_macro_auprc: 0.3749985551233748
+2020-07-22 20:54:38,445 - trainer - INFO -     val_challenge_metric: -0.07786126154541748
+2020-07-22 20:59:40,506 - trainer - INFO -     epoch          : 18
+2020-07-22 20:59:40,506 - trainer - INFO -     loss           : 0.057274061322212216
+2020-07-22 20:59:40,506 - trainer - INFO -     accuracy       : 0.17920833333333333
+2020-07-22 20:59:40,506 - trainer - INFO -     f_measure      : 0.13855304473024913
+2020-07-22 20:59:40,506 - trainer - INFO -     macro_f_beta_measure: 0.12053062153572579
+2020-07-22 20:59:40,506 - trainer - INFO -     macro_g_beta_measure: 0.08836579922472373
+2020-07-22 20:59:40,506 - trainer - INFO -     macro_auroc    : 0.8904828967460547
+2020-07-22 20:59:40,507 - trainer - INFO -     macro_auprc    : 0.3918152719636304
+2020-07-22 20:59:40,507 - trainer - INFO -     challenge_metric: -0.07119772694478187
+2020-07-22 20:59:40,507 - trainer - INFO -     val_loss       : 0.05956348209154038
+2020-07-22 20:59:40,507 - trainer - INFO -     val_accuracy   : 0.16907738095238095
+2020-07-22 20:59:40,507 - trainer - INFO -     val_f_measure  : 0.10511785724804869
+2020-07-22 20:59:40,507 - trainer - INFO -     val_macro_f_beta_measure: 0.08727895722364908
+2020-07-22 20:59:40,507 - trainer - INFO -     val_macro_g_beta_measure: 0.057072675576713104
+2020-07-22 20:59:40,507 - trainer - INFO -     val_macro_auroc: 0.8602644748090007
+2020-07-22 20:59:40,507 - trainer - INFO -     val_macro_auprc: 0.3802977631301245
+2020-07-22 20:59:40,507 - trainer - INFO -     val_challenge_metric: -0.10443865469695982
+2020-07-22 20:59:40,527 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch18.pth ...
+2020-07-22 20:59:40,535 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:04:43,003 - trainer - INFO -     epoch          : 19
+2020-07-22 21:04:43,003 - trainer - INFO -     loss           : 0.056764562517404554
+2020-07-22 21:04:43,003 - trainer - INFO -     accuracy       : 0.1823125
+2020-07-22 21:04:43,003 - trainer - INFO -     f_measure      : 0.1415880940492326
+2020-07-22 21:04:43,003 - trainer - INFO -     macro_f_beta_measure: 0.12374843378263635
+2020-07-22 21:04:43,004 - trainer - INFO -     macro_g_beta_measure: 0.09054242898303247
+2020-07-22 21:04:43,004 - trainer - INFO -     macro_auroc    : 0.8941302493908672
+2020-07-22 21:04:43,004 - trainer - INFO -     macro_auprc    : 0.4001114470177897
+2020-07-22 21:04:43,004 - trainer - INFO -     challenge_metric: -0.06486775523833377
+2020-07-22 21:04:43,004 - trainer - INFO -     val_loss       : 0.05949123931073007
+2020-07-22 21:04:43,004 - trainer - INFO -     val_accuracy   : 0.16870535714285714
+2020-07-22 21:04:43,004 - trainer - INFO -     val_f_measure  : 0.09734520785785497
+2020-07-22 21:04:43,004 - trainer - INFO -     val_macro_f_beta_measure: 0.0788543665587671
+2020-07-22 21:04:43,004 - trainer - INFO -     val_macro_g_beta_measure: 0.050044826516109
+2020-07-22 21:04:43,004 - trainer - INFO -     val_macro_auroc: 0.8670349957443961
+2020-07-22 21:04:43,004 - trainer - INFO -     val_macro_auprc: 0.37238639414742697
+2020-07-22 21:04:43,004 - trainer - INFO -     val_challenge_metric: -0.10808395247640792
+2020-07-22 21:04:43,011 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch19.pth ...
+2020-07-22 21:04:43,018 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:09:45,573 - trainer - INFO -     epoch          : 20
+2020-07-22 21:09:45,574 - trainer - INFO -     loss           : 0.05639184214671453
+2020-07-22 21:09:45,574 - trainer - INFO -     accuracy       : 0.18650595238095238
+2020-07-22 21:09:45,574 - trainer - INFO -     f_measure      : 0.1479838389139579
+2020-07-22 21:09:45,574 - trainer - INFO -     macro_f_beta_measure: 0.12912602647649027
+2020-07-22 21:09:45,574 - trainer - INFO -     macro_g_beta_measure: 0.09480409938502869
+2020-07-22 21:09:45,574 - trainer - INFO -     macro_auroc    : 0.8965348966824153
+2020-07-22 21:09:45,574 - trainer - INFO -     macro_auprc    : 0.4066851538086806
+2020-07-22 21:09:45,574 - trainer - INFO -     challenge_metric: -0.05420791861584713
+2020-07-22 21:09:45,574 - trainer - INFO -     val_loss       : 0.05919109089743523
+2020-07-22 21:09:45,574 - trainer - INFO -     val_accuracy   : 0.17395833333333335
+2020-07-22 21:09:45,574 - trainer - INFO -     val_f_measure  : 0.11109405004467725
+2020-07-22 21:09:45,574 - trainer - INFO -     val_macro_f_beta_measure: 0.09268008672798658
+2020-07-22 21:09:45,574 - trainer - INFO -     val_macro_g_beta_measure: 0.05866374681142499
+2020-07-22 21:09:45,574 - trainer - INFO -     val_macro_auroc: 0.8662230252862457
+2020-07-22 21:09:45,575 - trainer - INFO -     val_macro_auprc: 0.38589517064796625
+2020-07-22 21:09:45,575 - trainer - INFO -     val_challenge_metric: -0.0826246701592049
+2020-07-22 21:09:45,582 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch20.pth ...
+2020-07-22 21:09:45,589 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:14:48,102 - trainer - INFO -     epoch          : 21
+2020-07-22 21:14:48,103 - trainer - INFO -     loss           : 0.05611065849661827
+2020-07-22 21:14:48,103 - trainer - INFO -     accuracy       : 0.18839583333333335
+2020-07-22 21:14:48,103 - trainer - INFO -     f_measure      : 0.15042316430131714
+2020-07-22 21:14:48,103 - trainer - INFO -     macro_f_beta_measure: 0.13131493622948803
+2020-07-22 21:14:48,103 - trainer - INFO -     macro_g_beta_measure: 0.09628831445553965
+2020-07-22 21:14:48,103 - trainer - INFO -     macro_auroc    : 0.8982084093571231
+2020-07-22 21:14:48,103 - trainer - INFO -     macro_auprc    : 0.4102254143587283
+2020-07-22 21:14:48,103 - trainer - INFO -     challenge_metric: -0.05106796255139684
+2020-07-22 21:14:48,103 - trainer - INFO -     val_loss       : 0.05862961532104583
+2020-07-22 21:14:48,103 - trainer - INFO -     val_accuracy   : 0.17864583333333334
+2020-07-22 21:14:48,103 - trainer - INFO -     val_f_measure  : 0.12376322566854459
+2020-07-22 21:14:48,104 - trainer - INFO -     val_macro_f_beta_measure: 0.10492455899284925
+2020-07-22 21:14:48,104 - trainer - INFO -     val_macro_g_beta_measure: 0.06844773219575795
+2020-07-22 21:14:48,104 - trainer - INFO -     val_macro_auroc: 0.8687313445674124
+2020-07-22 21:14:48,104 - trainer - INFO -     val_macro_auprc: 0.38248943022337545
+2020-07-22 21:14:48,104 - trainer - INFO -     val_challenge_metric: -0.0497509040004057
+2020-07-22 21:14:48,111 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch21.pth ...
+2020-07-22 21:14:48,118 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:19:51,240 - trainer - INFO -     epoch          : 22
+2020-07-22 21:19:51,241 - trainer - INFO -     loss           : 0.056025867770115534
+2020-07-22 21:19:51,241 - trainer - INFO -     accuracy       : 0.1880744047619048
+2020-07-22 21:19:51,241 - trainer - INFO -     f_measure      : 0.1508144475003305
+2020-07-22 21:19:51,241 - trainer - INFO -     macro_f_beta_measure: 0.1318517567955051
+2020-07-22 21:19:51,241 - trainer - INFO -     macro_g_beta_measure: 0.09706577647920085
+2020-07-22 21:19:51,241 - trainer - INFO -     macro_auroc    : 0.8975598292873816
+2020-07-22 21:19:51,241 - trainer - INFO -     macro_auprc    : 0.4115690887586793
+2020-07-22 21:19:51,241 - trainer - INFO -     challenge_metric: -0.0536591151939447
+2020-07-22 21:19:51,241 - trainer - INFO -     val_loss       : 0.05860293709806034
+2020-07-22 21:19:51,241 - trainer - INFO -     val_accuracy   : 0.1808184523809524
+2020-07-22 21:19:51,241 - trainer - INFO -     val_f_measure  : 0.12655079455107085
+2020-07-22 21:19:51,241 - trainer - INFO -     val_macro_f_beta_measure: 0.1075308288024244
+2020-07-22 21:19:51,241 - trainer - INFO -     val_macro_g_beta_measure: 0.07055815619615416
+2020-07-22 21:19:51,242 - trainer - INFO -     val_macro_auroc: 0.8693043824102221
+2020-07-22 21:19:51,242 - trainer - INFO -     val_macro_auprc: 0.3963385756818186
+2020-07-22 21:19:51,242 - trainer - INFO -     val_challenge_metric: -0.031968132106252545
+2020-07-22 21:19:51,262 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch22.pth ...
+2020-07-22 21:19:51,269 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:24:52,855 - trainer - INFO -     epoch          : 23
+2020-07-22 21:24:52,855 - trainer - INFO -     loss           : 0.055264862765868505
+2020-07-22 21:24:52,856 - trainer - INFO -     accuracy       : 0.19404761904761902
+2020-07-22 21:24:52,856 - trainer - INFO -     f_measure      : 0.16052985638076353
+2020-07-22 21:24:52,856 - trainer - INFO -     macro_f_beta_measure: 0.14066898716707624
+2020-07-22 21:24:52,856 - trainer - INFO -     macro_g_beta_measure: 0.10440834754011473
+2020-07-22 21:24:52,856 - trainer - INFO -     macro_auroc    : 0.9023844580964517
+2020-07-22 21:24:52,856 - trainer - INFO -     macro_auprc    : 0.4184032401019244
+2020-07-22 21:24:52,856 - trainer - INFO -     challenge_metric: -0.03867742683694305
+2020-07-22 21:24:52,856 - trainer - INFO -     val_loss       : 0.0586837703982989
+2020-07-22 21:24:52,856 - trainer - INFO -     val_accuracy   : 0.1804464285714286
+2020-07-22 21:24:52,856 - trainer - INFO -     val_f_measure  : 0.12809241167833998
+2020-07-22 21:24:52,856 - trainer - INFO -     val_macro_f_beta_measure: 0.10775563349419888
+2020-07-22 21:24:52,856 - trainer - INFO -     val_macro_g_beta_measure: 0.06928041615520429
+2020-07-22 21:24:52,856 - trainer - INFO -     val_macro_auroc: 0.8738869268466063
+2020-07-22 21:24:52,857 - trainer - INFO -     val_macro_auprc: 0.39144567660176033
+2020-07-22 21:24:52,857 - trainer - INFO -     val_challenge_metric: -0.036456771238001964
+2020-07-22 21:29:56,296 - trainer - INFO -     epoch          : 24
+2020-07-22 21:29:56,296 - trainer - INFO -     loss           : 0.055009307573239005
+2020-07-22 21:29:56,296 - trainer - INFO -     accuracy       : 0.1956517857142857
+2020-07-22 21:29:56,296 - trainer - INFO -     f_measure      : 0.16428713590534946
+2020-07-22 21:29:56,296 - trainer - INFO -     macro_f_beta_measure: 0.14373624271216393
+2020-07-22 21:29:56,296 - trainer - INFO -     macro_g_beta_measure: 0.10654187930300295
+2020-07-22 21:29:56,297 - trainer - INFO -     macro_auroc    : 0.9027381056635233
+2020-07-22 21:29:56,297 - trainer - INFO -     macro_auprc    : 0.42462478798881526
+2020-07-22 21:29:56,297 - trainer - INFO -     challenge_metric: -0.03382458834044097
+2020-07-22 21:29:56,297 - trainer - INFO -     val_loss       : 0.05777494875448091
+2020-07-22 21:29:56,297 - trainer - INFO -     val_accuracy   : 0.17846726190476192
+2020-07-22 21:29:56,297 - trainer - INFO -     val_f_measure  : 0.12066014788462091
+2020-07-22 21:29:56,297 - trainer - INFO -     val_macro_f_beta_measure: 0.10355752804685814
+2020-07-22 21:29:56,297 - trainer - INFO -     val_macro_g_beta_measure: 0.06853468517313702
+2020-07-22 21:29:56,297 - trainer - INFO -     val_macro_auroc: 0.8806741585826959
+2020-07-22 21:29:56,297 - trainer - INFO -     val_macro_auprc: 0.3979599574900081
+2020-07-22 21:29:56,297 - trainer - INFO -     val_challenge_metric: -0.024703878067916202
+2020-07-22 21:29:56,318 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch24.pth ...
+2020-07-22 21:29:56,324 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:34:57,260 - trainer - INFO -     epoch          : 25
+2020-07-22 21:34:57,260 - trainer - INFO -     loss           : 0.05449957254528999
+2020-07-22 21:34:57,260 - trainer - INFO -     accuracy       : 0.19873511904761904
+2020-07-22 21:34:57,260 - trainer - INFO -     f_measure      : 0.1679428469574782
+2020-07-22 21:34:57,260 - trainer - INFO -     macro_f_beta_measure: 0.14720034722889505
+2020-07-22 21:34:57,260 - trainer - INFO -     macro_g_beta_measure: 0.10913004746795842
+2020-07-22 21:34:57,260 - trainer - INFO -     macro_auroc    : 0.9056254162841842
+2020-07-22 21:34:57,260 - trainer - INFO -     macro_auprc    : 0.4290734007495842
+2020-07-22 21:34:57,260 - trainer - INFO -     challenge_metric: -0.028792232514539707
+2020-07-22 21:34:57,260 - trainer - INFO -     val_loss       : 0.05736789178280603
+2020-07-22 21:34:57,261 - trainer - INFO -     val_accuracy   : 0.18549107142857144
+2020-07-22 21:34:57,261 - trainer - INFO -     val_f_measure  : 0.1289462990286061
+2020-07-22 21:34:57,261 - trainer - INFO -     val_macro_f_beta_measure: 0.11013317504932603
+2020-07-22 21:34:57,261 - trainer - INFO -     val_macro_g_beta_measure: 0.0712668782770416
+2020-07-22 21:34:57,261 - trainer - INFO -     val_macro_auroc: 0.8762247965942426
+2020-07-22 21:34:57,261 - trainer - INFO -     val_macro_auprc: 0.3963550688227049
+2020-07-22 21:34:57,261 - trainer - INFO -     val_challenge_metric: -0.03246651397813064
+2020-07-22 21:34:57,281 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch25.pth ...
+2020-07-22 21:34:57,289 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 21:39:58,291 - trainer - INFO -     epoch          : 26
+2020-07-22 21:39:58,292 - trainer - INFO -     loss           : 0.054175763209660846
+2020-07-22 21:39:58,292 - trainer - INFO -     accuracy       : 0.20242261904761905
+2020-07-22 21:39:58,292 - trainer - INFO -     f_measure      : 0.17485124998626944
+2020-07-22 21:39:58,292 - trainer - INFO -     macro_f_beta_measure: 0.15408254880542419
+2020-07-22 21:39:58,292 - trainer - INFO -     macro_g_beta_measure: 0.11487871765395116
+2020-07-22 21:39:58,292 - trainer - INFO -     macro_auroc    : 0.9074870824678324
+2020-07-22 21:39:58,292 - trainer - INFO -     macro_auprc    : 0.4349677183165371
+2020-07-22 21:39:58,292 - trainer - INFO -     challenge_metric: -0.021638710126730493
+2020-07-22 21:39:58,292 - trainer - INFO -     val_loss       : 0.058274763148455394
+2020-07-22 21:39:58,292 - trainer - INFO -     val_accuracy   : 0.19299107142857141
+2020-07-22 21:39:58,292 - trainer - INFO -     val_f_measure  : 0.12960450508611807
+2020-07-22 21:39:58,293 - trainer - INFO -     val_macro_f_beta_measure: 0.11140701540014182
+2020-07-22 21:39:58,293 - trainer - INFO -     val_macro_g_beta_measure: 0.07340967963560388
+2020-07-22 21:39:58,293 - trainer - INFO -     val_macro_auroc: 0.8750886316335335
+2020-07-22 21:39:58,293 - trainer - INFO -     val_macro_auprc: 0.40810694830024663
+2020-07-22 21:39:58,293 - trainer - INFO -     val_challenge_metric: 0.005421355052901142
+2020-07-22 21:44:57,841 - trainer - INFO -     epoch          : 27
+2020-07-22 21:44:57,841 - trainer - INFO -     loss           : 0.05386869698762894
+2020-07-22 21:44:57,841 - trainer - INFO -     accuracy       : 0.20364583333333333
+2020-07-22 21:44:57,841 - trainer - INFO -     f_measure      : 0.17841832565033516
+2020-07-22 21:44:57,841 - trainer - INFO -     macro_f_beta_measure: 0.15692262948624502
+2020-07-22 21:44:57,841 - trainer - INFO -     macro_g_beta_measure: 0.1174846387970795
+2020-07-22 21:44:57,841 - trainer - INFO -     macro_auroc    : 0.9088324011002398
+2020-07-22 21:44:57,841 - trainer - INFO -     macro_auprc    : 0.43788332419247467
+2020-07-22 21:44:57,841 - trainer - INFO -     challenge_metric: -0.018443540172413633
+2020-07-22 21:44:57,842 - trainer - INFO -     val_loss       : 0.05802175473599207
+2020-07-22 21:44:57,842 - trainer - INFO -     val_accuracy   : 0.19104166666666667
+2020-07-22 21:44:57,842 - trainer - INFO -     val_f_measure  : 0.13168009609045128
+2020-07-22 21:44:57,842 - trainer - INFO -     val_macro_f_beta_measure: 0.11476218049058137
+2020-07-22 21:44:57,842 - trainer - INFO -     val_macro_g_beta_measure: 0.07390562701484762
+2020-07-22 21:44:57,842 - trainer - INFO -     val_macro_auroc: 0.8750104738502917
+2020-07-22 21:44:57,842 - trainer - INFO -     val_macro_auprc: 0.4067529854651657
+2020-07-22 21:44:57,842 - trainer - INFO -     val_challenge_metric: -0.002198742309944157
+2020-07-22 21:50:02,458 - trainer - INFO -     epoch          : 28
+2020-07-22 21:50:02,458 - trainer - INFO -     loss           : 0.05359882322947184
+2020-07-22 21:50:02,458 - trainer - INFO -     accuracy       : 0.20813095238095236
+2020-07-22 21:50:02,458 - trainer - INFO -     f_measure      : 0.1829006336147171
+2020-07-22 21:50:02,458 - trainer - INFO -     macro_f_beta_measure: 0.1612486732501591
+2020-07-22 21:50:02,458 - trainer - INFO -     macro_g_beta_measure: 0.12088546624060924
+2020-07-22 21:50:02,458 - trainer - INFO -     macro_auroc    : 0.9099536563337722
+2020-07-22 21:50:02,458 - trainer - INFO -     macro_auprc    : 0.44450559963867675
+2020-07-22 21:50:02,459 - trainer - INFO -     challenge_metric: -0.010837385139311411
+2020-07-22 21:50:02,459 - trainer - INFO -     val_loss       : 0.057780571636699495
+2020-07-22 21:50:02,459 - trainer - INFO -     val_accuracy   : 0.1849107142857143
+2020-07-22 21:50:02,459 - trainer - INFO -     val_f_measure  : 0.13051583465905417
+2020-07-22 21:50:02,459 - trainer - INFO -     val_macro_f_beta_measure: 0.11082976915932077
+2020-07-22 21:50:02,459 - trainer - INFO -     val_macro_g_beta_measure: 0.07205959001967199
+2020-07-22 21:50:02,459 - trainer - INFO -     val_macro_auroc: 0.8776882902030655
+2020-07-22 21:50:02,459 - trainer - INFO -     val_macro_auprc: 0.41005979777514673
+2020-07-22 21:50:02,459 - trainer - INFO -     val_challenge_metric: 0.0019764838163614388
+2020-07-22 21:55:04,199 - trainer - INFO -     epoch          : 29
+2020-07-22 21:55:04,200 - trainer - INFO -     loss           : 0.05339158072074254
+2020-07-22 21:55:04,200 - trainer - INFO -     accuracy       : 0.208375
+2020-07-22 21:55:04,200 - trainer - INFO -     f_measure      : 0.1858541816283175
+2020-07-22 21:55:04,200 - trainer - INFO -     macro_f_beta_measure: 0.1639669592490549
+2020-07-22 21:55:04,200 - trainer - INFO -     macro_g_beta_measure: 0.12271853628140941
+2020-07-22 21:55:04,200 - trainer - INFO -     macro_auroc    : 0.9116000700884768
+2020-07-22 21:55:04,200 - trainer - INFO -     macro_auprc    : 0.4463097118803005
+2020-07-22 21:55:04,200 - trainer - INFO -     challenge_metric: -0.004463871071733116
+2020-07-22 21:55:04,200 - trainer - INFO -     val_loss       : 0.05757294488804681
+2020-07-22 21:55:04,200 - trainer - INFO -     val_accuracy   : 0.19133928571428574
+2020-07-22 21:55:04,200 - trainer - INFO -     val_f_measure  : 0.14508704728774657
+2020-07-22 21:55:04,201 - trainer - INFO -     val_macro_f_beta_measure: 0.12512959299251697
+2020-07-22 21:55:04,201 - trainer - INFO -     val_macro_g_beta_measure: 0.08251049720340836
+2020-07-22 21:55:04,201 - trainer - INFO -     val_macro_auroc: 0.8748341691293211
+2020-07-22 21:55:04,201 - trainer - INFO -     val_macro_auprc: 0.40233208694079603
+2020-07-22 21:55:04,201 - trainer - INFO -     val_challenge_metric: 0.023754938421806766
+2020-07-22 22:00:05,520 - trainer - INFO -     epoch          : 30
+2020-07-22 22:00:05,520 - trainer - INFO -     loss           : 0.052990487227837245
+2020-07-22 22:00:05,521 - trainer - INFO -     accuracy       : 0.21129166666666666
+2020-07-22 22:00:05,521 - trainer - INFO -     f_measure      : 0.18968146418190607
+2020-07-22 22:00:05,521 - trainer - INFO -     macro_f_beta_measure: 0.16735632640789014
+2020-07-22 22:00:05,521 - trainer - INFO -     macro_g_beta_measure: 0.12574536868476796
+2020-07-22 22:00:05,521 - trainer - INFO -     macro_auroc    : 0.9125530583026843
+2020-07-22 22:00:05,521 - trainer - INFO -     macro_auprc    : 0.45221712113480045
+2020-07-22 22:00:05,521 - trainer - INFO -     challenge_metric: -0.0017418453273676828
+2020-07-22 22:00:05,521 - trainer - INFO -     val_loss       : 0.05713143323858579
+2020-07-22 22:00:05,521 - trainer - INFO -     val_accuracy   : 0.19080357142857143
+2020-07-22 22:00:05,521 - trainer - INFO -     val_f_measure  : 0.13628024067065772
+2020-07-22 22:00:05,521 - trainer - INFO -     val_macro_f_beta_measure: 0.11407230747610499
+2020-07-22 22:00:05,521 - trainer - INFO -     val_macro_g_beta_measure: 0.07383075658647974
+2020-07-22 22:00:05,521 - trainer - INFO -     val_macro_auroc: 0.8787648807788823
+2020-07-22 22:00:05,521 - trainer - INFO -     val_macro_auprc: 0.4124646640478203
+2020-07-22 22:00:05,522 - trainer - INFO -     val_challenge_metric: 0.0003457913450135874
+2020-07-22 22:00:05,542 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch30.pth ...
+2020-07-22 22:00:05,549 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:05:07,278 - trainer - INFO -     epoch          : 31
+2020-07-22 22:05:07,279 - trainer - INFO -     loss           : 0.05281726629535357
+2020-07-22 22:05:07,279 - trainer - INFO -     accuracy       : 0.21388095238095237
+2020-07-22 22:05:07,279 - trainer - INFO -     f_measure      : 0.19222522670421435
+2020-07-22 22:05:07,279 - trainer - INFO -     macro_f_beta_measure: 0.1703271326989058
+2020-07-22 22:05:07,279 - trainer - INFO -     macro_g_beta_measure: 0.12862141183067677
+2020-07-22 22:05:07,279 - trainer - INFO -     macro_auroc    : 0.9140535544625831
+2020-07-22 22:05:07,279 - trainer - INFO -     macro_auprc    : 0.4538453645959458
+2020-07-22 22:05:07,279 - trainer - INFO -     challenge_metric: 0.0045152680510252355
+2020-07-22 22:05:07,279 - trainer - INFO -     val_loss       : 0.05629226015437217
+2020-07-22 22:05:07,279 - trainer - INFO -     val_accuracy   : 0.1987202380952381
+2020-07-22 22:05:07,279 - trainer - INFO -     val_f_measure  : 0.13774482425138096
+2020-07-22 22:05:07,279 - trainer - INFO -     val_macro_f_beta_measure: 0.11586366594317943
+2020-07-22 22:05:07,280 - trainer - INFO -     val_macro_g_beta_measure: 0.07703500817136419
+2020-07-22 22:05:07,280 - trainer - INFO -     val_macro_auroc: 0.8805440786085311
+2020-07-22 22:05:07,280 - trainer - INFO -     val_macro_auprc: 0.42312895870918005
+2020-07-22 22:05:07,280 - trainer - INFO -     val_challenge_metric: 0.012020843814631029
+2020-07-22 22:05:07,290 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch31.pth ...
+2020-07-22 22:05:07,297 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:10:07,556 - trainer - INFO -     epoch          : 32
+2020-07-22 22:10:07,556 - trainer - INFO -     loss           : 0.0527347437342008
+2020-07-22 22:10:07,556 - trainer - INFO -     accuracy       : 0.21375595238095238
+2020-07-22 22:10:07,556 - trainer - INFO -     f_measure      : 0.1938568651567473
+2020-07-22 22:10:07,556 - trainer - INFO -     macro_f_beta_measure: 0.17153404501004957
+2020-07-22 22:10:07,557 - trainer - INFO -     macro_g_beta_measure: 0.12928665784323487
+2020-07-22 22:10:07,557 - trainer - INFO -     macro_auroc    : 0.914243421097694
+2020-07-22 22:10:07,557 - trainer - INFO -     macro_auprc    : 0.4585364599076305
+2020-07-22 22:10:07,557 - trainer - INFO -     challenge_metric: 0.00535609962484593
+2020-07-22 22:10:07,557 - trainer - INFO -     val_loss       : 0.05619952277768226
+2020-07-22 22:10:07,557 - trainer - INFO -     val_accuracy   : 0.19308035714285715
+2020-07-22 22:10:07,557 - trainer - INFO -     val_f_measure  : 0.13684208732958109
+2020-07-22 22:10:07,557 - trainer - INFO -     val_macro_f_beta_measure: 0.11489089740403105
+2020-07-22 22:10:07,557 - trainer - INFO -     val_macro_g_beta_measure: 0.07443138956412099
+2020-07-22 22:10:07,557 - trainer - INFO -     val_macro_auroc: 0.8820320133720116
+2020-07-22 22:10:07,557 - trainer - INFO -     val_macro_auprc: 0.4196467246748724
+2020-07-22 22:10:07,557 - trainer - INFO -     val_challenge_metric: 0.007024319991012632
+2020-07-22 22:10:07,578 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch32.pth ...
+2020-07-22 22:10:07,585 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:15:09,960 - trainer - INFO -     epoch          : 33
+2020-07-22 22:15:09,961 - trainer - INFO -     loss           : 0.052637206226587296
+2020-07-22 22:15:09,961 - trainer - INFO -     accuracy       : 0.2162767857142857
+2020-07-22 22:15:09,961 - trainer - INFO -     f_measure      : 0.19521561920374852
+2020-07-22 22:15:09,961 - trainer - INFO -     macro_f_beta_measure: 0.17316744761736633
+2020-07-22 22:15:09,961 - trainer - INFO -     macro_g_beta_measure: 0.13068008950946394
+2020-07-22 22:15:09,961 - trainer - INFO -     macro_auroc    : 0.9144719574851233
+2020-07-22 22:15:09,961 - trainer - INFO -     macro_auprc    : 0.45643853786521865
+2020-07-22 22:15:09,961 - trainer - INFO -     challenge_metric: 0.0058365952645613
+2020-07-22 22:15:09,961 - trainer - INFO -     val_loss       : 0.05630090637576012
+2020-07-22 22:15:09,961 - trainer - INFO -     val_accuracy   : 0.20133928571428572
+2020-07-22 22:15:09,961 - trainer - INFO -     val_f_measure  : 0.1350344579264909
+2020-07-22 22:15:09,961 - trainer - INFO -     val_macro_f_beta_measure: 0.11601391930058581
+2020-07-22 22:15:09,961 - trainer - INFO -     val_macro_g_beta_measure: 0.07525332619235667
+2020-07-22 22:15:09,962 - trainer - INFO -     val_macro_auroc: 0.8811235555734946
+2020-07-22 22:15:09,962 - trainer - INFO -     val_macro_auprc: 0.42627696067892695
+2020-07-22 22:15:09,962 - trainer - INFO -     val_challenge_metric: 0.049633998225843516
+2020-07-22 22:20:11,408 - trainer - INFO -     epoch          : 34
+2020-07-22 22:20:11,408 - trainer - INFO -     loss           : 0.05216638461748759
+2020-07-22 22:20:11,408 - trainer - INFO -     accuracy       : 0.2185892857142857
+2020-07-22 22:20:11,409 - trainer - INFO -     f_measure      : 0.2011412475230352
+2020-07-22 22:20:11,409 - trainer - INFO -     macro_f_beta_measure: 0.17851481687836593
+2020-07-22 22:20:11,409 - trainer - INFO -     macro_g_beta_measure: 0.1351941761910691
+2020-07-22 22:20:11,409 - trainer - INFO -     macro_auroc    : 0.9161960023032567
+2020-07-22 22:20:11,409 - trainer - INFO -     macro_auprc    : 0.4634013320624288
+2020-07-22 22:20:11,409 - trainer - INFO -     challenge_metric: 0.019952462321984693
+2020-07-22 22:20:11,409 - trainer - INFO -     val_loss       : 0.05651952503692536
+2020-07-22 22:20:11,409 - trainer - INFO -     val_accuracy   : 0.20032738095238095
+2020-07-22 22:20:11,409 - trainer - INFO -     val_f_measure  : 0.14303192271442197
+2020-07-22 22:20:11,409 - trainer - INFO -     val_macro_f_beta_measure: 0.12290719523627905
+2020-07-22 22:20:11,409 - trainer - INFO -     val_macro_g_beta_measure: 0.08250850171932336
+2020-07-22 22:20:11,409 - trainer - INFO -     val_macro_auroc: 0.8806035793929419
+2020-07-22 22:20:11,409 - trainer - INFO -     val_macro_auprc: 0.422016170639537
+2020-07-22 22:20:11,409 - trainer - INFO -     val_challenge_metric: 0.01667643705696519
+2020-07-22 22:25:14,334 - trainer - INFO -     epoch          : 35
+2020-07-22 22:25:14,335 - trainer - INFO -     loss           : 0.052080382337172826
+2020-07-22 22:25:14,335 - trainer - INFO -     accuracy       : 0.220625
+2020-07-22 22:25:14,335 - trainer - INFO -     f_measure      : 0.20119118986220821
+2020-07-22 22:25:14,335 - trainer - INFO -     macro_f_beta_measure: 0.17852911181930545
+2020-07-22 22:25:14,335 - trainer - INFO -     macro_g_beta_measure: 0.13489016507584417
+2020-07-22 22:25:14,335 - trainer - INFO -     macro_auroc    : 0.9165973562820882
+2020-07-22 22:25:14,335 - trainer - INFO -     macro_auprc    : 0.4639997164679379
+2020-07-22 22:25:14,335 - trainer - INFO -     challenge_metric: 0.022882239031723088
+2020-07-22 22:25:14,335 - trainer - INFO -     val_loss       : 0.05607093036884353
+2020-07-22 22:25:14,335 - trainer - INFO -     val_accuracy   : 0.20620535714285712
+2020-07-22 22:25:14,335 - trainer - INFO -     val_f_measure  : 0.15357914331559494
+2020-07-22 22:25:14,335 - trainer - INFO -     val_macro_f_beta_measure: 0.13427828854631418
+2020-07-22 22:25:14,336 - trainer - INFO -     val_macro_g_beta_measure: 0.09075482061754821
+2020-07-22 22:25:14,336 - trainer - INFO -     val_macro_auroc: 0.8840844960594696
+2020-07-22 22:25:14,336 - trainer - INFO -     val_macro_auprc: 0.43554743052236605
+2020-07-22 22:25:14,336 - trainer - INFO -     val_challenge_metric: 0.021879992722557855
+2020-07-22 22:25:14,356 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch35.pth ...
+2020-07-22 22:25:14,364 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:30:15,704 - trainer - INFO -     epoch          : 36
+2020-07-22 22:30:15,704 - trainer - INFO -     loss           : 0.0520146005153656
+2020-07-22 22:30:15,704 - trainer - INFO -     accuracy       : 0.21904761904761905
+2020-07-22 22:30:15,704 - trainer - INFO -     f_measure      : 0.20255418911155654
+2020-07-22 22:30:15,704 - trainer - INFO -     macro_f_beta_measure: 0.179923216045925
+2020-07-22 22:30:15,704 - trainer - INFO -     macro_g_beta_measure: 0.13668880673362896
+2020-07-22 22:30:15,704 - trainer - INFO -     macro_auroc    : 0.917410440837906
+2020-07-22 22:30:15,705 - trainer - INFO -     macro_auprc    : 0.4663229655638893
+2020-07-22 22:30:15,705 - trainer - INFO -     challenge_metric: 0.018482863078655785
+2020-07-22 22:30:15,705 - trainer - INFO -     val_loss       : 0.05621929111934844
+2020-07-22 22:30:15,705 - trainer - INFO -     val_accuracy   : 0.20424107142857142
+2020-07-22 22:30:15,705 - trainer - INFO -     val_f_measure  : 0.14735805524079487
+2020-07-22 22:30:15,705 - trainer - INFO -     val_macro_f_beta_measure: 0.12755093149289878
+2020-07-22 22:30:15,705 - trainer - INFO -     val_macro_g_beta_measure: 0.0825487734903044
+2020-07-22 22:30:15,705 - trainer - INFO -     val_macro_auroc: 0.8836745583188955
+2020-07-22 22:30:15,705 - trainer - INFO -     val_macro_auprc: 0.4384492980882275
+2020-07-22 22:30:15,705 - trainer - INFO -     val_challenge_metric: 0.05940223735679081
+2020-07-22 22:35:18,804 - trainer - INFO -     epoch          : 37
+2020-07-22 22:35:18,804 - trainer - INFO -     loss           : 0.051589571863412856
+2020-07-22 22:35:18,804 - trainer - INFO -     accuracy       : 0.224125
+2020-07-22 22:35:18,804 - trainer - INFO -     f_measure      : 0.20765433659095342
+2020-07-22 22:35:18,804 - trainer - INFO -     macro_f_beta_measure: 0.18466344446300684
+2020-07-22 22:35:18,804 - trainer - INFO -     macro_g_beta_measure: 0.14015393278762894
+2020-07-22 22:35:18,805 - trainer - INFO -     macro_auroc    : 0.9192616280395038
+2020-07-22 22:35:18,805 - trainer - INFO -     macro_auprc    : 0.4717798200788776
+2020-07-22 22:35:18,805 - trainer - INFO -     challenge_metric: 0.03155141356070563
+2020-07-22 22:35:18,805 - trainer - INFO -     val_loss       : 0.05590692606000673
+2020-07-22 22:35:18,805 - trainer - INFO -     val_accuracy   : 0.20020833333333332
+2020-07-22 22:35:18,805 - trainer - INFO -     val_f_measure  : 0.14934193444413396
+2020-07-22 22:35:18,805 - trainer - INFO -     val_macro_f_beta_measure: 0.12771660347954633
+2020-07-22 22:35:18,805 - trainer - INFO -     val_macro_g_beta_measure: 0.08289822367343957
+2020-07-22 22:35:18,805 - trainer - INFO -     val_macro_auroc: 0.8823421859517802
+2020-07-22 22:35:18,805 - trainer - INFO -     val_macro_auprc: 0.42712421427124947
+2020-07-22 22:35:18,805 - trainer - INFO -     val_challenge_metric: 0.032851534164977866
+2020-07-22 22:35:18,825 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch37.pth ...
+2020-07-22 22:35:18,833 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:40:21,024 - trainer - INFO -     epoch          : 38
+2020-07-22 22:40:21,024 - trainer - INFO -     loss           : 0.05141344289978345
+2020-07-22 22:40:21,024 - trainer - INFO -     accuracy       : 0.2228392857142857
+2020-07-22 22:40:21,024 - trainer - INFO -     f_measure      : 0.20700672485904453
+2020-07-22 22:40:21,024 - trainer - INFO -     macro_f_beta_measure: 0.18391322217344677
+2020-07-22 22:40:21,024 - trainer - INFO -     macro_g_beta_measure: 0.1392104175918133
+2020-07-22 22:40:21,024 - trainer - INFO -     macro_auroc    : 0.9189805933913164
+2020-07-22 22:40:21,025 - trainer - INFO -     macro_auprc    : 0.47377555784971126
+2020-07-22 22:40:21,025 - trainer - INFO -     challenge_metric: 0.027396553696980252
+2020-07-22 22:40:21,025 - trainer - INFO -     val_loss       : 0.055742066353559494
+2020-07-22 22:40:21,025 - trainer - INFO -     val_accuracy   : 0.21062499999999998
+2020-07-22 22:40:21,025 - trainer - INFO -     val_f_measure  : 0.142947313567043
+2020-07-22 22:40:21,025 - trainer - INFO -     val_macro_f_beta_measure: 0.1239096267767841
+2020-07-22 22:40:21,025 - trainer - INFO -     val_macro_g_beta_measure: 0.08311430214747993
+2020-07-22 22:40:21,025 - trainer - INFO -     val_macro_auroc: 0.8791398659959493
+2020-07-22 22:40:21,025 - trainer - INFO -     val_macro_auprc: 0.43708033418248055
+2020-07-22 22:40:21,025 - trainer - INFO -     val_challenge_metric: 0.0571175731168518
+2020-07-22 22:40:21,032 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch38.pth ...
+2020-07-22 22:40:21,039 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:45:24,551 - trainer - INFO -     epoch          : 39
+2020-07-22 22:45:24,551 - trainer - INFO -     loss           : 0.05121183188756307
+2020-07-22 22:45:24,551 - trainer - INFO -     accuracy       : 0.22701785714285716
+2020-07-22 22:45:24,551 - trainer - INFO -     f_measure      : 0.21074565180548724
+2020-07-22 22:45:24,551 - trainer - INFO -     macro_f_beta_measure: 0.1877172446775385
+2020-07-22 22:45:24,551 - trainer - INFO -     macro_g_beta_measure: 0.14299347686015146
+2020-07-22 22:45:24,551 - trainer - INFO -     macro_auroc    : 0.9202872977042977
+2020-07-22 22:45:24,551 - trainer - INFO -     macro_auprc    : 0.4794228418719417
+2020-07-22 22:45:24,551 - trainer - INFO -     challenge_metric: 0.037648867239363955
+2020-07-22 22:45:24,552 - trainer - INFO -     val_loss       : 0.05591419835885366
+2020-07-22 22:45:24,552 - trainer - INFO -     val_accuracy   : 0.2054761904761905
+2020-07-22 22:45:24,552 - trainer - INFO -     val_f_measure  : 0.1608067756759727
+2020-07-22 22:45:24,552 - trainer - INFO -     val_macro_f_beta_measure: 0.14103799863546565
+2020-07-22 22:45:24,552 - trainer - INFO -     val_macro_g_beta_measure: 0.09340618798978542
+2020-07-22 22:45:24,552 - trainer - INFO -     val_macro_auroc: 0.8844793808697617
+2020-07-22 22:45:24,552 - trainer - INFO -     val_macro_auprc: 0.4368287206205777
+2020-07-22 22:45:24,552 - trainer - INFO -     val_challenge_metric: 0.053460263843951035
+2020-07-22 22:50:27,064 - trainer - INFO -     epoch          : 40
+2020-07-22 22:50:27,065 - trainer - INFO -     loss           : 0.05107357123494148
+2020-07-22 22:50:27,065 - trainer - INFO -     accuracy       : 0.22716666666666666
+2020-07-22 22:50:27,065 - trainer - INFO -     f_measure      : 0.21359514105567953
+2020-07-22 22:50:27,065 - trainer - INFO -     macro_f_beta_measure: 0.19022888824428055
+2020-07-22 22:50:27,065 - trainer - INFO -     macro_g_beta_measure: 0.14457825833455043
+2020-07-22 22:50:27,065 - trainer - INFO -     macro_auroc    : 0.9206296737585088
+2020-07-22 22:50:27,065 - trainer - INFO -     macro_auprc    : 0.47975730705017866
+2020-07-22 22:50:27,065 - trainer - INFO -     challenge_metric: 0.038445111483632416
+2020-07-22 22:50:27,065 - trainer - INFO -     val_loss       : 0.05561943245785577
+2020-07-22 22:50:27,065 - trainer - INFO -     val_accuracy   : 0.20675595238095237
+2020-07-22 22:50:27,066 - trainer - INFO -     val_f_measure  : 0.14851738752360952
+2020-07-22 22:50:27,066 - trainer - INFO -     val_macro_f_beta_measure: 0.13174369630052704
+2020-07-22 22:50:27,066 - trainer - INFO -     val_macro_g_beta_measure: 0.08680936800918959
+2020-07-22 22:50:27,066 - trainer - INFO -     val_macro_auroc: 0.8822092174107022
+2020-07-22 22:50:27,066 - trainer - INFO -     val_macro_auprc: 0.44554117436727225
+2020-07-22 22:50:27,066 - trainer - INFO -     val_challenge_metric: 0.07981067505702566
+2020-07-22 22:50:27,073 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch40.pth ...
+2020-07-22 22:50:27,079 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 22:55:30,178 - trainer - INFO -     epoch          : 41
+2020-07-22 22:55:30,178 - trainer - INFO -     loss           : 0.05094514057040214
+2020-07-22 22:55:30,179 - trainer - INFO -     accuracy       : 0.22888095238095238
+2020-07-22 22:55:30,179 - trainer - INFO -     f_measure      : 0.21349059300299802
+2020-07-22 22:55:30,179 - trainer - INFO -     macro_f_beta_measure: 0.19009034026900937
+2020-07-22 22:55:30,179 - trainer - INFO -     macro_g_beta_measure: 0.14447798987305188
+2020-07-22 22:55:30,179 - trainer - INFO -     macro_auroc    : 0.9213930865536409
+2020-07-22 22:55:30,179 - trainer - INFO -     macro_auprc    : 0.48170201644003163
+2020-07-22 22:55:30,179 - trainer - INFO -     challenge_metric: 0.04399890729795256
+2020-07-22 22:55:30,179 - trainer - INFO -     val_loss       : 0.056077931431077775
+2020-07-22 22:55:30,179 - trainer - INFO -     val_accuracy   : 0.21424107142857143
+2020-07-22 22:55:30,179 - trainer - INFO -     val_f_measure  : 0.15233328849590858
+2020-07-22 22:55:30,179 - trainer - INFO -     val_macro_f_beta_measure: 0.1329430704868116
+2020-07-22 22:55:30,179 - trainer - INFO -     val_macro_g_beta_measure: 0.0863024041008573
+2020-07-22 22:55:30,179 - trainer - INFO -     val_macro_auroc: 0.8844793862962759
+2020-07-22 22:55:30,179 - trainer - INFO -     val_macro_auprc: 0.4395334005385643
+2020-07-22 22:55:30,180 - trainer - INFO -     val_challenge_metric: 0.07456770483018253
+2020-07-22 23:00:32,222 - trainer - INFO -     epoch          : 42
+2020-07-22 23:00:32,222 - trainer - INFO -     loss           : 0.050985589424769086
+2020-07-22 23:00:32,222 - trainer - INFO -     accuracy       : 0.2301011904761905
+2020-07-22 23:00:32,222 - trainer - INFO -     f_measure      : 0.21362434107871173
+2020-07-22 23:00:32,222 - trainer - INFO -     macro_f_beta_measure: 0.19031337200040693
+2020-07-22 23:00:32,223 - trainer - INFO -     macro_g_beta_measure: 0.14464712236464705
+2020-07-22 23:00:32,223 - trainer - INFO -     macro_auroc    : 0.9214133476162693
+2020-07-22 23:00:32,223 - trainer - INFO -     macro_auprc    : 0.4842593375468063
+2020-07-22 23:00:32,223 - trainer - INFO -     challenge_metric: 0.04568278290765597
+2020-07-22 23:00:32,223 - trainer - INFO -     val_loss       : 0.055988390708253497
+2020-07-22 23:00:32,223 - trainer - INFO -     val_accuracy   : 0.20729166666666668
+2020-07-22 23:00:32,223 - trainer - INFO -     val_f_measure  : 0.14898126167507522
+2020-07-22 23:00:32,223 - trainer - INFO -     val_macro_f_beta_measure: 0.13269313883481054
+2020-07-22 23:00:32,223 - trainer - INFO -     val_macro_g_beta_measure: 0.08974835956586681
+2020-07-22 23:00:32,223 - trainer - INFO -     val_macro_auroc: 0.8872049091449122
+2020-07-22 23:00:32,223 - trainer - INFO -     val_macro_auprc: 0.43742670909381925
+2020-07-22 23:00:32,223 - trainer - INFO -     val_challenge_metric: 0.06291012053690734
+2020-07-22 23:05:35,213 - trainer - INFO -     epoch          : 43
+2020-07-22 23:05:35,214 - trainer - INFO -     loss           : 0.05072429582476616
+2020-07-22 23:05:35,214 - trainer - INFO -     accuracy       : 0.22804166666666667
+2020-07-22 23:05:35,214 - trainer - INFO -     f_measure      : 0.2153399020950705
+2020-07-22 23:05:35,214 - trainer - INFO -     macro_f_beta_measure: 0.19192847364712845
+2020-07-22 23:05:35,214 - trainer - INFO -     macro_g_beta_measure: 0.14611103484349033
+2020-07-22 23:05:35,214 - trainer - INFO -     macro_auroc    : 0.9225262639877857
+2020-07-22 23:05:35,214 - trainer - INFO -     macro_auprc    : 0.48394219176808206
+2020-07-22 23:05:35,214 - trainer - INFO -     challenge_metric: 0.04501143238964683
+2020-07-22 23:05:35,214 - trainer - INFO -     val_loss       : 0.05652440020016262
+2020-07-22 23:05:35,214 - trainer - INFO -     val_accuracy   : 0.20827380952380953
+2020-07-22 23:05:35,214 - trainer - INFO -     val_f_measure  : 0.15165238491012717
+2020-07-22 23:05:35,214 - trainer - INFO -     val_macro_f_beta_measure: 0.13317739568854167
+2020-07-22 23:05:35,215 - trainer - INFO -     val_macro_g_beta_measure: 0.08894429152950811
+2020-07-22 23:05:35,215 - trainer - INFO -     val_macro_auroc: 0.8801301623217636
+2020-07-22 23:05:35,215 - trainer - INFO -     val_macro_auprc: 0.436052449696861
+2020-07-22 23:05:35,215 - trainer - INFO -     val_challenge_metric: 0.04870226923924997
+2020-07-22 23:10:37,201 - trainer - INFO -     epoch          : 44
+2020-07-22 23:10:37,202 - trainer - INFO -     loss           : 0.050496536642313
+2020-07-22 23:10:37,202 - trainer - INFO -     accuracy       : 0.23092261904761904
+2020-07-22 23:10:37,202 - trainer - INFO -     f_measure      : 0.21928994640866628
+2020-07-22 23:10:37,202 - trainer - INFO -     macro_f_beta_measure: 0.19570250867638905
+2020-07-22 23:10:37,202 - trainer - INFO -     macro_g_beta_measure: 0.14895749862398644
+2020-07-22 23:10:37,202 - trainer - INFO -     macro_auroc    : 0.9231667644233696
+2020-07-22 23:10:37,202 - trainer - INFO -     macro_auprc    : 0.4891209321019581
+2020-07-22 23:10:37,202 - trainer - INFO -     challenge_metric: 0.05264559747654453
+2020-07-22 23:10:37,202 - trainer - INFO -     val_loss       : 0.055314288075481145
+2020-07-22 23:10:37,202 - trainer - INFO -     val_accuracy   : 0.2175892857142857
+2020-07-22 23:10:37,202 - trainer - INFO -     val_f_measure  : 0.14716725145323187
+2020-07-22 23:10:37,202 - trainer - INFO -     val_macro_f_beta_measure: 0.1289753380153144
+2020-07-22 23:10:37,203 - trainer - INFO -     val_macro_g_beta_measure: 0.08712777633124968
+2020-07-22 23:10:37,203 - trainer - INFO -     val_macro_auroc: 0.8873066109732599
+2020-07-22 23:10:37,203 - trainer - INFO -     val_macro_auprc: 0.44705354298260647
+2020-07-22 23:10:37,203 - trainer - INFO -     val_challenge_metric: 0.06089154711370663
+2020-07-22 23:10:37,210 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch44.pth ...
+2020-07-22 23:10:37,216 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 23:15:39,516 - trainer - INFO -     epoch          : 45
+2020-07-22 23:15:39,516 - trainer - INFO -     loss           : 0.050511022001504896
+2020-07-22 23:15:39,516 - trainer - INFO -     accuracy       : 0.2325892857142857
+2020-07-22 23:15:39,516 - trainer - INFO -     f_measure      : 0.21949513451882036
+2020-07-22 23:15:39,516 - trainer - INFO -     macro_f_beta_measure: 0.19603118697664676
+2020-07-22 23:15:39,516 - trainer - INFO -     macro_g_beta_measure: 0.14964212362829815
+2020-07-22 23:15:39,517 - trainer - INFO -     macro_auroc    : 0.9231278592443983
+2020-07-22 23:15:39,517 - trainer - INFO -     macro_auprc    : 0.49044999902864994
+2020-07-22 23:15:39,517 - trainer - INFO -     challenge_metric: 0.052833045147768834
+2020-07-22 23:15:39,517 - trainer - INFO -     val_loss       : 0.0569392866676762
+2020-07-22 23:15:39,517 - trainer - INFO -     val_accuracy   : 0.21116071428571428
+2020-07-22 23:15:39,517 - trainer - INFO -     val_f_measure  : 0.15747597554426365
+2020-07-22 23:15:39,517 - trainer - INFO -     val_macro_f_beta_measure: 0.1379799821531423
+2020-07-22 23:15:39,517 - trainer - INFO -     val_macro_g_beta_measure: 0.09100566346044045
+2020-07-22 23:15:39,517 - trainer - INFO -     val_macro_auroc: 0.8774134217135598
+2020-07-22 23:15:39,517 - trainer - INFO -     val_macro_auprc: 0.44036486048590084
+2020-07-22 23:15:39,517 - trainer - INFO -     val_challenge_metric: 0.055455273607294915
+2020-07-22 23:20:42,111 - trainer - INFO -     epoch          : 46
+2020-07-22 23:20:42,111 - trainer - INFO -     loss           : 0.05045515279968579
+2020-07-22 23:20:42,111 - trainer - INFO -     accuracy       : 0.2325
+2020-07-22 23:20:42,111 - trainer - INFO -     f_measure      : 0.2184734036395804
+2020-07-22 23:20:42,111 - trainer - INFO -     macro_f_beta_measure: 0.19516578859225175
+2020-07-22 23:20:42,112 - trainer - INFO -     macro_g_beta_measure: 0.14899400928564172
+2020-07-22 23:20:42,112 - trainer - INFO -     macro_auroc    : 0.9240407909236886
+2020-07-22 23:20:42,112 - trainer - INFO -     macro_auprc    : 0.49148933374244735
+2020-07-22 23:20:42,112 - trainer - INFO -     challenge_metric: 0.05275736122248665
+2020-07-22 23:20:42,112 - trainer - INFO -     val_loss       : 0.05528138028014274
+2020-07-22 23:20:42,112 - trainer - INFO -     val_accuracy   : 0.20861607142857141
+2020-07-22 23:20:42,112 - trainer - INFO -     val_f_measure  : 0.1512849626906617
+2020-07-22 23:20:42,112 - trainer - INFO -     val_macro_f_beta_measure: 0.1309717135434178
+2020-07-22 23:20:42,112 - trainer - INFO -     val_macro_g_beta_measure: 0.08510091537062932
+2020-07-22 23:20:42,112 - trainer - INFO -     val_macro_auroc: 0.892143900443933
+2020-07-22 23:20:42,112 - trainer - INFO -     val_macro_auprc: 0.4588415517168302
+2020-07-22 23:20:42,112 - trainer - INFO -     val_challenge_metric: 0.0759574962148116
+2020-07-22 23:20:42,119 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch46.pth ...
+2020-07-22 23:20:42,127 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 23:25:44,030 - trainer - INFO -     epoch          : 47
+2020-07-22 23:25:44,030 - trainer - INFO -     loss           : 0.050369583715995155
+2020-07-22 23:25:44,030 - trainer - INFO -     accuracy       : 0.23363690476190477
+2020-07-22 23:25:44,030 - trainer - INFO -     f_measure      : 0.21955648589793827
+2020-07-22 23:25:44,030 - trainer - INFO -     macro_f_beta_measure: 0.19618835803663964
+2020-07-22 23:25:44,030 - trainer - INFO -     macro_g_beta_measure: 0.14949630260448318
+2020-07-22 23:25:44,030 - trainer - INFO -     macro_auroc    : 0.9235840559392537
+2020-07-22 23:25:44,030 - trainer - INFO -     macro_auprc    : 0.49171444454885793
+2020-07-22 23:25:44,030 - trainer - INFO -     challenge_metric: 0.055492009486231716
+2020-07-22 23:25:44,031 - trainer - INFO -     val_loss       : 0.05529856965655372
+2020-07-22 23:25:44,031 - trainer - INFO -     val_accuracy   : 0.21211309523809524
+2020-07-22 23:25:44,031 - trainer - INFO -     val_f_measure  : 0.15914111322267188
+2020-07-22 23:25:44,031 - trainer - INFO -     val_macro_f_beta_measure: 0.14002770138154647
+2020-07-22 23:25:44,031 - trainer - INFO -     val_macro_g_beta_measure: 0.09530339051203243
+2020-07-22 23:25:44,031 - trainer - INFO -     val_macro_auroc: 0.8871670005509725
+2020-07-22 23:25:44,031 - trainer - INFO -     val_macro_auprc: 0.440863570863931
+2020-07-22 23:25:44,031 - trainer - INFO -     val_challenge_metric: 0.05722748451376567
+2020-07-22 23:30:47,044 - trainer - INFO -     epoch          : 48
+2020-07-22 23:30:47,044 - trainer - INFO -     loss           : 0.05014695052305857
+2020-07-22 23:30:47,045 - trainer - INFO -     accuracy       : 0.23510416666666667
+2020-07-22 23:30:47,045 - trainer - INFO -     f_measure      : 0.2222960763887235
+2020-07-22 23:30:47,045 - trainer - INFO -     macro_f_beta_measure: 0.19870445461732336
+2020-07-22 23:30:47,045 - trainer - INFO -     macro_g_beta_measure: 0.15179093243680916
+2020-07-22 23:30:47,045 - trainer - INFO -     macro_auroc    : 0.9248653832856617
+2020-07-22 23:30:47,045 - trainer - INFO -     macro_auprc    : 0.49435438310113256
+2020-07-22 23:30:47,045 - trainer - INFO -     challenge_metric: 0.058224522055953
+2020-07-22 23:30:47,045 - trainer - INFO -     val_loss       : 0.05569923669099808
+2020-07-22 23:30:47,045 - trainer - INFO -     val_accuracy   : 0.21849702380952382
+2020-07-22 23:30:47,045 - trainer - INFO -     val_f_measure  : 0.14868390623068295
+2020-07-22 23:30:47,045 - trainer - INFO -     val_macro_f_beta_measure: 0.13105909490171075
+2020-07-22 23:30:47,045 - trainer - INFO -     val_macro_g_beta_measure: 0.08777705814260643
+2020-07-22 23:30:47,045 - trainer - INFO -     val_macro_auroc: 0.8849761111643478
+2020-07-22 23:30:47,045 - trainer - INFO -     val_macro_auprc: 0.44580012559328097
+2020-07-22 23:30:47,046 - trainer - INFO -     val_challenge_metric: 0.10093696183760072
+2020-07-22 23:35:49,786 - trainer - INFO -     epoch          : 49
+2020-07-22 23:35:49,786 - trainer - INFO -     loss           : 0.049927129914363225
+2020-07-22 23:35:49,786 - trainer - INFO -     accuracy       : 0.2369642857142857
+2020-07-22 23:35:49,786 - trainer - INFO -     f_measure      : 0.22547158665004405
+2020-07-22 23:35:49,786 - trainer - INFO -     macro_f_beta_measure: 0.2015832640456719
+2020-07-22 23:35:49,786 - trainer - INFO -     macro_g_beta_measure: 0.15385325058266824
+2020-07-22 23:35:49,787 - trainer - INFO -     macro_auroc    : 0.9251541963927701
+2020-07-22 23:35:49,787 - trainer - INFO -     macro_auprc    : 0.49733087205989257
+2020-07-22 23:35:49,787 - trainer - INFO -     challenge_metric: 0.061319373725528314
+2020-07-22 23:35:49,787 - trainer - INFO -     val_loss       : 0.05488060148698943
+2020-07-22 23:35:49,787 - trainer - INFO -     val_accuracy   : 0.22904761904761903
+2020-07-22 23:35:49,787 - trainer - INFO -     val_f_measure  : 0.15846284707091843
+2020-07-22 23:35:49,787 - trainer - INFO -     val_macro_f_beta_measure: 0.1379136850606427
+2020-07-22 23:35:49,787 - trainer - INFO -     val_macro_g_beta_measure: 0.09182189423485013
+2020-07-22 23:35:49,787 - trainer - INFO -     val_macro_auroc: 0.8962044932855273
+2020-07-22 23:35:49,787 - trainer - INFO -     val_macro_auprc: 0.46650870129807437
+2020-07-22 23:35:49,787 - trainer - INFO -     val_challenge_metric: 0.11544737508999066
+2020-07-22 23:35:49,794 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch49.pth ...
+2020-07-22 23:35:49,801 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 23:40:52,685 - trainer - INFO -     epoch          : 50
+2020-07-22 23:40:52,685 - trainer - INFO -     loss           : 0.04984997977813085
+2020-07-22 23:40:52,685 - trainer - INFO -     accuracy       : 0.23794345238095238
+2020-07-22 23:40:52,686 - trainer - INFO -     f_measure      : 0.22708635349702277
+2020-07-22 23:40:52,686 - trainer - INFO -     macro_f_beta_measure: 0.20304457695084127
+2020-07-22 23:40:52,686 - trainer - INFO -     macro_g_beta_measure: 0.15501229120624746
+2020-07-22 23:40:52,686 - trainer - INFO -     macro_auroc    : 0.9257395247753872
+2020-07-22 23:40:52,686 - trainer - INFO -     macro_auprc    : 0.4987688559246828
+2020-07-22 23:40:52,686 - trainer - INFO -     challenge_metric: 0.07018778502832207
+2020-07-22 23:40:52,686 - trainer - INFO -     val_loss       : 0.05596050460423742
+2020-07-22 23:40:52,686 - trainer - INFO -     val_accuracy   : 0.2103422619047619
+2020-07-22 23:40:52,686 - trainer - INFO -     val_f_measure  : 0.14967456501311305
+2020-07-22 23:40:52,686 - trainer - INFO -     val_macro_f_beta_measure: 0.13029019948378315
+2020-07-22 23:40:52,686 - trainer - INFO -     val_macro_g_beta_measure: 0.08752597048159781
+2020-07-22 23:40:52,686 - trainer - INFO -     val_macro_auroc: 0.8900633203297249
+2020-07-22 23:40:52,686 - trainer - INFO -     val_macro_auprc: 0.44922298088347856
+2020-07-22 23:40:52,686 - trainer - INFO -     val_challenge_metric: 0.0859361228525658
+2020-07-22 23:45:54,773 - trainer - INFO -     epoch          : 51
+2020-07-22 23:45:54,773 - trainer - INFO -     loss           : 0.04983932560682297
+2020-07-22 23:45:54,773 - trainer - INFO -     accuracy       : 0.23910416666666667
+2020-07-22 23:45:54,774 - trainer - INFO -     f_measure      : 0.22540493275189938
+2020-07-22 23:45:54,774 - trainer - INFO -     macro_f_beta_measure: 0.20202652539224142
+2020-07-22 23:45:54,774 - trainer - INFO -     macro_g_beta_measure: 0.15454901514947353
+2020-07-22 23:45:54,774 - trainer - INFO -     macro_auroc    : 0.9261214024615664
+2020-07-22 23:45:54,774 - trainer - INFO -     macro_auprc    : 0.5002641895835837
+2020-07-22 23:45:54,774 - trainer - INFO -     challenge_metric: 0.06864079248182366
+2020-07-22 23:45:54,774 - trainer - INFO -     val_loss       : 0.05532957436073394
+2020-07-22 23:45:54,774 - trainer - INFO -     val_accuracy   : 0.2145089285714286
+2020-07-22 23:45:54,774 - trainer - INFO -     val_f_measure  : 0.15884079609966437
+2020-07-22 23:45:54,774 - trainer - INFO -     val_macro_f_beta_measure: 0.1429914164571333
+2020-07-22 23:45:54,774 - trainer - INFO -     val_macro_g_beta_measure: 0.09637807202399049
+2020-07-22 23:45:54,774 - trainer - INFO -     val_macro_auroc: 0.8919482968827727
+2020-07-22 23:45:54,774 - trainer - INFO -     val_macro_auprc: 0.445198450475447
+2020-07-22 23:45:54,774 - trainer - INFO -     val_challenge_metric: 0.0895078183521448
+2020-07-22 23:50:57,017 - trainer - INFO -     epoch          : 52
+2020-07-22 23:50:57,017 - trainer - INFO -     loss           : 0.04905959401528041
+2020-07-22 23:50:57,018 - trainer - INFO -     accuracy       : 0.24079166666666665
+2020-07-22 23:50:57,018 - trainer - INFO -     f_measure      : 0.2312227076320792
+2020-07-22 23:50:57,018 - trainer - INFO -     macro_f_beta_measure: 0.20741855703490839
+2020-07-22 23:50:57,018 - trainer - INFO -     macro_g_beta_measure: 0.15899404118237961
+2020-07-22 23:50:57,018 - trainer - INFO -     macro_auroc    : 0.9280773459349861
+2020-07-22 23:50:57,018 - trainer - INFO -     macro_auprc    : 0.5058379036570035
+2020-07-22 23:50:57,018 - trainer - INFO -     challenge_metric: 0.07675342793997844
+2020-07-22 23:50:57,018 - trainer - INFO -     val_loss       : 0.054620680709679924
+2020-07-22 23:50:57,018 - trainer - INFO -     val_accuracy   : 0.2332142857142857
+2020-07-22 23:50:57,018 - trainer - INFO -     val_f_measure  : 0.1587925487430216
+2020-07-22 23:50:57,018 - trainer - INFO -     val_macro_f_beta_measure: 0.13942547289359553
+2020-07-22 23:50:57,018 - trainer - INFO -     val_macro_g_beta_measure: 0.09303632750291223
+2020-07-22 23:50:57,018 - trainer - INFO -     val_macro_auroc: 0.892549660692001
+2020-07-22 23:50:57,019 - trainer - INFO -     val_macro_auprc: 0.45813752670669167
+2020-07-22 23:50:57,019 - trainer - INFO -     val_challenge_metric: 0.12256199126784895
+2020-07-22 23:50:57,026 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch52.pth ...
+2020-07-22 23:50:57,032 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-22 23:56:00,025 - trainer - INFO -     epoch          : 53
+2020-07-22 23:56:00,025 - trainer - INFO -     loss           : 0.048788345207770666
+2020-07-22 23:56:00,025 - trainer - INFO -     accuracy       : 0.24475595238095238
+2020-07-22 23:56:00,025 - trainer - INFO -     f_measure      : 0.2337732734800421
+2020-07-22 23:56:00,025 - trainer - INFO -     macro_f_beta_measure: 0.20942121871479602
+2020-07-22 23:56:00,026 - trainer - INFO -     macro_g_beta_measure: 0.1603066064462209
+2020-07-22 23:56:00,026 - trainer - INFO -     macro_auroc    : 0.9286493537021083
+2020-07-22 23:56:00,026 - trainer - INFO -     macro_auprc    : 0.5076652986429299
+2020-07-22 23:56:00,026 - trainer - INFO -     challenge_metric: 0.08494607690270042
+2020-07-22 23:56:00,026 - trainer - INFO -     val_loss       : 0.05474670994139853
+2020-07-22 23:56:00,026 - trainer - INFO -     val_accuracy   : 0.21632440476190476
+2020-07-22 23:56:00,026 - trainer - INFO -     val_f_measure  : 0.1595664489594667
+2020-07-22 23:56:00,026 - trainer - INFO -     val_macro_f_beta_measure: 0.14056133411221522
+2020-07-22 23:56:00,026 - trainer - INFO -     val_macro_g_beta_measure: 0.09379634802759226
+2020-07-22 23:56:00,026 - trainer - INFO -     val_macro_auroc: 0.8930679898658236
+2020-07-22 23:56:00,026 - trainer - INFO -     val_macro_auprc: 0.4546448614455052
+2020-07-22 23:56:00,026 - trainer - INFO -     val_challenge_metric: 0.08615663803020869
+2020-07-23 00:01:03,522 - trainer - INFO -     epoch          : 54
+2020-07-23 00:01:03,522 - trainer - INFO -     loss           : 0.04879199141263962
+2020-07-23 00:01:03,523 - trainer - INFO -     accuracy       : 0.24542261904761903
+2020-07-23 00:01:03,523 - trainer - INFO -     f_measure      : 0.2360569124069557
+2020-07-23 00:01:03,523 - trainer - INFO -     macro_f_beta_measure: 0.21197062622007398
+2020-07-23 00:01:03,523 - trainer - INFO -     macro_g_beta_measure: 0.16295557302404995
+2020-07-23 00:01:03,523 - trainer - INFO -     macro_auroc    : 0.9291106523422638
+2020-07-23 00:01:03,523 - trainer - INFO -     macro_auprc    : 0.5124942549439192
+2020-07-23 00:01:03,523 - trainer - INFO -     challenge_metric: 0.08706063899987738
+2020-07-23 00:01:03,523 - trainer - INFO -     val_loss       : 0.05424628814771062
+2020-07-23 00:01:03,523 - trainer - INFO -     val_accuracy   : 0.2223214285714286
+2020-07-23 00:01:03,523 - trainer - INFO -     val_f_measure  : 0.16154636836143674
+2020-07-23 00:01:03,523 - trainer - INFO -     val_macro_f_beta_measure: 0.14233012084634059
+2020-07-23 00:01:03,523 - trainer - INFO -     val_macro_g_beta_measure: 0.09488567749269194
+2020-07-23 00:01:03,523 - trainer - INFO -     val_macro_auroc: 0.8936676249031799
+2020-07-23 00:01:03,523 - trainer - INFO -     val_macro_auprc: 0.4553818583669235
+2020-07-23 00:01:03,524 - trainer - INFO -     val_challenge_metric: 0.10773685521664425
+2020-07-23 00:01:03,544 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch54.pth ...
+2020-07-23 00:01:03,551 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-23 00:06:06,572 - trainer - INFO -     epoch          : 55
+2020-07-23 00:06:06,573 - trainer - INFO -     loss           : 0.04887666994333267
+2020-07-23 00:06:06,573 - trainer - INFO -     accuracy       : 0.24760416666666665
+2020-07-23 00:06:06,573 - trainer - INFO -     f_measure      : 0.23856025913283677
+2020-07-23 00:06:06,573 - trainer - INFO -     macro_f_beta_measure: 0.21391405148220266
+2020-07-23 00:06:06,573 - trainer - INFO -     macro_g_beta_measure: 0.16382194240410736
+2020-07-23 00:06:06,573 - trainer - INFO -     macro_auroc    : 0.9287119158669613
+2020-07-23 00:06:06,573 - trainer - INFO -     macro_auprc    : 0.5109994648590885
+2020-07-23 00:06:06,573 - trainer - INFO -     challenge_metric: 0.09127478889380332
+2020-07-23 00:06:06,573 - trainer - INFO -     val_loss       : 0.05461887110556875
+2020-07-23 00:06:06,573 - trainer - INFO -     val_accuracy   : 0.22150297619047618
+2020-07-23 00:06:06,573 - trainer - INFO -     val_f_measure  : 0.1540610848830078
+2020-07-23 00:06:06,573 - trainer - INFO -     val_macro_f_beta_measure: 0.13302664609071305
+2020-07-23 00:06:06,573 - trainer - INFO -     val_macro_g_beta_measure: 0.08886916960401774
+2020-07-23 00:06:06,574 - trainer - INFO -     val_macro_auroc: 0.8938346520282979
+2020-07-23 00:06:06,574 - trainer - INFO -     val_macro_auprc: 0.4527833419119205
+2020-07-23 00:06:06,574 - trainer - INFO -     val_challenge_metric: 0.09537858119662544
+2020-07-23 00:11:09,587 - trainer - INFO -     epoch          : 56
+2020-07-23 00:11:09,587 - trainer - INFO -     loss           : 0.04869287752111753
+2020-07-23 00:11:09,587 - trainer - INFO -     accuracy       : 0.24513095238095237
+2020-07-23 00:11:09,587 - trainer - INFO -     f_measure      : 0.23356418023702474
+2020-07-23 00:11:09,587 - trainer - INFO -     macro_f_beta_measure: 0.2088853064668741
+2020-07-23 00:11:09,587 - trainer - INFO -     macro_g_beta_measure: 0.16008767215194578
+2020-07-23 00:11:09,587 - trainer - INFO -     macro_auroc    : 0.9292432827491669
+2020-07-23 00:11:09,587 - trainer - INFO -     macro_auprc    : 0.5088089609678821
+2020-07-23 00:11:09,588 - trainer - INFO -     challenge_metric: 0.08614451342654338
+2020-07-23 00:11:09,588 - trainer - INFO -     val_loss       : 0.05448109284043312
+2020-07-23 00:11:09,588 - trainer - INFO -     val_accuracy   : 0.2294345238095238
+2020-07-23 00:11:09,588 - trainer - INFO -     val_f_measure  : 0.16465409168416287
+2020-07-23 00:11:09,588 - trainer - INFO -     val_macro_f_beta_measure: 0.14643482367925748
+2020-07-23 00:11:09,588 - trainer - INFO -     val_macro_g_beta_measure: 0.09836541590530871
+2020-07-23 00:11:09,588 - trainer - INFO -     val_macro_auroc: 0.8940711952297071
+2020-07-23 00:11:09,588 - trainer - INFO -     val_macro_auprc: 0.4548876769381608
+2020-07-23 00:11:09,588 - trainer - INFO -     val_challenge_metric: 0.11056366360155734
+2020-07-23 00:16:17,975 - trainer - INFO -     epoch          : 57
+2020-07-23 00:16:17,975 - trainer - INFO -     loss           : 0.0487691645026207
+2020-07-23 00:16:17,975 - trainer - INFO -     accuracy       : 0.24592261904761903
+2020-07-23 00:16:17,975 - trainer - INFO -     f_measure      : 0.23337356772067047
+2020-07-23 00:16:17,976 - trainer - INFO -     macro_f_beta_measure: 0.20941648673066712
+2020-07-23 00:16:17,976 - trainer - INFO -     macro_g_beta_measure: 0.16068253847777886
+2020-07-23 00:16:17,976 - trainer - INFO -     macro_auroc    : 0.9294824155606449
+2020-07-23 00:16:17,976 - trainer - INFO -     macro_auprc    : 0.5110982710228114
+2020-07-23 00:16:17,976 - trainer - INFO -     challenge_metric: 0.08514438596045526
+2020-07-23 00:16:17,976 - trainer - INFO -     val_loss       : 0.05463157452288128
+2020-07-23 00:16:17,976 - trainer - INFO -     val_accuracy   : 0.22416666666666665
+2020-07-23 00:16:17,976 - trainer - INFO -     val_f_measure  : 0.15908171209179375
+2020-07-23 00:16:17,976 - trainer - INFO -     val_macro_f_beta_measure: 0.1391044961858102
+2020-07-23 00:16:17,976 - trainer - INFO -     val_macro_g_beta_measure: 0.09306712946793193
+2020-07-23 00:16:17,976 - trainer - INFO -     val_macro_auroc: 0.8902226367117683
+2020-07-23 00:16:17,976 - trainer - INFO -     val_macro_auprc: 0.4564664145537612
+2020-07-23 00:16:17,976 - trainer - INFO -     val_challenge_metric: 0.10395496954155133
+2020-07-23 00:21:27,711 - trainer - INFO -     epoch          : 58
+2020-07-23 00:21:27,711 - trainer - INFO -     loss           : 0.04874689601858457
+2020-07-23 00:21:27,711 - trainer - INFO -     accuracy       : 0.24553869047619048
+2020-07-23 00:21:27,711 - trainer - INFO -     f_measure      : 0.2369802308150885
+2020-07-23 00:21:27,711 - trainer - INFO -     macro_f_beta_measure: 0.21320711910631254
+2020-07-23 00:21:27,711 - trainer - INFO -     macro_g_beta_measure: 0.1641877586793309
+2020-07-23 00:21:27,711 - trainer - INFO -     macro_auroc    : 0.9291555882179275
+2020-07-23 00:21:27,711 - trainer - INFO -     macro_auprc    : 0.5093969679884758
+2020-07-23 00:21:27,711 - trainer - INFO -     challenge_metric: 0.0878050318400941
+2020-07-23 00:21:27,712 - trainer - INFO -     val_loss       : 0.05434443996775718
+2020-07-23 00:21:27,712 - trainer - INFO -     val_accuracy   : 0.2264732142857143
+2020-07-23 00:21:27,712 - trainer - INFO -     val_f_measure  : 0.16417493322629564
+2020-07-23 00:21:27,712 - trainer - INFO -     val_macro_f_beta_measure: 0.14692270172761898
+2020-07-23 00:21:27,712 - trainer - INFO -     val_macro_g_beta_measure: 0.0993784838746405
+2020-07-23 00:21:27,712 - trainer - INFO -     val_macro_auroc: 0.8901624882217154
+2020-07-23 00:21:27,712 - trainer - INFO -     val_macro_auprc: 0.4595443861702653
+2020-07-23 00:21:27,712 - trainer - INFO -     val_challenge_metric: 0.11564850857472153
+2020-07-23 00:26:38,310 - trainer - INFO -     epoch          : 59
+2020-07-23 00:26:38,310 - trainer - INFO -     loss           : 0.04855113540093104
+2020-07-23 00:26:38,310 - trainer - INFO -     accuracy       : 0.24639285714285714
+2020-07-23 00:26:38,310 - trainer - INFO -     f_measure      : 0.23852952442110523
+2020-07-23 00:26:38,310 - trainer - INFO -     macro_f_beta_measure: 0.21423493205818606
+2020-07-23 00:26:38,310 - trainer - INFO -     macro_g_beta_measure: 0.16444554832582603
+2020-07-23 00:26:38,311 - trainer - INFO -     macro_auroc    : 0.9299240796879691
+2020-07-23 00:26:38,311 - trainer - INFO -     macro_auprc    : 0.5131578847422846
+2020-07-23 00:26:38,311 - trainer - INFO -     challenge_metric: nan
+2020-07-23 00:26:38,311 - trainer - INFO -     val_loss       : 0.054246214883668084
+2020-07-23 00:26:38,311 - trainer - INFO -     val_accuracy   : 0.22549107142857144
+2020-07-23 00:26:38,311 - trainer - INFO -     val_f_measure  : 0.163777397874057
+2020-07-23 00:26:38,311 - trainer - INFO -     val_macro_f_beta_measure: 0.14436592565411566
+2020-07-23 00:26:38,311 - trainer - INFO -     val_macro_g_beta_measure: 0.09938038218668137
+2020-07-23 00:26:38,311 - trainer - INFO -     val_macro_auroc: 0.8939462083531938
+2020-07-23 00:26:38,311 - trainer - INFO -     val_macro_auprc: 0.4577819625601006
+2020-07-23 00:26:38,311 - trainer - INFO -     val_challenge_metric: 0.10602025759667211
+2020-07-23 00:26:38,332 - trainer - INFO - Saving checkpoint: saved/models/challenge2020_official_data_slided_cnn/0722_192321/checkpoint-epoch59.pth ...
+2020-07-23 00:26:38,338 - trainer - INFO - Saving current best: model_best.pth ...
+2020-07-23 00:31:48,756 - trainer - INFO -     epoch          : 60
+2020-07-23 00:31:48,756 - trainer - INFO -     loss           : 0.04861501995722453
+2020-07-23 00:31:48,757 - trainer - INFO -     accuracy       : 0.2455267857142857
+2020-07-23 00:31:48,757 - trainer - INFO -     f_measure      : 0.23654089308331988
+2020-07-23 00:31:48,757 - trainer - INFO -     macro_f_beta_measure: 0.21197837054209412
+2020-07-23 00:31:48,757 - trainer - INFO -     macro_g_beta_measure: 0.16307076966646714
+2020-07-23 00:31:48,757 - trainer - INFO -     macro_auroc    : 0.9290394850364646
+2020-07-23 00:31:48,757 - trainer - INFO -     macro_auprc    : 0.5101116172440762
+2020-07-23 00:31:48,757 - trainer - INFO -     challenge_metric: 0.08801082089821938
+2020-07-23 00:31:48,757 - trainer - INFO -     val_loss       : 0.05489121803215572
+2020-07-23 00:31:48,757 - trainer - INFO -     val_accuracy   : 0.21913690476190475
+2020-07-23 00:31:48,757 - trainer - INFO -     val_f_measure  : 0.15636804805180116
+2020-07-23 00:31:48,757 - trainer - INFO -     val_macro_f_beta_measure: 0.1373919781137788
+2020-07-23 00:31:48,757 - trainer - INFO -     val_macro_g_beta_measure: 0.09116350748497469
+2020-07-23 00:31:48,757 - trainer - INFO -     val_macro_auroc: 0.8939005363583099
+2020-07-23 00:31:48,758 - trainer - INFO -     val_macro_auprc: 0.46114571970792717
+2020-07-23 00:31:48,758 - trainer - INFO -     val_challenge_metric: 0.08811322887031033
+2020-07-23 00:36:57,959 - trainer - INFO -     epoch          : 61
+2020-07-23 00:36:57,959 - trainer - INFO -     loss           : 0.04859733712673187
+2020-07-23 00:36:57,959 - trainer - INFO -     accuracy       : 0.24686011904761904
+2020-07-23 00:36:57,959 - trainer - INFO -     f_measure      : 0.23557551508318708
+2020-07-23 00:36:57,959 - trainer - INFO -     macro_f_beta_measure: 0.2115765110653206
+2020-07-23 00:36:57,959 - trainer - INFO -     macro_g_beta_measure: 0.16286438572352807
+2020-07-23 00:36:57,959 - trainer - INFO -     macro_auroc    : 0.9302822875128283
+2020-07-23 00:36:57,960 - trainer - INFO -     macro_auprc    : 0.5128535386293942
+2020-07-23 00:36:57,960 - trainer - INFO -     challenge_metric: 0.09116768128509409
+2020-07-23 00:36:57,960 - trainer - INFO -     val_loss       : 0.05439558997750282
+2020-07-23 00:36:57,960 - trainer - INFO -     val_accuracy   : 0.2263541666666667
+2020-07-23 00:36:57,960 - trainer - INFO -     val_f_measure  : 0.16328948921715597
+2020-07-23 00:36:57,960 - trainer - INFO -     val_macro_f_beta_measure: 0.14472622417255496
+2020-07-23 00:36:57,960 - trainer - INFO -     val_macro_g_beta_measure: 0.09671639222414619
+2020-07-23 00:36:57,960 - trainer - INFO -     val_macro_auroc: 0.8912499538848354
+2020-07-23 00:36:57,960 - trainer - INFO -     val_macro_auprc: 0.4567243056243177
+2020-07-23 00:36:57,960 - trainer - INFO -     val_challenge_metric: 0.11265789915411817
+2020-07-23 00:42:07,641 - trainer - INFO -     epoch          : 62
+2020-07-23 00:42:07,641 - trainer - INFO -     loss           : 0.04844873452186584
+2020-07-23 00:42:07,642 - trainer - INFO -     accuracy       : 0.24729761904761904
+2020-07-23 00:42:07,642 - trainer - INFO -     f_measure      : 0.23690409468172674
+2020-07-23 00:42:07,642 - trainer - INFO -     macro_f_beta_measure: 0.21232420341546154
+2020-07-23 00:42:07,642 - trainer - INFO -     macro_g_beta_measure: 0.1622889894820602
+2020-07-23 00:42:07,642 - trainer - INFO -     macro_auroc    : 0.9304112476371692
+2020-07-23 00:42:07,642 - trainer - INFO -     macro_auprc    : 0.513478375046726
+2020-07-23 00:42:07,642 - trainer - INFO -     challenge_metric: 0.08967013159963237
+2020-07-23 00:42:07,642 - trainer - INFO -     val_loss       : 0.05432925940979095
+2020-07-23 00:42:07,642 - trainer - INFO -     val_accuracy   : 0.22528273809523808
+2020-07-23 00:42:07,642 - trainer - INFO -     val_f_measure  : 0.16708171084524323
+2020-07-23 00:42:07,642 - trainer - INFO -     val_macro_f_beta_measure: 0.14904802781655033
+2020-07-23 00:42:07,642 - trainer - INFO -     val_macro_g_beta_measure: 0.10067799781560882
+2020-07-23 00:42:07,642 - trainer - INFO -     val_macro_auroc: 0.8954140511161439
+2020-07-23 00:42:07,642 - trainer - INFO -     val_macro_auprc: 0.4595365312322003
+2020-07-23 00:42:07,643 - trainer - INFO -     val_challenge_metric: 0.10951183680502567
+2020-07-23 00:47:17,709 - trainer - INFO -     epoch          : 63
+2020-07-23 00:47:17,709 - trainer - INFO -     loss           : 0.04854315101106962
+2020-07-23 00:47:17,709 - trainer - INFO -     accuracy       : 0.24776190476190477
+2020-07-23 00:47:17,709 - trainer - INFO -     f_measure      : 0.23671324590452048
+2020-07-23 00:47:17,710 - trainer - INFO -     macro_f_beta_measure: 0.2120709464620962
+2020-07-23 00:47:17,710 - trainer - INFO -     macro_g_beta_measure: 0.16249062248020876
+2020-07-23 00:47:17,710 - trainer - INFO -     macro_auroc    : 0.9298148556233012
+2020-07-23 00:47:17,710 - trainer - INFO -     macro_auprc    : 0.5131003932902286
+2020-07-23 00:47:17,710 - trainer - INFO -     challenge_metric: 0.08871987171334215
+2020-07-23 00:47:17,710 - trainer - INFO -     val_loss       : 0.05445414391301927
+2020-07-23 00:47:17,710 - trainer - INFO -     val_accuracy   : 0.2259375
+2020-07-23 00:47:17,710 - trainer - INFO -     val_f_measure  : 0.1640936368359137
+2020-07-23 00:47:17,710 - trainer - INFO -     val_macro_f_beta_measure: 0.14477995290143655
+2020-07-23 00:47:17,710 - trainer - INFO -     val_macro_g_beta_measure: 0.09783147185295801
+2020-07-23 00:47:17,710 - trainer - INFO -     val_macro_auroc: 0.8956880133926103
+2020-07-23 00:47:17,710 - trainer - INFO -     val_macro_auprc: 0.46252248656657846
+2020-07-23 00:47:17,710 - trainer - INFO -     val_challenge_metric: 0.11524101748679062
+2020-07-23 00:52:28,215 - trainer - INFO -     epoch          : 64
+2020-07-23 00:52:28,216 - trainer - INFO -     loss           : 0.04856057426333427
+2020-07-23 00:52:28,216 - trainer - INFO -     accuracy       : 0.246375
+2020-07-23 00:52:28,216 - trainer - INFO -     f_measure      : 0.23595849402240116
+2020-07-23 00:52:28,216 - trainer - INFO -     macro_f_beta_measure: 0.2118827167698749
+2020-07-23 00:52:28,216 - trainer - INFO -     macro_g_beta_measure: 0.1625632102550864
+2020-07-23 00:52:28,216 - trainer - INFO -     macro_auroc    : 0.9303921159680857
+2020-07-23 00:52:28,216 - trainer - INFO -     macro_auprc    : 0.5126287944318644
+2020-07-23 00:52:28,216 - trainer - INFO -     challenge_metric: 0.09001168897470317
+2020-07-23 00:52:28,216 - trainer - INFO -     val_loss       : 0.0546286203676746
+2020-07-23 00:52:28,216 - trainer - INFO -     val_accuracy   : 0.2242261904761905
+2020-07-23 00:52:28,216 - trainer - INFO -     val_f_measure  : 0.1588094972692663
+2020-07-23 00:52:28,216 - trainer - INFO -     val_macro_f_beta_measure: 0.14015272636381493
+2020-07-23 00:52:28,217 - trainer - INFO -     val_macro_g_beta_measure: 0.09476137717664719
+2020-07-23 00:52:28,217 - trainer - INFO -     val_macro_auroc: 0.8958428476866116
+2020-07-23 00:52:28,217 - trainer - INFO -     val_macro_auprc: 0.45531958578546455
+2020-07-23 00:52:28,217 - trainer - INFO -     val_challenge_metric: 0.1146570202918437
+2020-07-23 00:57:39,596 - trainer - INFO -     epoch          : 65
+2020-07-23 00:57:39,597 - trainer - INFO -     loss           : 0.048488451222578687
+2020-07-23 00:57:39,597 - trainer - INFO -     accuracy       : 0.24667261904761903
+2020-07-23 00:57:39,597 - trainer - INFO -     f_measure      : 0.2389939026947248
+2020-07-23 00:57:39,597 - trainer - INFO -     macro_f_beta_measure: 0.21509248122495248
+2020-07-23 00:57:39,597 - trainer - INFO -     macro_g_beta_measure: 0.16540393363716804
+2020-07-23 00:57:39,597 - trainer - INFO -     macro_auroc    : 0.9294500711802282
+2020-07-23 00:57:39,597 - trainer - INFO -     macro_auprc    : 0.5113832726251171
+2020-07-23 00:57:39,597 - trainer - INFO -     challenge_metric: 0.09295143149723942
+2020-07-23 00:57:39,597 - trainer - INFO -     val_loss       : 0.05434281964387212
+2020-07-23 00:57:39,597 - trainer - INFO -     val_accuracy   : 0.22401785714285713
+2020-07-23 00:57:39,597 - trainer - INFO -     val_f_measure  : 0.16195055975146233
+2020-07-23 00:57:39,598 - trainer - INFO -     val_macro_f_beta_measure: 0.14304154507489505
+2020-07-23 00:57:39,598 - trainer - INFO -     val_macro_g_beta_measure: 0.09735766888862676
+2020-07-23 00:57:39,598 - trainer - INFO -     val_macro_auroc: 0.893491211318066
+2020-07-23 00:57:39,598 - trainer - INFO -     val_macro_auprc: 0.46219518819455985
+2020-07-23 00:57:39,598 - trainer - INFO -     val_challenge_metric: 0.10826985635925668
+2020-07-23 01:02:51,247 - trainer - INFO -     epoch          : 66
+2020-07-23 01:02:51,247 - trainer - INFO -     loss           : 0.04841183622678121
+2020-07-23 01:02:51,247 - trainer - INFO -     accuracy       : 0.2493244047619048
+2020-07-23 01:02:51,247 - trainer - INFO -     f_measure      : 0.24037188088109657
+2020-07-23 01:02:51,248 - trainer - INFO -     macro_f_beta_measure: 0.21583704603175008
+2020-07-23 01:02:51,248 - trainer - INFO -     macro_g_beta_measure: 0.16627855907435143
+2020-07-23 01:02:51,248 - trainer - INFO -     macro_auroc    : 0.930935933582505
+2020-07-23 01:02:51,248 - trainer - INFO -     macro_auprc    : 0.5160375756818733
+2020-07-23 01:02:51,248 - trainer - INFO -     challenge_metric: 0.09627963819447563
+2020-07-23 01:02:51,248 - trainer - INFO -     val_loss       : 0.05489224301917212
+2020-07-23 01:02:51,248 - trainer - INFO -     val_accuracy   : 0.21828869047619048
+2020-07-23 01:02:51,248 - trainer - INFO -     val_f_measure  : 0.15570014649972524
+2020-07-23 01:02:51,248 - trainer - INFO -     val_macro_f_beta_measure: 0.13702930762432525
+2020-07-23 01:02:51,248 - trainer - INFO -     val_macro_g_beta_measure: 0.09115746677184877
+2020-07-23 01:02:51,248 - trainer - INFO -     val_macro_auroc: 0.8877453961904314
+2020-07-23 01:02:51,248 - trainer - INFO -     val_macro_auprc: 0.4620490822143011
+2020-07-23 01:02:51,248 - trainer - INFO -     val_challenge_metric: 0.08778392795984759
+2020-07-23 01:08:01,913 - trainer - INFO -     epoch          : 67
+2020-07-23 01:08:01,914 - trainer - INFO -     loss           : 0.04847305711110433
+2020-07-23 01:08:01,914 - trainer - INFO -     accuracy       : 0.2480625
+2020-07-23 01:08:01,914 - trainer - INFO -     f_measure      : 0.23971237391259942
+2020-07-23 01:08:01,914 - trainer - INFO -     macro_f_beta_measure: 0.21571653694540924
+2020-07-23 01:08:01,914 - trainer - INFO -     macro_g_beta_measure: 0.16605168151505073
+2020-07-23 01:08:01,914 - trainer - INFO -     macro_auroc    : 0.9299208425473383
+2020-07-23 01:08:01,914 - trainer - INFO -     macro_auprc    : 0.5159511730576926
+2020-07-23 01:08:01,914 - trainer - INFO -     challenge_metric: 0.09618880707180706
+2020-07-23 01:08:01,914 - trainer - INFO -     val_loss       : 0.05454496560352189
+2020-07-23 01:08:01,914 - trainer - INFO -     val_accuracy   : 0.22577380952380952
+2020-07-23 01:08:01,914 - trainer - INFO -     val_f_measure  : 0.16190835529729153
+2020-07-23 01:08:01,915 - trainer - INFO -     val_macro_f_beta_measure: 0.1445091623277621
+2020-07-23 01:08:01,915 - trainer - INFO -     val_macro_g_beta_measure: 0.09593137053258999
+2020-07-23 01:08:01,915 - trainer - INFO -     val_macro_auroc: 0.8946937381925069
+2020-07-23 01:08:01,915 - trainer - INFO -     val_macro_auprc: 0.4678825489031465
+2020-07-23 01:08:01,915 - trainer - INFO -     val_challenge_metric: 0.11091521390522681
+2020-07-23 01:13:13,101 - trainer - INFO -     epoch          : 68
+2020-07-23 01:13:13,101 - trainer - INFO -     loss           : 0.04853388693928719
+2020-07-23 01:13:13,101 - trainer - INFO -     accuracy       : 0.24888095238095237
+2020-07-23 01:13:13,101 - trainer - INFO -     f_measure      : 0.23683046180548475
+2020-07-23 01:13:13,101 - trainer - INFO -     macro_f_beta_measure: 0.2125617305385606
+2020-07-23 01:13:13,101 - trainer - INFO -     macro_g_beta_measure: 0.16275355718367396
+2020-07-23 01:13:13,101 - trainer - INFO -     macro_auroc    : 0.9295370155259857
+2020-07-23 01:13:13,101 - trainer - INFO -     macro_auprc    : 0.5120943370420589
+2020-07-23 01:13:13,102 - trainer - INFO -     challenge_metric: 0.09509855029305646
+2020-07-23 01:13:13,102 - trainer - INFO -     val_loss       : 0.054364245739721116
+2020-07-23 01:13:13,102 - trainer - INFO -     val_accuracy   : 0.21843749999999998
+2020-07-23 01:13:13,102 - trainer - INFO -     val_f_measure  : 0.161838934206607
+2020-07-23 01:13:13,102 - trainer - INFO -     val_macro_f_beta_measure: 0.14186682877674975
+2020-07-23 01:13:13,102 - trainer - INFO -     val_macro_g_beta_measure: 0.09494846211622461
+2020-07-23 01:13:13,102 - trainer - INFO -     val_macro_auroc: 0.8900657381005148
+2020-07-23 01:13:13,102 - trainer - INFO -     val_macro_auprc: 0.4468030183145292
+2020-07-23 01:13:13,102 - trainer - INFO -     val_challenge_metric: 0.08603910255318163
+2020-07-23 01:18:23,735 - trainer - INFO -     epoch          : 69
+2020-07-23 01:18:23,735 - trainer - INFO -     loss           : 0.04843803762396177
+2020-07-23 01:18:23,735 - trainer - INFO -     accuracy       : 0.24744345238095236
+2020-07-23 01:18:23,735 - trainer - INFO -     f_measure      : 0.2383285224684222
+2020-07-23 01:18:23,735 - trainer - INFO -     macro_f_beta_measure: 0.2139571429740098
+2020-07-23 01:18:23,735 - trainer - INFO -     macro_g_beta_measure: 0.16438317869800204
+2020-07-23 01:18:23,735 - trainer - INFO -     macro_auroc    : 0.9299245659768189
+2020-07-23 01:18:23,735 - trainer - INFO -     macro_auprc    : 0.5144289042868905
+2020-07-23 01:18:23,735 - trainer - INFO -     challenge_metric: 0.0902610327708414
+2020-07-23 01:18:23,736 - trainer - INFO -     val_loss       : 0.054634972519817804
+2020-07-23 01:18:23,736 - trainer - INFO -     val_accuracy   : 0.22561011904761907
+2020-07-23 01:18:23,736 - trainer - INFO -     val_f_measure  : 0.16613777757534476
+2020-07-23 01:18:23,736 - trainer - INFO -     val_macro_f_beta_measure: 0.1473022422738317
+2020-07-23 01:18:23,736 - trainer - INFO -     val_macro_g_beta_measure: 0.09963865227942563
+2020-07-23 01:18:23,736 - trainer - INFO -     val_macro_auroc: 0.8955018921244167
+2020-07-23 01:18:23,736 - trainer - INFO -     val_macro_auprc: 0.4713048470503529
+2020-07-23 01:18:23,736 - trainer - INFO -     val_challenge_metric: 0.11100685429554566
+2020-07-23 01:23:34,106 - trainer - INFO -     epoch          : 70
+2020-07-23 01:23:34,106 - trainer - INFO -     loss           : 0.04848012148340543
+2020-07-23 01:23:34,106 - trainer - INFO -     accuracy       : 0.24775
+2020-07-23 01:23:34,106 - trainer - INFO -     f_measure      : 0.2376611649901088
+2020-07-23 01:23:34,106 - trainer - INFO -     macro_f_beta_measure: 0.21342614925559109
+2020-07-23 01:23:34,106 - trainer - INFO -     macro_g_beta_measure: 0.16393572329879036
+2020-07-23 01:23:34,106 - trainer - INFO -     macro_auroc    : 0.9299151804784269
+2020-07-23 01:23:34,106 - trainer - INFO -     macro_auprc    : 0.5122593713418842
+2020-07-23 01:23:34,106 - trainer - INFO -     challenge_metric: 0.09470484738271408
+2020-07-23 01:23:34,107 - trainer - INFO -     val_loss       : 0.05490741240126746
+2020-07-23 01:23:34,107 - trainer - INFO -     val_accuracy   : 0.21397321428571428
+2020-07-23 01:23:34,107 - trainer - INFO -     val_f_measure  : 0.16435191511696856
+2020-07-23 01:23:34,107 - trainer - INFO -     val_macro_f_beta_measure: 0.1460943736385748
+2020-07-23 01:23:34,107 - trainer - INFO -     val_macro_g_beta_measure: 0.09893890045644207
+2020-07-23 01:23:34,107 - trainer - INFO -     val_macro_auroc: 0.8951429598286986
+2020-07-23 01:23:34,107 - trainer - INFO -     val_macro_auprc: 0.46267387127113485
+2020-07-23 01:23:34,107 - trainer - INFO -     val_challenge_metric: 0.09595505698923665
+2020-07-23 01:23:34,107 - trainer - INFO - Validation performance didn't improve for 10 epochs. Training stops.

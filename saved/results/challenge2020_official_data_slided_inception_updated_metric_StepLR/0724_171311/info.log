@@ -1,0 +1,10 @@
+2020-07-24 19:09:00,229 - evaluater - INFO - Loading checkpoint: saved/models/challenge2020_official_data_slided_inception_updated_metric_StepLR/0724_171311/model_best.pth ...
+2020-07-24 19:09:00,319 - evaluater - INFO - Checkpoint loaded from epoch 10
+2020-07-24 19:09:17,986 - evaluater - INFO -     macro_g_beta_measure: 0.29492348029017756
+2020-07-24 19:09:17,987 - evaluater - INFO -     macro_f_beta_measure: 0.42079862863728656
+2020-07-24 19:09:17,987 - evaluater - INFO -     loss           : 0.041198136373644785
+2020-07-24 19:09:17,987 - evaluater - INFO -     accuracy       : 0.5516887626262627
+2020-07-24 19:09:17,987 - evaluater - INFO -     challenge_metric: 0.3907152880973764
+2020-07-24 19:09:17,987 - evaluater - INFO -     macro_auroc    : 0.9461597300812402
+2020-07-24 19:09:17,987 - evaluater - INFO -     macro_auprc    : 0.635297118280264
+2020-07-24 19:09:17,987 - evaluater - INFO -     f_measure      : 0.4365427948435448
