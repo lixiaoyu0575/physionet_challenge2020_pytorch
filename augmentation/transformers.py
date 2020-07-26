@@ -197,7 +197,7 @@ class Permutation(object):
 
     """
 
-    def __init__(self, nPerm, minSegLength):
+    def __init__(self, nPerm=4, minSegLength=10):
         self.nPerm = nPerm
         self.minSegLength = minSegLength
 

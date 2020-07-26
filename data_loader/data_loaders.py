@@ -65,13 +65,12 @@ class ChallengeDataLoader1(BaseDataLoader2):
         print('Loading labels...')
         classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
 
-        # # Load the weights for the Challenge metric.
-        # print('Loading weights...')
-        # weights = load_weights(weights_file, classes)
-        #
-        # # Classes that are scored with the Challenge metric.
-        # indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
-        #
+        # Load the weights for the Challenge metric.
+        print('Loading weights...')
+        weights = load_weights(weights_file, classes)
+
+        # Classes that are scored with the Challenge metric.
+        indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
         # from scipy.io import savemat
         # savemat('evaluation/scored_classes_indices.mat', {'val': indices})
 
@@ -139,6 +138,11 @@ class ChallengeDataLoader1(BaseDataLoader2):
                 a.append(recordings_augmented[i])
         print(c)
         print(a)
+
+        # Get number of samples for each category
+        self.count = np.sum(labels_onehot, axis=0)
+        self.indices = indices
+
         X = torch.from_numpy(recordings_augmented).float()
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot.astype(int))

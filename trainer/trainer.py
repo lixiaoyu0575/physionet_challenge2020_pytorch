@@ -1,10 +1,12 @@
 import numpy as np
 import torch
+import torch.nn as nn
 from torchvision.utils import make_grid
 from base import BaseTrainer
 from utils import inf_loop, MetricTracker
 import torch.nn.functional as F
 from scipy.io import loadmat
+
 
 class Trainer(BaseTrainer):
     """
@@ -42,6 +44,8 @@ class Trainer(BaseTrainer):
             indices = loadmat('evaluation/scored_classes_indices.mat')['val']
             self.indices = indices.reshape([indices.shape[1],]).astype(bool)
 
+        self.sigmoid = nn.Sigmoid()
+
     def _train_epoch(self, epoch):
         """
         Training logic for an epoch
@@ -68,8 +72,10 @@ class Trainer(BaseTrainer):
 
             self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.train_metrics.update('loss', loss.item())
+
+            output_logit = self.sigmoid(output)
             for met in self.metric_ftns:
-                self.train_metrics.update(met.__name__, met(self._to_np(output), self._to_np(target)))
+                self.train_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
 
             if batch_idx % self.log_step == 0:
                 self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
@@ -113,8 +119,10 @@ class Trainer(BaseTrainer):
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.valid_metrics.update('loss', loss.item())
+
+                output_logit = self.sigmoid(output)
                 for met in self.metric_ftns:
-                    self.valid_metrics.update(met.__name__, met(self._to_np(output), self._to_np(target)))
+                    self.valid_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard

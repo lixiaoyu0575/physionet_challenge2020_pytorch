@@ -5,17 +5,15 @@ from scipy.io import loadmat, savemat
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from process.util import load_challenge_data, load_labels, load_label_files
+from augmentation.transformers import Jitter, Scaling, MagWarp, TimeWarp, Permutation, RandSampling
+import torch
 
-def plot(data, header_data, label, name, save_path):
+def plot_aug(data, data_aug, header_data, label, name, j, aug, save_path):
     fig, axs = plt.subplots(12, 1, sharey=True, figsize=(50, 50))
 
-    mm = MinMaxScaler()
-    data = data.swapaxes(0, 1)
-    data_scaled = mm.fit_transform(data)
-    data_scaled = data_scaled.swapaxes(0, 1)
     for i in range(12):
-        # axs[i].set_autoscale_on(True)
-        axs[i].plot(data_scaled[i,:])
+        axs[i].plot(data[i])
+        axs[i].plot(data_aug[i], color = 'red')
         axs[i].set_title(header_data[i+1])
         axs[i].autoscale(enable=True, axis='both', tight=True)
 
@@ -33,21 +31,9 @@ def plot(data, header_data, label, name, save_path):
     if not os.path.exists(save_path_label):
         os.mkdir(save_path_label)
 
-    plt.savefig(os.path.join(save_path_label, '%s.png' %(name)))
+    plt.savefig(os.path.join(save_path_label, '%s_%d_%s.png' %(name, j, aug)))
+    plt.show()
     plt.close()
-
-def count(label, class_count):
-
-    label = list(label)
-    labels = label[0]
-    if len(label) > 1:
-        for i in range(len(label)-1):
-            labels += ' %s' %(label[i+1])
-
-    if labels not in class_count:
-        class_count[labels] = 1
-    else:
-        class_count[labels] += 1
 
 if __name__ == '__main__':
 
@@ -56,12 +42,14 @@ if __name__ == '__main__':
     normal_class = '426783006'
     equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
 
-    input_directory  = '/home/weiyuhua/Data/challenge2020'
-    save_path = '/home/weiyuhua/Data/challenge2020_plots'
+    input_directory_data = '/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100'
+    input_directory_label = '/home/weiyuhua/Data/challenge2020'
+
+    save_path = '/home/weiyuhua/Data/challenge2020_plots/aug'
 
     # Find the label files.
     print('Finding label and output files...')
-    label_files = load_label_files(input_directory)
+    label_files = load_label_files(input_directory_label)
 
     # Load the labels and classes.
     print('Loading labels and outputs...')
@@ -71,22 +59,35 @@ if __name__ == '__main__':
     print("num_files:", num_files)
 
     # Load data and plot
-    class_count = {}
+    augmentation = ['Jitter', 'Scaling', 'MagWarp', 'TimeWarp', 'Permutation', 'RandSampling']
 
     for i, (f, label) in enumerate(zip(label_files, labels)):
         print('    {}/{}...'.format(i + 1, num_files))
         file = os.path.basename(f)
         name, ext = os.path.splitext(file)
-        data, header_data = load_challenge_data(file, input_directory, input_directory)
-        # plot(data, header_data, label, name, save_path)
-        count(label, class_count)
+        data, header_data = load_challenge_data(file, input_directory_label, input_directory_data)
+        for j in range(data.shape[0]):
+            data_j = torch.from_numpy(data[j])
+            data_aug = torch.zeros((6, *data_j.shape))
 
-    print("Done.")
-    save_path_cc = '/home/weiyuhua/Data/challenge2020_info'
-    savemat(os.path.join(save_path_cc, 'class_count.mat'), {'val': class_count})
+            jitter = Jitter()
+            scaling = Scaling()
+            magWarp = MagWarp()
+            timeWarp = TimeWarp()
+            permutation = Permutation()
+            randSampling = RandSampling()
 
-    class_count_df = pd.DataFrame.from_dict(class_count, orient='index')
-    class_count_df.to_csv(os.path.join(save_path_cc, 'class_count.csv'))
+            data_aug[0] = jitter(data_j)
+            data_aug[1] = scaling(data_j)
+            data_aug[2] = magWarp(data_j)
+            data_aug[3] = timeWarp(data_j)
+            data_aug[4] = permutation(data_j)
+            data_aug[5] = randSampling(data_j)
+
+            for k in range(6):
+                plot_aug(data_j, data_aug[k], header_data, label, name, j, augmentation[k], save_path)
+
+
 
 
 
