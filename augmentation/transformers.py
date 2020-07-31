@@ -223,7 +223,7 @@ class Permutation(object):
         for ii in range(self.nPerm):
             x_temp = tensors[:, segs[idx[ii]]:segs[idx[ii] + 1]]
             X_new[:, pp:pp + x_temp.shape[1]] = x_temp
-            pp += len(x_temp)
+            pp += x_temp.shape[1]
 
         # print("This is Permutation")
         # print(type(X_new))
