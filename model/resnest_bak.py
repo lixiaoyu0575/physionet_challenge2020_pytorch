@@ -12,23 +12,23 @@ import torch.nn as nn
 import torch
 from torch import nn
 import torch.nn.functional as F
-from torch.nn import Conv1d, Module, Linear, BatchNorm1d, ReLU
-from torch.nn.modules.utils import _single
+from torch.nn import Conv2d, Module, Linear, BatchNorm2d, ReLU
+from torch.nn.modules.utils import _pair
 
 
-__all__ = ['SplAtConv1d']
+__all__ = ['SplAtConv2d']
 
-class SplAtConv1d(Module):
-    """Split-Attention Conv1d
+class SplAtConv2d(Module):
+    """Split-Attention Conv2d
     """
-    def __init__(self, in_channels, channels, kernel_size, stride=(1), padding=(0),
-                 dilation=(1), groups=1, bias=True,
+    def __init__(self, in_channels, channels, kernel_size, stride=(1, 1), padding=(0, 0),
+                 dilation=(1, 1), groups=1, bias=True,
                  radix=2, reduction_factor=4,
                  rectify=False, rectify_avg=False, norm_layer=None,
                  dropblock_prob=0.0, **kwargs):
-        super(SplAtConv1d, self).__init__()
-        padding = _single(padding)
-        self.rectify = rectify and (padding[0] > 0)
+        super(SplAtConv2d, self).__init__()
+        padding = _pair(padding)
+        self.rectify = rectify and (padding[0] > 0 or padding[1] > 0)
         self.rectify_avg = rectify_avg
         inter_channels = max(in_channels*radix//reduction_factor, 32)
         self.radix = radix
@@ -36,23 +36,22 @@ class SplAtConv1d(Module):
         self.channels = channels
         self.dropblock_prob = dropblock_prob
         if self.rectify:
-            from rfconv import RFConv1d
-            self.conv = RFConv1d(in_channels, channels*radix, kernel_size, stride, padding, dilation,
+            from rfconv import RFConv2d
+            self.conv = RFConv2d(in_channels, channels*radix, kernel_size, stride, padding, dilation,
                                  groups=groups*radix, bias=bias, average_mode=rectify_avg, **kwargs)
         else:
-            print(stride)
-            self.conv = Conv1d(in_channels, channels*radix, kernel_size, stride, padding, dilation,
+            self.conv = Conv2d(in_channels, channels*radix, kernel_size, stride, padding, dilation,
                                groups=groups*radix, bias=bias, **kwargs)
         self.use_bn = norm_layer is not None
         if self.use_bn:
             self.bn0 = norm_layer(channels*radix)
         self.relu = ReLU(inplace=True)
-        self.fc1 = Conv1d(channels, inter_channels, 1, groups=self.cardinality)
+        self.fc1 = Conv2d(channels, inter_channels, 1, groups=self.cardinality)
         if self.use_bn:
             self.bn1 = norm_layer(inter_channels)
-        self.fc2 = Conv1d(inter_channels, channels*radix, 1, groups=self.cardinality)
+        self.fc2 = Conv2d(inter_channels, channels*radix, 1, groups=self.cardinality)
         if dropblock_prob > 0.0:
-            self.dropblock = DropBlock1d(dropblock_prob, 3)
+            self.dropblock = DropBlock2D(dropblock_prob, 3)
         self.rsoftmax = rSoftMax(radix, groups)
 
     def forward(self, x):
@@ -72,7 +71,7 @@ class SplAtConv1d(Module):
             gap = sum(splited)
         else:
             gap = x
-        gap = F.adaptive_avg_pool1d(gap, 1)
+        gap = F.adaptive_avg_pool2d(gap, 1)
         gap = self.fc1(gap)
 
         if self.use_bn:
@@ -80,7 +79,7 @@ class SplAtConv1d(Module):
         gap = self.relu(gap)
 
         atten = self.fc2(gap)
-        atten = self.rsoftmax(atten).view(batch, -1, 1)
+        atten = self.rsoftmax(atten).view(batch, -1, 1, 1)
 
         if self.radix > 1:
             if torch.__version__ < '1.5':
@@ -110,17 +109,17 @@ class rSoftMax(nn.Module):
 
 __all__ = ['ResNet', 'Bottleneck']
 
-class DropBlock1d(object):
+class DropBlock2D(object):
     def __init__(self, *args, **kwargs):
         raise NotImplementedError
 
-class GlobalAvgPool1d(nn.Module):
+class GlobalAvgPool2d(nn.Module):
     def __init__(self):
         """Global average pooling over the input's spatial dimensions"""
-        super(GlobalAvgPool1d, self).__init__()
+        super(GlobalAvgPool2d, self).__init__()
 
     def forward(self, inputs):
-        return nn.functional.adaptive_avg_pool1d(inputs, 1).view(inputs.size(0), -1)
+        return nn.functional.adaptive_avg_pool2d(inputs, 1).view(inputs.size(0), -1)
 
 class Bottleneck(nn.Module):
     """ResNet Bottleneck
@@ -134,7 +133,7 @@ class Bottleneck(nn.Module):
                  norm_layer=None, dropblock_prob=0.0, last_gamma=False):
         super(Bottleneck, self).__init__()
         group_width = int(planes * (bottleneck_width / 64.)) * cardinality
-        self.conv1 = nn.Conv1d(inplanes, group_width, kernel_size=1, bias=False)
+        self.conv1 = nn.Conv2d(inplanes, group_width, kernel_size=1, bias=False)
         self.bn1 = norm_layer(group_width)
         self.dropblock_prob = dropblock_prob
         self.radix = radix
@@ -142,17 +141,17 @@ class Bottleneck(nn.Module):
         self.avd_first = avd_first
 
         if self.avd:
-            self.avd_layer = nn.AvgPool1d(3, stride, padding=1)
+            self.avd_layer = nn.AvgPool2d(3, stride, padding=1)
             stride = 1
 
         if dropblock_prob > 0.0:
-            self.dropblock1 = DropBlock1d(dropblock_prob, 3)
+            self.dropblock1 = DropBlock2D(dropblock_prob, 3)
             if radix == 1:
-                self.dropblock2 = DropBlock1d(dropblock_prob, 3)
-            self.dropblock3 = DropBlock1d(dropblock_prob, 3)
+                self.dropblock2 = DropBlock2D(dropblock_prob, 3)
+            self.dropblock3 = DropBlock2D(dropblock_prob, 3)
 
         if radix >= 1:
-            self.conv2 = SplAtConv1d(
+            self.conv2 = SplAtConv2d(
                 group_width, group_width, kernel_size=3,
                 stride=stride, padding=dilation,
                 dilation=dilation, groups=cardinality, bias=False,
@@ -161,21 +160,21 @@ class Bottleneck(nn.Module):
                 norm_layer=norm_layer,
                 dropblock_prob=dropblock_prob)
         elif rectified_conv:
-            from rfconv import RFConv1d
-            self.conv2 = RFConv1d(
+            from rfconv import RFConv2d
+            self.conv2 = RFConv2d(
                 group_width, group_width, kernel_size=3, stride=stride,
                 padding=dilation, dilation=dilation,
                 groups=cardinality, bias=False,
                 average_mode=rectify_avg)
             self.bn2 = norm_layer(group_width)
         else:
-            self.conv2 = nn.Conv1d(
+            self.conv2 = nn.Conv2d(
                 group_width, group_width, kernel_size=3, stride=stride,
                 padding=dilation, dilation=dilation,
                 groups=cardinality, bias=False)
             self.bn2 = norm_layer(group_width)
 
-        self.conv3 = nn.Conv1d(
+        self.conv3 = nn.Conv2d(
             group_width, planes * 4, kernel_size=1, bias=False)
         self.bn3 = norm_layer(planes*4)
 
@@ -249,7 +248,7 @@ class ResNet(nn.Module):
                  rectified_conv=False, rectify_avg=False,
                  avd=False, avd_first=False,
                  final_drop=0.0, dropblock_prob=0,
-                 last_gamma=False, norm_layer=nn.BatchNorm1d):
+                 last_gamma=False, norm_layer=nn.BatchNorm2d):
         self.cardinality = groups
         self.bottleneck_width = bottleneck_width
         # ResNet-D params
@@ -265,14 +264,14 @@ class ResNet(nn.Module):
         self.rectified_conv = rectified_conv
         self.rectify_avg = rectify_avg
         if rectified_conv:
-            from rfconv import RFConv1d
-            conv_layer = RFConv1d
+            from rfconv import RFConv2d
+            conv_layer = RFConv2d
         else:
-            conv_layer = nn.Conv1d
+            conv_layer = nn.Conv2d
         conv_kwargs = {'average_mode': rectify_avg} if rectified_conv else {}
         if deep_stem:
             self.conv1 = nn.Sequential(
-                conv_layer(12, stem_width, kernel_size=3, stride=2, padding=1, bias=False, **conv_kwargs),
+                conv_layer(3, stem_width, kernel_size=3, stride=2, padding=1, bias=False, **conv_kwargs),
                 norm_layer(stem_width),
                 nn.ReLU(inplace=True),
                 conv_layer(stem_width, stem_width, kernel_size=3, stride=1, padding=1, bias=False, **conv_kwargs),
@@ -281,11 +280,11 @@ class ResNet(nn.Module):
                 conv_layer(stem_width, stem_width*2, kernel_size=3, stride=1, padding=1, bias=False, **conv_kwargs),
             )
         else:
-            self.conv1 = conv_layer(12, 64, kernel_size=7, stride=2, padding=3,
+            self.conv1 = conv_layer(3, 64, kernel_size=7, stride=2, padding=3,
                                    bias=False, **conv_kwargs)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool1d(kernel_size=3, stride=2, padding=1)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0], norm_layer=norm_layer, is_first=False)
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, norm_layer=norm_layer)
         if dilated or dilation == 4:
@@ -309,13 +308,13 @@ class ResNet(nn.Module):
             self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
                                            norm_layer=norm_layer,
                                            dropblock_prob=dropblock_prob)
-        self.avgpool = GlobalAvgPool1d()
+        self.avgpool = GlobalAvgPool2d()
         self.drop = nn.Dropout(final_drop) if final_drop > 0.0 else None
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv1d):
-                n = m.kernel_size[0] * m.out_channels
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 m.weight.data.normal_(0, math.sqrt(2. / n))
             elif isinstance(m, norm_layer):
                 m.weight.data.fill_(1)
@@ -328,15 +327,15 @@ class ResNet(nn.Module):
             down_layers = []
             if self.avg_down:
                 if dilation == 1:
-                    down_layers.append(nn.AvgPool1d(kernel_size=stride, stride=stride,
+                    down_layers.append(nn.AvgPool2d(kernel_size=stride, stride=stride,
                                                     ceil_mode=True, count_include_pad=False))
                 else:
-                    down_layers.append(nn.AvgPool1d(kernel_size=1, stride=1,
+                    down_layers.append(nn.AvgPool2d(kernel_size=1, stride=1,
                                                     ceil_mode=True, count_include_pad=False))
-                down_layers.append(nn.Conv1d(self.inplanes, planes * block.expansion,
+                down_layers.append(nn.Conv2d(self.inplanes, planes * block.expansion,
                                              kernel_size=1, stride=1, bias=False))
             else:
-                down_layers.append(nn.Conv1d(self.inplanes, planes * block.expansion,
+                down_layers.append(nn.Conv2d(self.inplanes, planes * block.expansion,
                                              kernel_size=1, stride=stride, bias=False))
             down_layers.append(norm_layer(planes * block.expansion))
             downsample = nn.Sequential(*down_layers)
@@ -458,8 +457,7 @@ def resnest269(pretrained=False, root='~/.encoding/models', **kwargs):
     return model
 
 if __name__ == '__main__':
-    from ptflops import get_model_complexity_info
-    x = torch.randn(128, 12, 30000)
+    x = torch.randn(32, 3, 300, 300)
     m = resnest50()
     # flops, params = get_model_complexity_info(m, (12, 18000), as_strings=True, print_per_layer_stat=True)
     # print("%s |%s" % (flops, params))

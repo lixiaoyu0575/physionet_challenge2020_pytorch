@@ -11,6 +11,7 @@ import model.resnext as module_arch_resnext
 import model.inceptiontime as module_arch_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
+import model.resnest as module_arch_resnest
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -30,6 +31,7 @@ files_models = {
     "inceptiontime": ['InceptionTimeV1', 'InceptionTimeV2'],
     "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
+    "resnest": ['resnest50'],
     "model": ['CNN', 'MLP'],
     "tcn": ['TCN']
 }

@@ -2,7 +2,7 @@
     "name": "challenge2020_official_data_slided_cnn",
     "n_gpu": 1,
     "arch": {
-        "type": "CNN",
+        "type": "resnest50",
         "args": {
            "num_classes": 108
         }
@@ -15,7 +15,7 @@
             "data_dir": "/data/ecg/challenge2020/All_data_resampled_to_300HZ_and_slided_n_segment=1",
             "batch_size": 128,
             "shuffle": true,
-            "test_split": 0.05,
+            "split_index": "process/data_split/split1.mat",
             "num_workers": 6
         }
     },
@@ -28,7 +28,7 @@
         }
     },
      "loss": {
-        "type":"bce_loss"
+        "type":"bce_with_logits_loss"
     },
     "metrics":
     [
