@@ -17,11 +17,11 @@
         "args":{
             "label_dir": "/home/weiyuhua/Data/challenge2020",
             "data_dir": "/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100",
-            "batch_size": 16,
+            "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.05,
             "test_split": 0.05,
-            "num_workers": 0
+            "num_workers": 6
         }
     },
     "optimizer": {

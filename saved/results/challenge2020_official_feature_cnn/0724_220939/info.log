@@ -1,0 +1,10 @@
+2020-07-25 00:37:51,028 - evaluater - INFO - Loading checkpoint: saved/models/challenge2020_official_feature_cnn/0724_220939/model_best.pth ...
+2020-07-25 00:37:51,044 - evaluater - INFO - Checkpoint loaded from epoch 34
+2020-07-25 00:38:14,010 - evaluater - INFO -     macro_f_beta_measure: 0.3063777132404703
+2020-07-25 00:38:14,011 - evaluater - INFO -     f_measure      : 0.32118474438602274
+2020-07-25 00:38:14,011 - evaluater - INFO -     macro_auprc    : 0.5989377484072274
+2020-07-25 00:38:14,011 - evaluater - INFO -     macro_g_beta_measure: 0.2232617463413695
+2020-07-25 00:38:14,012 - evaluater - INFO -     loss           : 0.04161700509043772
+2020-07-25 00:38:14,012 - evaluater - INFO -     challenge_metric: 0.20026644689814493
+2020-07-25 00:38:14,012 - evaluater - INFO -     accuracy       : 0.46702425373134326
+2020-07-25 00:38:14,012 - evaluater - INFO -     macro_auroc    : 0.9122832866055164

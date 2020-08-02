@@ -22,9 +22,9 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class CNN(BaseModel):
-    def __init__(self, num_classes=9):
+    def __init__(self, in_channels=12, num_classes=9, ):
         super().__init__()
-        self.conv1 = nn.Conv1d(12, 32, kernel_size=16)
+        self.conv1 = nn.Conv1d(in_channels, 32, kernel_size=16)
         self.conv2 = nn.Conv1d(32, 64, kernel_size=16)
         self.conv3 = nn.Conv1d(64, 128, kernel_size=16)
         self.batch_norm1 = nn.BatchNorm1d(32)
@@ -33,7 +33,7 @@ class CNN(BaseModel):
         self.conv2_drop = nn.Dropout()
         self.fc1 = nn.Linear(128, 50)
         self.fc2 = nn.Linear(50, num_classes)
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.conv1(x)
@@ -54,13 +54,13 @@ class CNN(BaseModel):
         x = F.max_pool1d(x, 2)
         x = F.dropout(x, 0.2, training=self.training)
 
-        print(x.size())
+        # print(x.size())
         x = torch.mean(x, dim=2)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, 0.2, training=self.training)
         x = self.fc2(x)
-        y = self.sigmoid(x)
-        return y
+        # y = self.sigmoid(x)
+        return x
 
 class MLP(BaseModel):
     def __init__(self, input_dim, num_classes, n_hid, activation='ReLU'):
@@ -76,7 +76,8 @@ class MLP(BaseModel):
         fc.append(nn.Linear(self.n_hid[-1], self.num_classes))
 
         self.fc = nn.ModuleList(fc)
-        self.sigmiod = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
+
         # Non linearity
         if activation == 'ReLU':
             self.act = nn.ReLU(inplace=True)
@@ -91,7 +92,7 @@ class MLP(BaseModel):
         for i in range(len(self.fc) - 1):
             x = self.act(self.fc[i](x))
         y = self.fc[-1](x)
-        y = self.sigmiod(y)
+        # y = self.sigmoid(y)
         return  y
 
 import torch

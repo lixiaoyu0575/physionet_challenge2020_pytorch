@@ -76,7 +76,7 @@ class InceptionTimeTransposeModule(nn.Module):
         Z3 = self.conv_to_bottleneck_3(X)
         Z4 = self.conv_to_maxpool(X)
 
-        Z = torch.cat([Z1, Z2, Z3], axis=1)
+        Z = torch.cat([Z1, Z2, Z3], dim=1)
         MUP = self.max_unpool(Z4, indices)
         BN = self.bottleneck(Z)
         # another possibility insted of sum BN and MUP is adding 2nd bottleneck transposed convolution
@@ -212,7 +212,7 @@ class InceptionTimeMoudule(nn.Module):
         Z3 = self.conv_from_bottleneck_3(Z_bottleneck)
         Z4 = self.conv_from_maxpool(Z_maxpool)
         # step 3
-        Z = torch.cat([Z1, Z2, Z3, Z4], axis=1)
+        Z = torch.cat([Z1, Z2, Z3, Z4], dim=1)
         Z = self.activation(self.batch_norm(Z))
         if self.return_indices:
             return Z, indices
@@ -428,7 +428,7 @@ class InceptionTimeV1(nn.Module):
             return_indices=return_indices
         )
         self.fc = nn.Linear(in_features=4 * n_filters, out_features=num_classes)
-        self.sigmoid = nn.Sigmoid()
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, X):
         if self.return_indices:
@@ -441,7 +441,7 @@ class InceptionTimeV1(nn.Module):
             Z = self.inception_block_3(Z)
         Z = torch.mean(Z, dim=2)
         Z = self.fc(Z)
-        Z = self.sigmoid(Z)
+        # Z = self.sigmoid(Z)
         if self.return_indices:
             return Z, [i1, i2, i3]
         else:
@@ -493,8 +493,8 @@ class InceptionTimeV2(nn.Module):
             return_indices=return_indices
         )
         self.fc = nn.Linear(in_features=4 * n_filters, out_features=num_classes)
-        self.sigmoid = nn.Sigmoid()
-        # self.weight_init()
+        # self.sigmoid = nn.Sigmoid()
+
 
     def weight_init(self, mode='kaiming'):
         if mode == 'kaiming':
@@ -537,7 +537,7 @@ class InceptionTimeV2(nn.Module):
             Z = self.inception_block_3(Z)
         Z = torch.mean(Z, dim=2)
         Z = self.fc(Z)
-        Z = self.sigmoid(Z)
+        # Z = self.sigmoid(Z)
         if self.return_indices:
             return Z, [i1, i2, i3]
         else:

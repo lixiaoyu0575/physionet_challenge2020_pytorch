@@ -39,7 +39,7 @@ junctional premature complex,251164006,JPC,0,2,0,0,0,0,2
 junctional tachycardia,426648003,JTach,0,2,0,0,0,4,6
 lateral ischaemia,425623009,LIs,0,0,0,0,142,903,1045
 left atrial abnormality,253352002,LAA,0,0,0,0,0,72,72
-left atrial enlargement,67741000119109,LAE,0,1,0,0,427,870,1298
+left atrial enlargement,6.7741E+13,LAE,0,1,0,0,427,870,1298
 left atrial hypertrophy,446813000,LAH,0,40,0,0,0,0,40
 left posterior fascicular block,445211001,LPFB,0,0,0,0,177,25,202
 left ventricular hypertrophy,164873001,LVH,0,158,10,0,2359,1232,3759

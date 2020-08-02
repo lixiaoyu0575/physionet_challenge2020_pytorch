@@ -1,8 +1,8 @@
 {
-    "name": "challenge2020_official_data_slided_inception",
+    "name": "challenge2020_official_data_slided_inception_StepLR_Dice_loss_no_weighted",
     "n_gpu": 1,
     "arch": {
-        "type": "InceptionTimeV1",
+        "type": "InceptionTimeV2",
         "args": {
             "in_channels": 12,
             "num_classes": 108,
@@ -17,22 +17,24 @@
         "args":{
             "label_dir": "/home/weiyuhua/Data/challenge2020",
             "data_dir": "/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100",
-            "batch_size": 16,
+            "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.05,
             "test_split": 0.05,
-            "num_workers": 0
+            "num_workers": 6
         }
     },
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 0.001,
+            "lr": 0.01,
             "weight_decay": 0,
             "amsgrad": true
         }
     },
-    "loss": "bce_loss",
+    "loss": {
+        "type":"multiclass_dice_loss"
+    },
     "metrics":
     [
         "accuracy",
@@ -43,7 +45,7 @@
         "macro_auprc",
         "challenge_metric"
     ],
-    "lr_scheduler": {
+   "lr_scheduler": {
         "type": "StepLR",
         "args": {
             "step_size": 50,
@@ -51,7 +53,7 @@
         }
     },
     "trainer": {
-        "epochs": 1,
+        "epochs": 100,
 
         "save_dir": "saved/",
         "save_period": 1,

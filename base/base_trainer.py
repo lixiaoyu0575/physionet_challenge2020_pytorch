@@ -71,11 +71,12 @@ class BaseTrainer:
         """
         not_improved_count = 0
         self.log['epoch'] = []
+        self.log['lr'] = []
         for epoch in range(self.start_epoch, self.epochs + 1):
             result = self._train_epoch(epoch)
 
             # save logged informations into log dict
-            log = {'epoch': epoch}
+            log = {'epoch': epoch, 'lr': self.optimizer.param_groups[0]['lr']}
             log.update(result)
 
             # print logged informations to the screen
@@ -119,6 +120,10 @@ class BaseTrainer:
             metric_list = self.log[metric]
             metric_val_list = self.log.get('val_' + metric)
             plot_metric(np.array(metric_list), np.array(metric_val_list), metric=metric, save_path=str(self.log_dir))
+
+        lr = self.log['lr']
+        plot_lr(lr, save_path=str(self.log_dir))
+
 
     def _prepare_device(self, n_gpu_use):
         """

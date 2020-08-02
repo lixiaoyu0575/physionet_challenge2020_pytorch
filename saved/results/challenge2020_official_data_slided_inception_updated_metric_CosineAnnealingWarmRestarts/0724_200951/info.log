@@ -1,0 +1,10 @@
+2020-07-24 22:46:59,306 - evaluater - INFO - Loading checkpoint: saved/models/challenge2020_official_data_slided_inception_updated_metric_CosineAnnealingWarmRestarts/0724_200951/model_best.pth ...
+2020-07-24 22:46:59,479 - evaluater - INFO - Checkpoint loaded from epoch 17
+2020-07-24 22:47:16,723 - evaluater - INFO -     macro_auprc    : 0.6341159244122873
+2020-07-24 22:47:16,724 - evaluater - INFO -     accuracy       : 0.5462173821548821
+2020-07-24 22:47:16,724 - evaluater - INFO -     loss           : 0.04423401522494498
+2020-07-24 22:47:16,724 - evaluater - INFO -     macro_g_beta_measure: 0.2974985098778075
+2020-07-24 22:47:16,724 - evaluater - INFO -     f_measure      : 0.42266041505713353
+2020-07-24 22:47:16,724 - evaluater - INFO -     macro_f_beta_measure: 0.40495011097825084
+2020-07-24 22:47:16,724 - evaluater - INFO -     challenge_metric: 0.3818516805421274
+2020-07-24 22:47:16,724 - evaluater - INFO -     macro_auroc    : 0.939919116545641

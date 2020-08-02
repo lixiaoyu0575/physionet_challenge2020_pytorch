@@ -1,5 +1,5 @@
 {
-    "name": "Challenge2020_InceptionTimeV2",
+    "name": "challenge2020_unofficial_data_inception_len=3000",
     "n_gpu": 1,
     "arch": {
         "type": "InceptionTimeV2",

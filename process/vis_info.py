@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from process.util import load_challenge_data, load_labels, load_label_files
 
-def plot(data, header_data, label, label_file, save_path):
+def plot(data, header_data, label, name, save_path):
     fig, axs = plt.subplots(12, 1, sharey=True, figsize=(50, 50))
 
     mm = MinMaxScaler()
@@ -27,9 +27,6 @@ def plot(data, header_data, label, label_file, save_path):
 
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-
-    file = os.path.basename(label_file)
-    name, ext = os.path.splitext(file)
 
     save_path_label = os.path.join(save_path, save_path_label)
 
@@ -78,9 +75,10 @@ if __name__ == '__main__':
 
     for i, (f, label) in enumerate(zip(label_files, labels)):
         print('    {}/{}...'.format(i + 1, num_files))
-        tmp_label_file = os.path.join(input_directory, f)
-        data, header_data = load_challenge_data(tmp_label_file)
-        # plot(data, header_data, label, tmp_label_file, save_path)
+        file = os.path.basename(f)
+        name, ext = os.path.splitext(file)
+        data, header_data = load_challenge_data(file, input_directory, input_directory)
+        # plot(data, header_data, label, name, save_path)
         count(label, class_count)
 
     print("Done.")
