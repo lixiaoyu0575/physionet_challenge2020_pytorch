@@ -31,7 +31,7 @@ files_models = {
     "inceptiontime": ['InceptionTimeV1', 'InceptionTimeV2'],
     "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
-    "resnest": ['resnest50'],
+    "resnest": ['resnest50', 'resnest'],
     "model": ['CNN', 'MLP'],
     "tcn": ['TCN']
 }
