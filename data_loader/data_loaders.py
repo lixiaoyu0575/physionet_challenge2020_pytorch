@@ -48,7 +48,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
     """
     challenge2020 data loading
     """
-    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=1, training=True):
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True):
         self.label_dir = label_dir
         self.data_dir = data_dir
         print('Loading data...')

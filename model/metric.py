@@ -35,7 +35,7 @@ class ChallengeMetric():
 
         # Load the labels and classes.
         print('Loading labels...')
-        classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
+        classes, _, _ = load_labels(label_files, normal_class, equivalent_classes)
 
         num_files = len(label_files)
         print("num_files:", num_files)

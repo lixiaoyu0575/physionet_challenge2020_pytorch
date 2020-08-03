@@ -61,16 +61,21 @@ class TemporalConvNet(nn.Module):
     def forward(self, x):
         return self.network(x)
 
+
 class TCN(nn.Module):
     def __init__(self, input_size, output_size, num_channels, kernel_size, dropout):
         super(TCN, self).__init__()
         self.tcn = TemporalConvNet(input_size, num_channels, kernel_size=kernel_size, dropout=dropout)
-        self.linear = nn.Linear(num_channels[-1], output_size)
+        # self.linear = nn.Linear(num_channels[-1], output_size)
+        self.linear = nn.Linear(3000*num_channels[-1], output_size)
         # self.sigmoid = nn.Sigmoid()
 
     def forward(self, inputs):
         """Inputs have to have dimension (N, C_in, L_in)"""
         y1 = self.tcn(inputs)  # input should have dimension (N, C, L)
         # o = self.linear(y1[:, :, -1])   # return sequence = False
-        o = self.linear(torch.mean(y1, dim=2))
+        # print(y1.shape)
+        # o = self.linear(torch.mean(y1, dim=2))
+        o = self.linear(y1.view(y1.shape[0], -1))
+
         return o

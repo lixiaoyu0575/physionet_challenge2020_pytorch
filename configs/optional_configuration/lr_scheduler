@@ -37,8 +37,6 @@
   "ReduceLROnPlateau": {
       "type": "ReduceLROnPlateau",
       "args": {
-          "step_size": 50,
-          "gamma": 0.1,
           "mode":"min",
           "factor": 0.1,
           "patience": 10,
