@@ -83,10 +83,7 @@ def get_preprocessed_data_slide(filie_name,data):
     patient_info_each = []
     patient_info_each.append(filie_name)
     patient_info_each.append(record.__dict__['comments'][0][5:])
-    if record.__dict__['comments'][1][5:] == 'Female':
-        patient_info_each.append(0)
-    else:
-        patient_info_each.append(1)
+    patient_info_each.append(record.__dict__['comments'][1][5:])
     patient_info.append(patient_info_each)
     ###LONG
     long_pid.append(filie_name)
