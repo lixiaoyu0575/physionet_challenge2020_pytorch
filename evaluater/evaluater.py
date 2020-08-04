@@ -19,7 +19,6 @@ class Evaluater(BaseEvaluater):
     def evaluate_batchwise(self):
         """
         Evaluate after training procedure finished (batch-wised)
-
         :return: A log that contains information about validation
         """
         self.model.eval()
@@ -45,7 +44,6 @@ class Evaluater(BaseEvaluater):
     def evaluate(self):
         """
         Evaluate after training procedure finished
-
         :return: A log that contains information about validation
         """
 
@@ -93,4 +91,3 @@ def get_pred(output, alpha=0.5):
             else:
                 output[i, j] = 0
     return output
-
