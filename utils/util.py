@@ -82,7 +82,6 @@ class MetricTracker:
             self._log[key] = np.array(key_list)
         return self._log
 
-
 def plot_metric(metric_train, metric_val, metric, save_path):
     textsize = 15
     marker = 5

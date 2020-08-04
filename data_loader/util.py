@@ -20,12 +20,13 @@ def get_classes(input_directory, filenames):
 # Load challenge data.
 def load_challenge_data(label_file, data_dir):
     file = os.path.basename(label_file)
+    name, ext = os.path.splitext(file)
     with open(label_file, 'r') as f:
         header = f.readlines()
     mat_file = file.replace('.hea', '.mat')
     x = loadmat(os.path.join(data_dir, mat_file))
     recording = np.asarray(x['val'], dtype=np.float64)
-    return recording, header
+    return recording, header, name
 
 # Customed TensorDataset
 class CustomTensorDataset(Dataset):

@@ -54,6 +54,11 @@ class ChallengeMetric():
         self.classes = classes
         self.normal_class = normal_class
 
+        self._return_metric_list = False
+
+    def return_metric_list(self):
+        self._return_metric_list = True
+
     # Compute recording-wise accuracy.
     def accuracy(self, outputs, labels):
         outputs = self.get_pred(outputs)
@@ -131,14 +136,25 @@ class ChallengeMetric():
 
         macro_f_measure = np.nanmean(f_measure)
 
-        return macro_f_measure
+        if self._return_metric_list:
+            return macro_f_measure, f_measure
+        else:
+            return macro_f_measure
 
     # Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
     def macro_f_beta_measure(self, outputs, labels, beta=2):
-        return self.beta_measures(outputs, labels, beta)[0]
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = self.beta_measures(outputs, labels, beta)
+        if self._return_metric_list:
+            return macro_f_beta_measure, f_beta_measure
+        else:
+            return macro_f_beta_measure
 
     def macro_g_beta_measure(self, outputs, labels, beta=2):
-        return self.beta_measures(outputs, labels, beta)[1]
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = self.beta_measures(outputs, labels, beta)
+        if self._return_metric_list:
+            return macro_g_beta_measure, g_beta_measure
+        else:
+            return macro_g_beta_measure
 
     def beta_measures(self, outputs, labels, beta=2):
         outputs = self.get_pred(outputs)
@@ -164,14 +180,22 @@ class ChallengeMetric():
         macro_f_beta_measure = np.nanmean(f_beta_measure)
         macro_g_beta_measure = np.nanmean(g_beta_measure)
 
-        return macro_f_beta_measure, macro_g_beta_measure
+        return macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure
 
     # Compute macro AUROC and macro AUPRC.
     def macro_auroc(self, outputs, labels):
-        return self.auc(outputs, labels)[0]
+        macro_auroc, macro_auprc, auroc, auprc = self.auc(outputs, labels)
+        if self._return_metric_list:
+            return macro_auroc, auroc
+        else:
+            return macro_auroc
 
     def macro_auprc(self, outputs, labels):
-        return self.auc(outputs, labels)[1]
+        macro_auroc, macro_auprc, auroc, auprc = self.auc(outputs, labels)
+        if self._return_metric_list:
+            return macro_auprc, auprc
+        else:
+            return macro_auprc
 
     def auc(self, outputs, labels):
         outputs = outputs[:, self.indices]
@@ -251,7 +275,7 @@ class ChallengeMetric():
         macro_auroc = np.nanmean(auroc)
         macro_auprc = np.nanmean(auprc)
 
-        return macro_auroc, macro_auprc
+        return macro_auroc, macro_auprc, auroc, auprc
 
     # Compute modified confusion matrix for multi-class, multi-label tasks.
     def modified_confusion_matrix(self, outputs, labels):

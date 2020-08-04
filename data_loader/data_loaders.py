@@ -75,8 +75,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # savemat('evaluation/scored_classes_indices.mat', {'val': indices})
 
         # Load short signals and remove from labels
-        short_signals = loadmat(os.path.join(data_dir, 'short_signals.mat'))['val']
-        short_signals_ids = list(short_signals.reshape((short_signals.shape[1], )))
+        # short_signals = loadmat(os.path.join(data_dir, 'short_signals.mat'))['val']
+        # short_signals_ids = list(short_signals.reshape((short_signals.shape[1], )))
 
         split_idx = loadmat(split_index)
         train_index, val_index, test_index = split_idx['train_index'], split_idx['val_index'], split_idx['test_index']
@@ -88,17 +88,20 @@ class ChallengeDataLoader0(BaseDataLoader2):
         recordings = list()
         labels_onehot_new = list()
         labels_new = list()
+        file_names = list()
 
         bb = []
         dd = []
 
         for i in range(num_files):
-            if i in short_signals_ids:
-                recording = np.zeros((1, 12, 3000))
-            else:
-                recording, header = load_challenge_data(label_files[i], data_dir)
+            # if i in short_signals_ids:
+            #     recording = np.zeros((1, 12, 3000))
+            #
+            # else:
+            recording, header, name = load_challenge_data(label_files[i], data_dir)
             recording[np.isnan(recording)] = 0
             recordings.append(recording)
+            file_names.append(name)
 
             rr = np.array(recording)
             if np.isnan(rr).any():
@@ -155,6 +158,9 @@ class ChallengeDataLoader0(BaseDataLoader2):
 
         super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers)
 
+        self.valid_data_loader.file_names = file_names
+        self.test_data_loader.file_names = file_names
+
     def preprocessing(self, recordings, labels):
 
         # mm = MinMaxScaler()
@@ -181,7 +187,6 @@ class ChallengeDataLoader0(BaseDataLoader2):
         random.shuffle(labels)
 
         return recordings, labels_onehot, labels
-
 
 # official data (filtered\balanced\slided_and_cut)
 class ChallengeDataLoader1(BaseDataLoader2):
@@ -215,8 +220,8 @@ class ChallengeDataLoader1(BaseDataLoader2):
         # savemat('evaluation/scored_classes_indices.mat', {'val': indices})
 
         # Load short signals and remove from labels
-        short_signals = loadmat(os.path.join(data_dir, 'short_signals.mat'))['val']
-        short_signals_ids = list(short_signals.reshape((short_signals.shape[1], )))
+        # short_signals = loadmat(os.path.join(data_dir, 'short_signals.mat'))['val']
+        # short_signals_ids = list(short_signals.reshape((short_signals.shape[1], )))
 
         num_files = len(label_files)
         recordings = list()
@@ -227,8 +232,8 @@ class ChallengeDataLoader1(BaseDataLoader2):
         dd = []
 
         for i in range(num_files):
-            if i in short_signals_ids:
-                continue
+            # if i in short_signals_ids:
+            #     continue
             recording, header = load_challenge_data(label_files[i], data_dir)
             recording[np.isnan(recording)] = 0
             recordings.append(recording)
