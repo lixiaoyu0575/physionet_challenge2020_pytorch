@@ -3,6 +3,10 @@ import numpy as np
 import torch
 from scipy.interpolate import CubicSpline      # for warping
 from transforms3d.axangles import axangle2mat  # for rotation
+import pywt
+from scipy import signal
+import pandas as pd
+
 
 ## This example using cubic splice is not the best approach to generate random curves.
 ## You can use other aprroaches, e.g., Gaussian process regression, Bezier curve, etc.
@@ -40,6 +44,19 @@ def RandSampleTimesteps(X, nSample=1000):
         tt[1:-1,i] = np.sort(np.random.randint(1,X.shape[1]-1,nSample-2))
     tt[-1,:] = X.shape[1]-1
     return tt.transpose()
+
+def WTfilt_1d(sig):
+    coeffs = pywt.wavedec(data=sig, wavelet='db5', level=9)
+    cA9, cD9, cD8, cD7, cD6, cD5, cD4, cD3, cD2, cD1 = coeffs
+    threshold = (np.median(np.abs(cD1)) / 0.6745) * (np.sqrt(2 * np.log(len(cD1))))
+    # 将高频信号cD1、cD2置零
+    cD1.fill(0)
+    cD2.fill(0)
+    # 将其他中低频信号按软阈值公式滤波
+    for i in range(1, len(coeffs) - 2):
+        coeffs[i] = pywt.threshold(coeffs[i], threshold)
+    rdata = pywt.waverec(coeffs=coeffs, wavelet='db5')
+    return rdata
 
 class Jitter(object):
     """
@@ -262,6 +279,37 @@ class RandSampling(object):
         # print(type(torch.from_numpy(X_new)))
 
         return (torch.from_numpy(X_new))
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+
+class filter_and_detrend(object):
+    """
+    Args:
+
+    """
+    def __init__(self):
+        pass
+
+    def __call__(self, data):
+        """
+        Args:
+            data: 12 lead ECG data . For example,the shape of data is (12,5000)
+
+        Returns:
+            Tensor: 12 lead ECG data after filtered and detrended
+        """
+
+        filtered_data = pd.DataFrame()
+        for k in range(12):
+            try:
+                filtered_data[k] = signal.detrend(WTfilt_1d(data[k]))
+            except ValueError:
+                ##有些数据全是0，记录下来，无法进行detrend处理
+                filtered_data[k] = WTfilt_1d(data[k])
+
+        return (filtered_data.values).T
 
     def __repr__(self):
         return self.__class__.__name__

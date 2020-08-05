@@ -32,16 +32,13 @@
         }
     },
     "loss": "bce_loss",
-    "metrics":
-    [
-        "accuracy",
-        "f_measure",
-        "macro_f_beta_measure",
-        "macro_g_beta_measure",
-        "macro_auroc",
-        "macro_auprc",
-        "challenge_metric"
-    ],
+    "metrics": {
+        "accuracy": "accuracy",
+        "f_measure": "f_measure",
+        "beta_measures": ["macro_f_beta_measure", "macro_g_beta_measure"],
+        "auc": ["macro_auroc", "macro_auprc"],
+        "challenge_metric": "challenge_metric"
+    },
     "lr_scheduler": {
         "type": "StepLR",
         "args": {

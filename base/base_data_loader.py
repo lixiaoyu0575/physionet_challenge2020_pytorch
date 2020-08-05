@@ -185,6 +185,7 @@ class BaseDataLoader2(DataLoader):
         else:
             valid_data_loader = DataLoader(sampler=self.valid_sampler, **self.init_kwargs)
             valid_data_loader.n_samples = self.valid_n_samples
+            valid_data_loader.idx = self.valid_idx
             return valid_data_loader
 
     def split_test(self):
@@ -193,4 +194,5 @@ class BaseDataLoader2(DataLoader):
         else:
             test_data_loader = DataLoader(self.test_subset, **self.test_data_loader_init_kwargs)
             test_data_loader.n_samples = self.test_n_samples
+            test_data_loader.idx = self.test_idx
             return test_data_loader

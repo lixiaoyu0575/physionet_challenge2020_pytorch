@@ -1,6 +1,9 @@
 import os
 import numpy as np
 from scipy.io import loadmat, savemat
+import neurokit2 as nk
+import matplotlib.pyplot as plt
+
 # Find Challenge files.
 def load_label_files(label_directory):
     label_files = list()
@@ -100,5 +103,124 @@ def load_challenge_data(label_filename, input_directory_label, input_directory_d
         header_data=f.readlines()
     return data, header_data
 
+# Load weights.
+def load_weights(weight_file, classes):
+    # Load the weight matrix.
+    rows, cols, values = load_table(weight_file)
+    assert(rows == cols)
+    num_rows = len(rows)
+
+    # Assign the entries of the weight matrix with rows and columns corresponding to the classes.
+    num_classes = len(classes)
+    weights = np.zeros((num_classes, num_classes), dtype=np.float64)
+    for i, a in enumerate(rows):
+        if a in classes:
+            k = classes.index(a)
+            for j, b in enumerate(rows):
+                if b in classes:
+                    l = classes.index(b)
+                    weights[k, l] = values[i, j]
+
+    return weights
+
+# Load_table
+def load_table(table_file):
+    # The table should have the following form:
+    #
+    # ,    a,   b,   c
+    # a, 1.2, 2.3, 3.4
+    # b, 4.5, 5.6, 6.7
+    # c, 7.8, 8.9, 9.0
+    #
+    table = list()
+    with open(table_file, 'r') as f:
+        for i, l in enumerate(f):
+            arrs = [arr.strip() for arr in l.split(',')]
+            table.append(arrs)
+
+    # Define the numbers of rows and columns and check for errors.
+    num_rows = len(table)-1
+    if num_rows<1:
+        raise Exception('The table {} is empty.'.format(table_file))
+
+    num_cols = set(len(table[i])-1 for i in range(num_rows))
+    if len(num_cols)!=1:
+        raise Exception('The table {} has rows with different lengths.'.format(table_file))
+    num_cols = min(num_cols)
+    if num_cols<1:
+        raise Exception('The table {} is empty.'.format(table_file))
+
+    # Find the row and column labels.
+    rows = [table[0][j+1] for j in range(num_rows)]
+    cols = [table[i+1][0] for i in range(num_cols)]
+
+    # Find the entries of the table.
+    values = np.zeros((num_rows, num_cols))
+    for i in range(num_rows):
+        for j in range(num_cols):
+            value = table[i+1][j+1]
+            if is_number(value):
+                values[i, j] = float(value)
+            else:
+                values[i, j] = float('nan')
+
+    return rows, cols, values
+
+def is_number(x):
+    try:
+        float(x)
+        return True
+    except ValueError:
+        return False
+
+def getRpeakSet(ecg, sampling_rate):
+    ecg_II = ecg[1]
+    processed_ecg = nk.ecg_process(ecg_II, sampling_rate)
+    rpeaks = processed_ecg[1]['ECG_R_Peaks']
+    return rpeaks
+
+def plot_ecg_filled(ecg, ecg_filled, save_file):
+    fig, axs = plt.subplots(12, 1, sharey=True, figsize=(25, 25))
+
+    for i in range(12):
+        axs[i].plot(ecg[i], color='blue')
+        axs[i].plot(ecg_filled[i], color='red')
+        axs[i].autoscale(enable=True, axis='both', tight=True)
+
+    plt.savefig(save_file)
+    # plt.show()
+    plt.close()
+
+def ecg_filling(ecg, sampling_rate, length, save_file):
+    rpeaks = getRpeakSet(ecg, sampling_rate)
+    ecg_filled = np.zeros((ecg.shape[0], length))
+    sta = rpeaks[-1]
+    ecg_filled[:, :sta] = ecg[:, :sta]
+    seg = ecg[:, rpeaks[0]:rpeaks[-1]]
+    len = seg.shape[1]
+    while True:
+        if (sta + len) >= length:
+            ecg_filled[:, sta: length] = seg[:, : length-sta]
+            break
+        else:
+            ecg_filled[:, sta: sta+len] = seg[:, :]
+            sta = sta + len
+
+    plot_ecg_filled(ecg, ecg_filled, save_file)
+    return ecg_filled
+
 # Plot Ecg
-channels = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6']
+# channels = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6']
+
+#
+# ecg = loadmat('/DATASET/challenge2020/All_data_resampled_to_300HZ/E09943.mat')['val']
+# ecg_filled = ecg_filling(ecg, sampling_rate=300, length=3000, save_file='./test.png')
+# plot_ecg_filled(ecg, ecg_filled)
+
+# nk error
+ecg = loadmat('/DATASET/challenge2020/All_data_resampled_to_300HZ/E09943.mat')['val']
+ecg_filled = np.concatenate((ecg, ecg[:, :3000-ecg.shape[1]]),axis=1)
+plot_ecg_filled(ecg, ecg_filled, save_file='../info/E09943.png')
+
+
+
