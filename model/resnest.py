@@ -131,7 +131,7 @@ class Bottleneck(nn.Module):
                  radix=1, cardinality=1, bottleneck_width=64,
                  avd=False, avd_first=False, dilation=1, is_first=False,
                  rectified_conv=False, rectify_avg=False,
-                 norm_layer=None, dropblock_prob=0.0, last_gamma=False):
+                 norm_layer=None, dropblock_prob=0.0, last_gamma=False, kernel_size=7):
         super(Bottleneck, self).__init__()
         group_width = int(planes * (bottleneck_width / 64.)) * cardinality
         self.conv1 = nn.Conv1d(inplanes, group_width, kernel_size=1, bias=False)
@@ -153,8 +153,8 @@ class Bottleneck(nn.Module):
 
         if radix >= 1:
             self.conv2 = SplAtConv1d(
-                group_width, group_width, kernel_size=7,
-                stride=stride, padding=3,
+                group_width, group_width, kernel_size=kernel_size,
+                stride=stride, padding=(kernel_size - 1) // 2,
                 dilation=dilation, groups=cardinality, bias=False,
                 radix=radix, rectify=rectified_conv,
                 rectify_avg=rectify_avg,
@@ -163,15 +163,15 @@ class Bottleneck(nn.Module):
         elif rectified_conv:
             from rfconv import RFConv1d
             self.conv2 = RFConv1d(
-                group_width, group_width, kernel_size=7, stride=stride,
-                padding=3, dilation=dilation,
+                group_width, group_width, kernel_size=kernel_size, stride=stride,
+                padding=(kernel_size - 1) // 2, dilation=dilation,
                 groups=cardinality, bias=False,
                 average_mode=rectify_avg)
             self.bn2 = norm_layer(group_width)
         else:
             self.conv2 = nn.Conv1d(
-                group_width, group_width, kernel_size=7, stride=stride,
-                padding=3, dilation=dilation,
+                group_width, group_width, kernel_size=kernel_size, stride=stride,
+                padding=(kernel_size - 1) // 2, dilation=dilation,
                 groups=cardinality, bias=False)
             self.bn2 = norm_layer(group_width)
 
@@ -249,7 +249,7 @@ class ResNet(nn.Module):
                  rectified_conv=False, rectify_avg=False,
                  avd=False, avd_first=False,
                  final_drop=0.0, dropblock_prob=0,
-                 last_gamma=False, norm_layer=nn.BatchNorm1d):
+                 last_gamma=False, norm_layer=nn.BatchNorm1d, kernel_size=7):
         self.cardinality = groups
         self.bottleneck_width = bottleneck_width
         # ResNet-D params
@@ -260,6 +260,7 @@ class ResNet(nn.Module):
         self.radix = radix
         self.avd = avd
         self.avd_first = avd_first
+        self.kernel_size=kernel_size
 
         super(ResNet, self).__init__()
         self.rectified_conv = rectified_conv
@@ -272,20 +273,20 @@ class ResNet(nn.Module):
         conv_kwargs = {'average_mode': rectify_avg} if rectified_conv else {}
         if deep_stem:
             self.conv1 = nn.Sequential(
-                conv_layer(12, stem_width, kernel_size=7, stride=2, padding=3, bias=False, **conv_kwargs),
+                conv_layer(12, stem_width, kernel_size=kernel_size, stride=2, padding=(kernel_size - 1) // 2, bias=False, **conv_kwargs),
                 norm_layer(stem_width),
                 nn.ReLU(inplace=True),
-                conv_layer(stem_width, stem_width, kernel_size=7, stride=1, padding=3, bias=False, **conv_kwargs),
+                conv_layer(stem_width, stem_width, kernel_size=kernel_size, stride=1, padding=(kernel_size - 1) // 2, bias=False, **conv_kwargs),
                 norm_layer(stem_width),
                 nn.ReLU(inplace=True),
-                conv_layer(stem_width, stem_width*2, kernel_size=7, stride=1, padding=3, bias=False, **conv_kwargs),
+                conv_layer(stem_width, stem_width*2, kernel_size=kernel_size, stride=1, padding=(kernel_size - 1) // 2, bias=False, **conv_kwargs),
             )
         else:
-            self.conv1 = conv_layer(12, 64, kernel_size=15, stride=2, padding=7,
+            self.conv1 = conv_layer(12, 64, kernel_size=(kernel_size * 2 + 1), stride=2, padding=kernel_size,
                                    bias=False, **conv_kwargs)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool1d(kernel_size=7, stride=2, padding=3)
+        self.maxpool = nn.MaxPool1d(kernel_size=kernel_size, stride=2, padding=(kernel_size - 1) // 2)
         self.layer1 = self._make_layer(block, 64, layers[0], norm_layer=norm_layer, is_first=False)
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, norm_layer=norm_layer)
         if dilated or dilation == 4:
@@ -350,7 +351,7 @@ class ResNet(nn.Module):
                                 dilation=1, is_first=is_first, rectified_conv=self.rectified_conv,
                                 rectify_avg=self.rectify_avg,
                                 norm_layer=norm_layer, dropblock_prob=dropblock_prob,
-                                last_gamma=self.last_gamma))
+                                last_gamma=self.last_gamma, kernel_size=self.kernel_size))
         elif dilation == 4:
             layers.append(block(self.inplanes, planes, stride, downsample=downsample,
                                 radix=self.radix, cardinality=self.cardinality,
@@ -359,7 +360,7 @@ class ResNet(nn.Module):
                                 dilation=2, is_first=is_first, rectified_conv=self.rectified_conv,
                                 rectify_avg=self.rectify_avg,
                                 norm_layer=norm_layer, dropblock_prob=dropblock_prob,
-                                last_gamma=self.last_gamma))
+                                last_gamma=self.last_gamma, kernel_size=self.kernel_size))
         else:
             raise RuntimeError("=> unknown dilation size: {}".format(dilation))
 
@@ -372,7 +373,7 @@ class ResNet(nn.Module):
                                 dilation=dilation, rectified_conv=self.rectified_conv,
                                 rectify_avg=self.rectify_avg,
                                 norm_layer=norm_layer, dropblock_prob=dropblock_prob,
-                                last_gamma=self.last_gamma))
+                                last_gamma=self.last_gamma, kernel_size=self.kernel_size))
 
         return nn.Sequential(*layers)
 
@@ -428,12 +429,12 @@ def resnest50(pretrained=False, root='~/.encoding/models', **kwargs):
     return model
 
 def resnest(pretrained=False, layers=[3, 4, 6, 3], radix=2, groups=1, bottleneck_width=64,
-                   deep_stem=True, stem_width=32, avg_down=True,
+                   deep_stem=True, stem_width=32, avg_down=True, kernel_size=7,
                    avd=True, avd_first=False, root='~/.encoding/models', **kwargs):
     model = ResNet(Bottleneck, layers,
                    radix=radix, groups=groups, bottleneck_width=bottleneck_width,
                    deep_stem=deep_stem, stem_width=stem_width, avg_down=avg_down,
-                   avd=avd, avd_first=avd_first, **kwargs)
+                   avd=avd, avd_first=avd_first, kernel_size=kernel_size, **kwargs)
     if pretrained:
         model.load_state_dict(torch.hub.load_state_dict_from_url(
             resnest_model_urls['resnest50'], progress=True, check_hash=True))

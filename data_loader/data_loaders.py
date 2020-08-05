@@ -15,6 +15,8 @@ from data_loader.util import load_challenge_data, get_classes, CustomTensorDatas
 import augmentation.transformers as module_transformers
 import random
 
+from utils.util import smooth_labels
+
 class MnistDataLoader(BaseDataLoader):
     """
     MNIST data loading demo using BaseDataLoader
@@ -130,6 +132,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
         recordings_preprocessed, labels_onehot = self.preprocessing(recordings_all, labels_onehot_all)
         recordings_augmented, labels_onehot = self.augmentation(recordings_preprocessed, labels_onehot_all)
 
+        labels_onehot = np.array(labels_onehot, dtype='float64')
+        labels_onehot = smooth_labels(labels_onehot)
         print(np.isnan(recordings_augmented).any())
 
         num = recordings_augmented.shape[0]
@@ -149,8 +153,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
 
         X = torch.from_numpy(recordings_augmented).float()
         # Y = torch.from_numpy(labels_onehot)
-        Y = torch.from_numpy(labels_onehot.astype(int))
-
+        Y = torch.from_numpy(labels_onehot)
         self.dataset = TensorDataset(X, Y)
 
         super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers)

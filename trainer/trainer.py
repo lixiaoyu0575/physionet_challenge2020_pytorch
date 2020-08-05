@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from torchvision.utils import make_grid
 from base import BaseTrainer
-from utils import inf_loop, MetricTracker
+from utils import inf_loop, MetricTracker, smooth_one_hot
 import torch.nn.functional as F
 from scipy.io import loadmat
 
@@ -38,7 +38,8 @@ class Trainer(BaseTrainer):
                 self.log[key] = []
 
 
-        self.only_scored_classes = config['trainer'].get('only_scored_class', False)
+        self.only_scored_classes = config['trainer'].get('only_scored_class', True)
+        self.lable_smooth = config['trainer'].get('label_smooth', None)
         if self.only_scored_classes:
             # Only consider classes that are scored with the Challenge metric.
             indices = loadmat('evaluation/scored_classes_indices.mat')['val']
@@ -57,6 +58,11 @@ class Trainer(BaseTrainer):
         self.train_metrics.reset()
         for batch_idx, (data, target) in enumerate(self.data_loader):
             data, target = data.to(device=self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
+
+            # if self.lable_smooth is not None:
+            #     target = target.long()
+            #     print('getting smooth label')
+            #     target = smooth_one_hot(true_labels=target, classes=108, smoothing=self.lable_smooth)
 
             self.optimizer.zero_grad()
             output = self.model(data)

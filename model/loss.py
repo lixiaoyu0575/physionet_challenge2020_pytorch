@@ -171,3 +171,23 @@ class FocalLoss2d(nn.Module):
             focal_loss = focal_loss.sum()
         balanced_focal_loss = self.balance_param * focal_loss
         return balanced_focal_loss
+
+def reduce_loss(loss, reduction='mean'):
+    return loss.mean() if reduction=='mean' else loss.sum() if reduction=='sum' else loss
+def linear_combination(x, y, epsilon):
+    return epsilon*x + (1-epsilon)*y
+class LabelSmoothingBCE(nn.Module):
+    def __init__(self, epsilon:float=0.1, reduction='mean'):
+        super(LabelSmoothingBCE, self).__init__()
+        self.epsilon = epsilon
+        self.reduction = reduction
+
+    def forward(self, pred, target):
+        n = pred.size()[-1]
+        log_preds = F.logsigmoid(pred)
+        loss = reduce_loss(-log_preds.sum(dim=-1), self.reduction)
+        bce = F.binary_cross_entropy(log_preds, target, reduction=self.reduction)
+        return linear_combination(loss/n, bce, self.epsilon)
+def label_smoothing_bce(output, target):
+    loss = LabelSmoothingBCE()
+    return loss(output, target)
