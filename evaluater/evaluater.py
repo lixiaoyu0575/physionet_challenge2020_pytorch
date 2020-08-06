@@ -133,12 +133,12 @@ class Evaluater(BaseEvaluater):
         macro_auroc, macro_auprc, auroc, auprc = challenge_metrics.auc(self._to_np(outputs), self._to_np(targets))
         challenge_metric = challenge_metrics.challenge_metric(self._to_np(outputs), self._to_np(targets))
 
-        self.logger.info("challenge_metric:", challenge_metric)
-        self.logger.info("accuracy:", accuracy)
-        self.logger.info("macro_f_measure", macro_f_measure)
-        self.logger.info("macro_g_beta_measure", macro_g_beta_measure)
-        self.logger.info("macro_auroc", macro_auroc)
-        self.logger.info("macro_auprc", macro_auprc)
+        self.logger.info("challenge_metric:{}".format(challenge_metric))
+        self.logger.info("accuracy:{}".format(accuracy))
+        self.logger.info("macro_f_measure:{}".format(macro_f_measure))
+        self.logger.info("macro_g_beta_measure:{}".format(macro_g_beta_measure))
+        self.logger.info("macro_auroc:{}".format(macro_auroc))
+        self.logger.info("macro_auprc:{}".format(macro_auprc))
 
         metrics = np.vstack((f_measure, f_beta_measure, g_beta_measure, auroc, auprc))
         metrics_df = pd.DataFrame(data=metrics, columns=classes, index=['f_measure', 'f_beta_measure', 'g_beta_measure', 'auroc', 'auprc'])
@@ -161,12 +161,12 @@ class Evaluater(BaseEvaluater):
 
             self.logger.info("**********************************************************************************")
             self.logger.info(Dataset[i])
-            self.logger.info("challenge_metric:", challenge_metric)
-            self.logger.info("accuracy:", accuracy)
-            self.logger.info("macro_f_measure", macro_f_measure)
-            self.logger.info("macro_g_beta_measure", macro_g_beta_measure)
-            self.logger.info("macro_auroc", macro_auroc)
-            self.logger.info("macro_auprc", macro_auprc)
+            self.logger.info("challenge_metric:{}".format(challenge_metric))
+            self.logger.info("accuracy:{}".format(accuracy))
+            self.logger.info("macro_f_measure:{}".format(macro_f_measure))
+            self.logger.info("macro_g_beta_measure:{}".format(macro_g_beta_measure))
+            self.logger.info("macro_auroc:{}".format(macro_auroc))
+            self.logger.info("macro_auprc:{}".format(macro_auprc))
 
             metrics = np.vstack((f_measure, f_beta_measure, g_beta_measure, auroc, auprc))
             metrics_df = pd.DataFrame(data=metrics, columns=classes,
