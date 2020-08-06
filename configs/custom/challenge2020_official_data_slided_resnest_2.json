@@ -1,11 +1,14 @@
 {
     "name": "challenge2020_official_data_slided_cnn",
-    "n_gpu": 1,
+    "n_gpu": 2,
     "arch": {
         "type": "resnest",
         "args": {
            "layers": [3, 4, 2, 3],
-           "num_classes": 108
+            "bottleneck_width": 64,
+            "stem_width": 16,
+           "num_classes": 108,
+            "kernel_size": 15
         }
     },
 
@@ -49,16 +52,17 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 1000,
 
-        "save_dir": "saved/",
+        "save_dir": "/data/ecg/challenge2020/saved/",
         "save_period": 1,
         "verbosity": 2,
-        
+
         "monitor": "min val_loss",
         "early_stop": 10,
 
-        "tensorboard": true
+        "tensorboard": true,
+        "only_scored_class": true
     },
     "evaluater": {
         "result_dir": "saved/",

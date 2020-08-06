@@ -122,3 +122,58 @@ def plot_lr(lr, save_path):
         item.set_fontsize(textsize)
         item.set_weight('normal')
     plt.savefig(save_path + '/lr.png')
+
+#https://github.com/pytorch/pytorch/issues/7455
+def smooth_one_hot(true_labels: torch.Tensor, classes: int, smoothing=0.1):
+    """
+    if smoothing == 0, it's one-hot method
+    if 0 < smoothing < 1, it's smooth method
+
+    """
+    assert 0 <= smoothing < 1
+    confidence = 1.0 - smoothing
+    print(true_labels.size())
+    label_shape = torch.Size((true_labels.size(0), classes))
+    print(label_shape)
+    with torch.no_grad():
+        true_dist = torch.empty(size=label_shape, device=true_labels.device)
+        true_dist.fill_(smoothing / (classes - 1))
+        index1, index2 = torch.nonzero(true_labels, as_tuple=True)
+        index1 = index1.cpu().detach().numpy()
+        index2 = index2.cpu().detach().numpy()
+        label_index = []
+        count = 0
+        tmp = []
+        for i in range(len(index1)):
+            if count == index1[i]:
+                tmp.append(index2[i])
+            else:
+                count += 1
+                label_index.append(tmp)
+                tmp =[]
+                tmp.append(index2[i])
+        label_index.append(tmp)
+        # label_index = torch.tensor(label_index)
+        # label_index = torch.from_numpy(np.array(label_index, dtype='float32'))
+        # index2 = true_labels.data.unsqueeze(1)
+        index = torch.tensor([[1, 2, -1],[0, 1, 2]])
+        test = true_dist.scatter_(1, index=index, value=confidence)
+    return true_dist
+
+def smooth_labels(y, smooth_factor=0.1):
+    assert len(y.shape) == 2
+    assert 0 <= smooth_factor < 1
+    y *= 1 - smooth_factor
+    y += smooth_factor / y.shape[1]
+    return y
+
+if __name__ == '__main__':
+    # label = torch.zeros(128, 108)
+
+    # label = torch.tensor([[0, 1, 1], [1, 1, 1]])
+    # smth_label = smooth_one_hot(label, 3, 0.1)
+    # print('done')
+
+    label = np.ones((128, 108))
+    smth_label = smooth_labels(label)
+    print('done')

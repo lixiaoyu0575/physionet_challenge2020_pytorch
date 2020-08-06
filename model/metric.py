@@ -89,13 +89,13 @@ class ChallengeMetric():
             A = np.zeros((num_classes, 2, 2))
             for i in range(num_recordings):
                 for j in range(num_classes):
-                    if labels[i, j]==1 and outputs[i, j]==1: # TP
+                    if labels[i, j]>=0.5 and outputs[i, j]>=0.5: # TP
                         A[j, 1, 1] += 1
-                    elif labels[i, j]==0 and outputs[i, j]==1: # FP
+                    elif labels[i, j]<0.5 and outputs[i, j]>=0.5: # FP
                         A[j, 1, 0] += 1
-                    elif labels[i, j]==1 and outputs[i, j]==0: # FN
+                    elif labels[i, j]>=0.5 and outputs[i, j]<0.5: # FN
                         A[j, 0, 1] += 1
-                    elif labels[i, j]==0 and outputs[i, j]==0: # TN
+                    elif labels[i, j]<0.5 and outputs[i, j]<0.5: # TN
                         A[j, 0, 0] += 1
                     else: # This condition should not happen.
                         raise ValueError('Error in computing the confusion matrix.')
@@ -104,13 +104,13 @@ class ChallengeMetric():
             for i in range(num_recordings):
                 normalization = float(max(np.sum(labels[i, :]), 1))
                 for j in range(num_classes):
-                    if labels[i, j]==1 and outputs[i, j]==1: # TP
+                    if labels[i, j]>=0.5 and outputs[i, j]>=0.5: # TP
                         A[j, 1, 1] += 1.0/normalization
-                    elif labels[i, j]==0 and outputs[i, j]==1: # FP
+                    elif labels[i, j]<0.5 and outputs[i, j]>=0.5: # FP
                         A[j, 1, 0] += 1.0/normalization
-                    elif labels[i, j]==1 and outputs[i, j]==0: # FN
+                    elif labels[i, j]>=0.5 and outputs[i, j]<0.5: # FN
                         A[j, 0, 1] += 1.0/normalization
-                    elif labels[i, j]==0 and outputs[i, j]==0: # TN
+                    elif labels[i, j]<0.5 and outputs[i, j]<0.5: # TN
                         A[j, 0, 0] += 1.0/normalization
                     else: # This condition should not happen.
                         raise ValueError('Error in computing the confusion matrix.')
@@ -218,8 +218,8 @@ class ChallengeMetric():
             fp = np.zeros(num_thresholds)
             fn = np.zeros(num_thresholds)
             tn = np.zeros(num_thresholds)
-            fn[0] = np.sum(labels[:, k]==1)
-            tn[0] = np.sum(labels[:, k]==0)
+            fn[0] = np.sum(labels[:, k]>=0.5)
+            tn[0] = np.sum(labels[:, k]<0.5)
 
             # Find the indices that result in sorted output values.
             idx = np.argsort(outputs[:, k])[::-1]
@@ -595,3 +595,9 @@ class ChallengeMetric2():
                 else:
                     outputs[i, j] = 0
         return outputs
+
+if __name__ == '__main__':
+    target = torch.tensor([[0, 0, 1, 1], [1, 0, 1, 1]])
+    pred = torch.tensor([[0.01, 0.3, 0.9, 0.1], [0.6, 0.1, 0.5, 0.8]])
+    acc =accuracy(pred, target)
+    print('test')

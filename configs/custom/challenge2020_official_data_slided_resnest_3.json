@@ -8,7 +8,8 @@
             "bottleneck_width": 64,
             "stem_width": 16,
            "num_classes": 108,
-            "kernel_size": 7
+            "kernel_size": 7,
+            "radix": 4
         }
     },
 
