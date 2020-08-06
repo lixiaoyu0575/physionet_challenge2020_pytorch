@@ -52,3 +52,29 @@ class CustomTensorDataset(Dataset):
     def __len__(self):
         return self.tensors[0].size(0)
 
+class CustomTensorListDataset(Dataset):
+    """TensorDataset with support of transforms.
+    """
+    def __init__(self, *tensors_list, transform=None):
+        self.tensors_list = tensors_list
+        self.transform = transform
+
+    def __getitem__(self, index):
+        x = self.tensors_list[0][index]
+
+        if self.transform:
+            torch.randn(1)
+            if torch.rand(1) >= 0.5:
+                x = self.transform(x)
+
+        y = self.tensors_list[1][index]
+
+        return x, y
+
+    def __len__(self):
+        return len(self.tensors_list[0])
+
+def custom_collate_fn(batch):
+    data = [item[0].unsqueeze(0) for item in batch]
+    target = [item[1].unsqueeze(0) for item in batch]
+    return [data, target]

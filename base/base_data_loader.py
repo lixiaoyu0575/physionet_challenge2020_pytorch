@@ -11,7 +11,7 @@ class BaseDataLoader(DataLoader):
     """
     Base class for all data loaders
     """
-    def __init__(self, dataset, batch_size, shuffle, validation_split, test_split, num_workers, collate_fn=default_collate,  normalization=False):
+    def __init__(self, dataset, batch_size, shuffle, validation_split, test_split, num_workers, collate_fn=default_collate, pin_memory=True, normalization=False):
         self.validation_split = validation_split
         self.test_split = test_split
         self.shuffle = shuffle
@@ -26,7 +26,8 @@ class BaseDataLoader(DataLoader):
             'batch_size': batch_size,
             'shuffle': self.shuffle,
             'collate_fn': collate_fn,
-            'num_workers': num_workers
+            'num_workers': num_workers,
+            'pin_memory': pin_memory
         }
         super().__init__(sampler=self.sampler, **self.init_kwargs)
 
@@ -36,7 +37,8 @@ class BaseDataLoader(DataLoader):
             'batch_size': batch_size,
             'shuffle': False,
             'collate_fn': collate_fn,
-            'num_workers': num_workers
+            'num_workers': num_workers,
+            'pin_memory': pin_memory
         }
 
         self.test_data_loader = self.split_test()
@@ -128,7 +130,7 @@ class BaseDataLoader2(DataLoader):
     """
 
     def __init__(self, dataset, batch_size, shuffle, train_idx, valid_idx, test_idx, num_workers,
-                 collate_fn=default_collate, normalization=False):
+                 collate_fn=default_collate, pin_memory=True, normalization=False):
         self.train_idx = train_idx
         self.valid_idx = valid_idx
         self.test_idx = test_idx
@@ -146,7 +148,7 @@ class BaseDataLoader2(DataLoader):
             'shuffle': self.shuffle,
             'collate_fn': collate_fn,
             'num_workers': num_workers,
-            'pin_memory': True
+            'pin_memory': pin_memory
         }
         super().__init__(sampler=self.sampler, **self.init_kwargs)
 
@@ -157,7 +159,7 @@ class BaseDataLoader2(DataLoader):
             'shuffle': False,
             'collate_fn': collate_fn,
             'num_workers': num_workers,
-            'pin_memory': True
+            'pin_memory': pin_memory
         }
 
         self.test_data_loader = self.split_test()

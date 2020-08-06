@@ -4,14 +4,14 @@ import pandas as pd
 from scipy.io import loadmat
 import torch
 from torchvision import datasets, transforms
-from torch.utils.data import TensorDataset
+from torch.utils.data import TensorDataset, Dataset
 from base import BaseDataLoader, BaseDataLoader2
 from utils.dataset import ECGDataset
 from sklearn.preprocessing import MinMaxScaler
 from utils.dataset import load_label_files, load_labels, load_weights
 from scipy.signal import savgol_filter, medfilt, wiener
 from data_loader.preprocessing import cheby_lowpass_filter, butter_lowpass_filter, plot
-from data_loader.util import load_challenge_data, get_classes, CustomTensorDataset
+from data_loader.util import load_challenge_data, get_classes, CustomTensorDataset, CustomTensorListDataset, custom_collate_fn
 import augmentation.transformers as module_transformers
 import random
 
@@ -135,8 +135,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
         recordings_preprocessed, labels_onehot = self.preprocessing(recordings_all, labels_onehot_all)
         recordings_augmented, labels_onehot = self.augmentation(recordings_preprocessed, labels_onehot_all)
 
-        labels_onehot = np.array(labels_onehot, dtype='float64')
-        labels_onehot = smooth_labels(labels_onehot)
+        # labels_onehot = np.array(labels_onehot, dtype='float64')
+        # labels_onehot = smooth_labels(labels_onehot)
         print(np.isnan(recordings_augmented).any())
 
         num = recordings_augmented.shape[0]
@@ -156,7 +156,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
 
         X = torch.from_numpy(recordings_augmented).float()
         # Y = torch.from_numpy(labels_onehot)
-        Y = torch.from_numpy(labels_onehot)
+        Y = torch.from_numpy(labels_onehot.astype(int))
         self.dataset = TensorDataset(X, Y)
 
         super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers)
@@ -837,3 +837,143 @@ class ChallengeDataLoader6(BaseDataLoader):
 
         recordings_augmented = recordings
         return recordings_augmented, labels
+
+# TCN
+class ChallengeDataLoader7(BaseDataLoader2):
+    """
+    challenge2020 data loading
+    """
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True):
+        self.label_dir = label_dir
+        self.data_dir = data_dir
+        print('Loading data...')
+
+        weights_file = 'evaluation/weights.csv'
+        normal_class = '426783006'
+        equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
+
+        # Find the label files.
+        print('Finding label...')
+        label_files = load_label_files(label_dir)
+
+        # Load the labels and classes.
+        print('Loading labels...')
+        classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
+
+        # Load the weights for the Challenge metric.
+        print('Loading weights...')
+        weights = load_weights(weights_file, classes)
+
+        # Classes that are scored with the Challenge metric.
+        indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
+        # from scipy.io import savemat
+        # savemat('evaluation/scored_classes_indices.mat', {'val': indices})
+
+        # Load short signals and remove from labels
+        # short_signals = loadmat(os.path.join(data_dir, 'short_signals.mat'))['val']
+        # short_signals_ids = list(short_signals.reshape((short_signals.shape[1], )))
+
+        split_idx = loadmat(split_index)
+        train_index, val_index, test_index = split_idx['train_index'], split_idx['val_index'], split_idx['test_index']
+        train_index = train_index.reshape((train_index.shape[1], ))
+        val_index = val_index.reshape((val_index.shape[1], ))
+        test_index = test_index.reshape((test_index.shape[1], ))
+
+        num_files = len(label_files)
+        recordings = list()
+        labels_onehot_new = list()
+        labels_new = list()
+        file_names = list()
+
+        bb = []
+        dd = []
+
+        for i in range(num_files):
+            # if i in short_signals_ids:
+            #     recording = np.zeros((1, 12, 3000))
+            #
+            # else:
+            recording, header, name = load_challenge_data(label_files[i], data_dir)
+            if len(recording.shape) > 2:
+                print("******************************************************************************8")
+            recording[np.isnan(recording)] = 0
+            recordings.append(recording)
+            file_names.append(name)
+
+            rr = np.array(recording)
+            if np.isnan(rr).any():
+                print(i)
+                bb.append(i)
+                dd.append(rr)
+
+            labels_onehot_new.append(labels_onehot[i])
+            labels_new.append(labels[i])
+            # print(i)
+
+        for i in range(len(recordings)):
+            if np.isnan(recordings[i]).any():
+                print(i)
+
+        # recordings = np.array(recordings)
+        # labels_onehot_new = np.array(labels_onehot_new)
+
+        # recordings_preprocessed, labels_onehot_new = self.preprocessing(recordings, labels_onehot_new)
+        # recordings_augmented, labels_onehot_new = self.augmentation(recordings_preprocessed, labels_onehot_new)
+
+        # print(np.isnan(recordings_augmented).any())
+        #
+        # num = recordings_augmented.shape[0]
+        # c = []
+        # a = []
+        # for i in range(num):
+        #     if np.isnan(recordings_augmented[i]).any():
+        #         print(' {}/{}'.format(i, num))
+        #         c.append(i)
+        #         a.append(recordings_augmented[i])
+        # print(c)
+        # print(a)
+
+        # Get number of samples for each category
+
+        self.indices = indices
+
+        X = []
+        Y = []
+
+        for i in range(len(labels_onehot_new)):
+            X.append(torch.from_numpy(recordings[i]).float())
+            Y.append(torch.from_numpy(labels_onehot[i].astype(int)))
+
+        self.dataset = CustomTensorListDataset(X, Y)
+
+        super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers, collate_fn=custom_collate_fn, pin_memory=False)
+
+        self.valid_data_loader.file_names = file_names
+        self.test_data_loader.file_names = file_names
+
+    def preprocessing(self, recordings, labels):
+
+        # mm = MinMaxScaler()
+        # recordings = recordings.swapaxes(1, 2)
+        # for i in range(len(recordings)):
+        #     recordings[i] = mm.fit_transform(recordings[i])
+        # recordings_scaled = recordings.swapaxes(1, 2)
+        #
+        # recordings_preprocessed = recordings_scaled
+        return recordings, labels
+
+    def augmentation(self, recordings, labels):
+
+        recordings_augmented = recordings
+        return recordings_augmented, labels
+
+    def shuffle(self, recordings, labels_onehot, labels):
+        randnum = random.randint(0, 100)
+        random.seed(randnum)
+        random.shuffle(recordings)
+        random.seed(randnum)
+        random.shuffle(labels_onehot)
+        random.seed(randnum)
+        random.shuffle(labels)
+
+        return recordings, labels_onehot, labels
