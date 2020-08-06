@@ -629,16 +629,3 @@ class MCInceptionTimeV2(nn.Module):
         for i in range(len(self.n_hid)+1):
             X = self.mlp[i](X)
         return X
-
-
-if __name__ == '__main__':
-    import torch
-
-    x = torch.randn(1, 12, 18000)
-    # m = InceptionTimeV1(in_channels=12, num_classes=9, n_filters=32, kernel_sizes=[9, 19, 39], bottleneck_channels=32)
-    m = InceptionTimeV2(in_channels=12, num_classes=108, n_filters=32, kernel_sizes=[9, 19, 39], bottleneck_channels=32)
-    flops, params = get_model_complexity_info(m, (12, 18000), as_strings=True, print_per_layer_stat=True)
-    print("%s |%s" % (flops, params))
-    print(m)
-    y = m(x)
-    print('done')
