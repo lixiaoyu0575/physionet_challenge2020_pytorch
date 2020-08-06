@@ -292,9 +292,9 @@ class ChallengeMetric():
             # Iterate over all of the classes.
             for j in range(num_classes):
                 # Assign full and/or partial credit for each positive class.
-                if labels[i, j]:
+                if labels[i, j] > 0.5:
                     for k in range(num_classes):
-                        if outputs[i, k]:
+                        if outputs[i, k] > 0.5:
                             A[j, k] += 1.0/normalization
 
         return A

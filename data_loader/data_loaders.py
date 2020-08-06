@@ -14,6 +14,7 @@ from data_loader.preprocessing import cheby_lowpass_filter, butter_lowpass_filte
 from data_loader.util import load_challenge_data, get_classes, CustomTensorDataset
 import augmentation.transformers as module_transformers
 import random
+import time
 
 from utils.util import smooth_labels
 
@@ -51,6 +52,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
     challenge2020 data loading
     """
     def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True):
+        start = time.time()
         self.label_dir = label_dir
         self.data_dir = data_dir
         print('Loading data...')
@@ -158,7 +160,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot)
         self.dataset = TensorDataset(X, Y)
-
+        end = time.time()
+        print('time to get and process data: {}'.format(end-start))
         super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers)
 
         self.valid_data_loader.file_names = file_names

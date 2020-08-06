@@ -167,6 +167,24 @@ def smooth_labels(y, smooth_factor=0.1):
     y += smooth_factor / y.shape[1]
     return y
 
+def load_model(model, ckpth):
+    checkpoint = torch.load(ckpth)
+    state_dict = checkpoint['model']
+    own_state = model.state_dict()
+    new_state_dict = {}
+    layers2del = ["head.0.weight", "head.0.bias", "head.2.weight", "head.2.bias", "fc_layer.0.weight", "fc_layer.0.bias", "fc_layer.1.weight", "fc_layer.1.bias", "fc_layer.3.weight", "fc_layer.3.bias", "fc_layer.4.weight", "fc_layer.4.bias", "fc.weight", "fc.bias"]
+    for k, v in state_dict.items():
+        print(k)
+        k = k.replace("encoder.module.", "")
+        if k in layers2del:
+            continue
+        new_state_dict[k] = v
+    new_state_dict["fc.weight"] = own_state["encoder.module.fc.weight"]
+    new_state_dict["fc.bias"] = own_state["encoder.module.fc.bias"]
+    state_dict = new_state_dict
+    model.load_state_dict(state_dict)
+    return model
+
 if __name__ == '__main__':
     # label = torch.zeros(128, 108)
 

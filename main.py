@@ -17,6 +17,7 @@ from trainer import Trainer
 from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
+from utils.util import load_model
 
 # fix random seeds for reproducibility
 SEED = 123
@@ -51,6 +52,9 @@ def main(config):
             if config["arch"]["type"] == type:
                 model = config.init_obj('arch', eval("module_arch_" + file))
                 logger.info(model)
+                if config["arch"]["weight_path"] is not None:
+                    model = load_model(model, config["arch"]["weight_path"])
+
 
     # get function handles of loss and metrics
     if config['loss']['type'] == 'FocalLoss2d':
