@@ -3,12 +3,13 @@ from abc import abstractmethod
 from numpy import inf
 from logger import TensorboardWriter
 from logger import setup_logging
+from pathlib import Path
 
 class BaseEvaluater:
     """
     Base class for all evaluaters
     """
-    def __init__(self, model, criterion, metric_ftns, config):
+    def __init__(self, model, criterion, metric_ftns, config, checkpoint_dir, result_dir):
         self.config = config
         self.logger = config.get_logger('evaluater', config['evaluater']['verbosity'])
 
@@ -21,8 +22,16 @@ class BaseEvaluater:
         self.criterion = criterion
         self.metric_ftns = metric_ftns
 
-        self.checkpoint_dir = config.save_dir
-        self.result_dir = config.result_dir
+        if checkpoint_dir:
+            self.checkpoint_dir = Path(checkpoint_dir)
+            self.result_dir = config.result_dir
+        else:
+            self.checkpoint_dir = config.save_dir
+
+        if result_dir:
+            self.result_dir = Path(result_dir)
+        else:
+            self.result_dir = config.result_dir
 
         setup_logging(self.result_dir)
         self._resume_checkpoint(self.checkpoint_dir / 'model_best.pth')
