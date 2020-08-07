@@ -12,6 +12,7 @@ import model.inceptiontime as module_arch_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
+import model.resnest2 as module_arch_resnest2
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -33,6 +34,7 @@ files_models = {
     "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
     "resnest": ['resnest50', 'resnest'],
+    "resnest2": ['resnest2'],
     "model": ['CNN', 'MLP'],
     "tcn": ['TCN']
 }
@@ -52,7 +54,7 @@ def main(config):
             if config["arch"]["type"] == type:
                 model = config.init_obj('arch', eval("module_arch_" + file))
                 logger.info(model)
-                if config["arch"]["weight_path"] is not None:
+                if config['arch'].get('weight_path', False):
                     model = load_model(model, config["arch"]["weight_path"])
 
 

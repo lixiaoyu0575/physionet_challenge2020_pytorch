@@ -15,6 +15,7 @@ from data_loader.util import load_challenge_data, get_classes, CustomTensorDatas
 import augmentation.transformers as module_transformers
 import random
 import time
+import pickle
 
 from utils.util import smooth_labels
 
@@ -51,7 +52,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
     """
     challenge2020 data loading
     """
-    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True):
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None):
         start = time.time()
         self.label_dir = label_dir
         self.data_dir = data_dir
@@ -64,14 +65,20 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # Find the label files.
         print('Finding label...')
         label_files = load_label_files(label_dir)
+        time_record_1 = time.time()
+        print("Finding label cost {}s".format(time_record_1-start))
 
         # Load the labels and classes.
         print('Loading labels...')
         classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
+        time_record_2 = time.time()
+        print("Loading label cost {}s".format(time_record_2-time_record_1))
 
         # Load the weights for the Challenge metric.
         print('Loading weights...')
         weights = load_weights(weights_file, classes)
+        time_record_3 = time.time()
+        print("Loading label cost {}s".format(time_record_3-time_record_2))
 
         # Classes that are scored with the Challenge metric.
         indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
@@ -85,6 +92,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
         split_idx = loadmat(split_index)
         train_index, val_index, test_index = split_idx['train_index'], split_idx['val_index'], split_idx['test_index']
         train_index = train_index.reshape((train_index.shape[1], ))
+        if training_size is not None:
+            train_index = train_index[0:training_size]
         val_index = val_index.reshape((val_index.shape[1], ))
         test_index = test_index.reshape((test_index.shape[1], ))
 
@@ -116,6 +125,9 @@ class ChallengeDataLoader0(BaseDataLoader2):
             labels_onehot_new.append(labels_onehot[i])
             labels_new.append(labels[i])
 
+        time_record_4 = time.time()
+        print("Loading data cost {}s".format(time_record_4-time_record_3))
+
         for i in range(len(recordings)):
             if np.isnan(recordings[i]).any():
                 print(i)
@@ -137,8 +149,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
         recordings_preprocessed, labels_onehot = self.preprocessing(recordings_all, labels_onehot_all)
         recordings_augmented, labels_onehot = self.augmentation(recordings_preprocessed, labels_onehot_all)
 
-        labels_onehot = np.array(labels_onehot, dtype='float64')
-        labels_onehot = smooth_labels(labels_onehot)
+        # labels_onehot = np.array(labels_onehot, dtype='float64')
+        # labels_onehot = smooth_labels(labels_onehot)
         print(np.isnan(recordings_augmented).any())
 
         num = recordings_augmented.shape[0]

@@ -3,9 +3,10 @@ import torch
 import torch.nn as nn
 from torchvision.utils import make_grid
 from base import BaseTrainer
-from utils import inf_loop, MetricTracker, smooth_one_hot
+from utils import inf_loop, MetricTracker, smooth_one_hot, mixup
 import torch.nn.functional as F
 from scipy.io import loadmat
+import time
 
 
 class Trainer(BaseTrainer):
@@ -40,6 +41,7 @@ class Trainer(BaseTrainer):
 
         self.only_scored_classes = config['trainer'].get('only_scored_class', True)
         self.lable_smooth = config['trainer'].get('label_smooth', None)
+        self.mixup = config['trainer'].get('mixup', None)
         if self.only_scored_classes:
             # Only consider classes that are scored with the Challenge metric.
             indices = loadmat('evaluation/scored_classes_indices.mat')['val']
@@ -54,11 +56,14 @@ class Trainer(BaseTrainer):
         :param epoch: Integer, current training epoch.
         :return: A log that contains average loss and metric in this epoch.
         """
+        start_time = time.time()
         self.model.train()
         self.train_metrics.reset()
         for batch_idx, (data, target) in enumerate(self.data_loader):
+            batch_start = time.time()
             data, target = data.to(device=self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
-
+            if self.mixup is not None:
+                data, target = mixup(data, target, np.random.beta(1, 1))
             # if self.lable_smooth is not None:
             #     target = target.long()
             #     print('getting smooth label')
@@ -84,22 +89,27 @@ class Trainer(BaseTrainer):
                 self.train_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
 
             if batch_idx % self.log_step == 0:
-                self.logger.debug('Train Epoch: {} {} Loss: {:.6f}'.format(
+                batch_end = time.time()
+                self.logger.debug('Train Epoch: {} {} Loss: {:.6f}, 1 batch cost time {:.2f}'.format(
                     epoch,
                     self._progress(batch_idx),
-                    loss.item()))
+                    loss.item(),
+                    batch_end - batch_start))
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
             if batch_idx == self.len_epoch:
                 break
         log = self.train_metrics.result()
 
+        end_time = time.time()
+        print("training epoch cost {} seconds".format(end_time-start_time))
         if self.do_validation:
             val_log = self._valid_epoch(epoch)
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
         if self.lr_scheduler is not None:
             self.lr_scheduler.step()
+
         return log
 
     def _valid_epoch(self, epoch):

@@ -22,14 +22,18 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class CNN(BaseModel):
-    def __init__(self, in_channels=12, num_classes=9, ):
+    def __init__(self, in_channels=12, num_classes=108):
         super().__init__()
-        self.conv1 = nn.Conv1d(in_channels, 32, kernel_size=16)
-        self.conv2 = nn.Conv1d(32, 64, kernel_size=16)
-        self.conv3 = nn.Conv1d(64, 128, kernel_size=16)
+        self.conv1 = nn.Conv1d(in_channels, 32, kernel_size=7, padding=3)
+        self.conv2 = nn.Conv1d(32, 32, kernel_size=7, padding=3)
+        self.conv3 = nn.Conv1d(32, 64, kernel_size=7, padding=3)
+        self.conv4 = nn.Conv1d(64, 64, kernel_size=7, padding=3)
+        self.conv5 = nn.Conv1d(64, 128, kernel_size=7, padding=3)
         self.batch_norm1 = nn.BatchNorm1d(32)
-        self.batch_norm2 = nn.BatchNorm1d(64)
-        self.batch_norm3 = nn.BatchNorm1d(128)
+        self.batch_norm2 = nn.BatchNorm1d(32)
+        self.batch_norm3 = nn.BatchNorm1d(64)
+        self.batch_norm4 = nn.BatchNorm1d(64)
+        self.batch_norm5 = nn.BatchNorm1d(128)
         self.conv2_drop = nn.Dropout()
         self.fc1 = nn.Linear(128, 50)
         self.fc2 = nn.Linear(50, num_classes)
@@ -54,6 +58,17 @@ class CNN(BaseModel):
         x = F.max_pool1d(x, 2)
         x = F.dropout(x, 0.2, training=self.training)
 
+        x = self.conv4(x)
+        x = self.batch_norm4(x)
+        x = F.relu(x)
+        x = F.max_pool1d(x, 2)
+        x = F.dropout(x, 0.2, training=self.training)
+
+        x = self.conv5(x)
+        x = self.batch_norm5(x)
+        x = F.relu(x)
+        x = F.max_pool1d(x, 2)
+        x = F.dropout(x, 0.2, training=self.training)
         # print(x.size())
         x = torch.mean(x, dim=2)
         x = F.relu(self.fc1(x))

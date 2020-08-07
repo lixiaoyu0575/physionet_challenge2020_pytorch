@@ -128,7 +128,7 @@ class BaseDataLoader2(DataLoader):
     """
 
     def __init__(self, dataset, batch_size, shuffle, train_idx, valid_idx, test_idx, num_workers,
-                 collate_fn=default_collate, normalization=False):
+                 collate_fn=default_collate, normalization=False, training_size=None):
         self.train_idx = train_idx
         self.valid_idx = valid_idx
         self.test_idx = test_idx

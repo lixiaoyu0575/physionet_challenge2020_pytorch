@@ -174,16 +174,22 @@ def load_model(model, ckpth):
     new_state_dict = {}
     layers2del = ["head.0.weight", "head.0.bias", "head.2.weight", "head.2.bias", "fc_layer.0.weight", "fc_layer.0.bias", "fc_layer.1.weight", "fc_layer.1.bias", "fc_layer.3.weight", "fc_layer.3.bias", "fc_layer.4.weight", "fc_layer.4.bias", "fc.weight", "fc.bias"]
     for k, v in state_dict.items():
-        print(k)
+        # print(k)
         k = k.replace("encoder.module.", "")
         if k in layers2del:
             continue
         new_state_dict[k] = v
-    new_state_dict["fc.weight"] = own_state["encoder.module.fc.weight"]
-    new_state_dict["fc.bias"] = own_state["encoder.module.fc.bias"]
+    new_state_dict["fc.weight"] = own_state["fc.weight"]
+    new_state_dict["fc.bias"] = own_state["fc.bias"]
     state_dict = new_state_dict
     model.load_state_dict(state_dict)
     return model
+
+def mixup(input, target, gamma):
+    perm = torch.randperm(input.size(0))
+    perm_input = input[perm]
+    perm_target = target[perm]
+    return input.mul_(gamma).add_(1-gamma, perm_input), target.mul_(gamma).add_(1-gamma, perm_target)
 
 if __name__ == '__main__':
     # label = torch.zeros(128, 108)
