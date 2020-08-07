@@ -9,6 +9,7 @@ import model.model as module_arch_model
 import model.resnet as module_arch_resnet
 import model.resnext as module_arch_resnext
 import model.inceptiontime as module_arch_inceptiontime
+import model.mc_inceptiontime as module_arch_mc_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
@@ -19,6 +20,7 @@ from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
 from utils.util import load_model
+import datetime
 
 # fix random seeds for reproducibility
 SEED = 123
@@ -31,6 +33,7 @@ np.random.seed(SEED)
 files_models = {
     "fcn": ['FCN'],
     "inceptiontime": ['InceptionTimeV1', 'InceptionTimeV2'],
+    "mc_inceptiontime": ['MCInceptionTimeV2'],
     "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
     "resnest": ['resnest50', 'resnest'],
@@ -106,6 +109,7 @@ def main(config):
     evaluater.analyze(challenge_metrics)
 
 if __name__ == '__main__':
+    start_time = datetime.datetime.now()
     args = argparse.ArgumentParser(description='PyTorch Template')
     args.add_argument('-c', '--config', default=None, type=str,
                       help='config file path (default: None)')
@@ -127,3 +131,6 @@ if __name__ == '__main__':
     print(os.environ["CUDA_VISIBLE_DEVICES"])
     print(torch.cuda.device_count())
     main(config)
+
+    end_time = datetime.datetime.now()
+    print("程序运行时间：" + str((end_time - start_time).seconds) + "秒")

@@ -48,7 +48,7 @@ class ChallengeMetric():
         indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
         classes = [x for i, x in enumerate(classes) if indices[i]]
         weights = weights[np.ix_(indices, indices)]
-        
+
         self.weights = weights
         self.indices = indices
         self.classes = classes
@@ -59,12 +59,12 @@ class ChallengeMetric():
         outputs = self.get_pred(outputs)
         outputs = outputs[:, self.indices]
         labels = labels[:, self.indices]
-        
+
         num_recordings, num_classes = np.shape(labels)
 
         num_correct_recordings = 0
         for i in range(num_recordings):
-            if np.all(labels[i, :]==outputs[i, :]):
+            if np.all(labels[i, :] == outputs[i, :]):
                 num_correct_recordings += 1
 
         return float(num_correct_recordings) / float(num_recordings)
@@ -84,30 +84,30 @@ class ChallengeMetric():
             A = np.zeros((num_classes, 2, 2))
             for i in range(num_recordings):
                 for j in range(num_classes):
-                    if labels[i, j]>=0.5 and outputs[i, j]>=0.5: # TP
+                    if labels[i, j] >= 0.5 and outputs[i, j] >= 0.5:  # TP
                         A[j, 1, 1] += 1
-                    elif labels[i, j]<0.5 and outputs[i, j]>=0.5: # FP
+                    elif labels[i, j] < 0.5 and outputs[i, j] >= 0.5:  # FP
                         A[j, 1, 0] += 1
-                    elif labels[i, j]>=0.5 and outputs[i, j]<0.5: # FN
+                    elif labels[i, j] >= 0.5 and outputs[i, j] < 0.5:  # FN
                         A[j, 0, 1] += 1
-                    elif labels[i, j]<0.5 and outputs[i, j]<0.5: # TN
+                    elif labels[i, j] < 0.5 and outputs[i, j] < 0.5:  # TN
                         A[j, 0, 0] += 1
-                    else: # This condition should not happen.
+                    else:  # This condition should not happen.
                         raise ValueError('Error in computing the confusion matrix.')
         else:
             A = np.zeros((num_classes, 2, 2))
             for i in range(num_recordings):
                 normalization = float(max(np.sum(labels[i, :]), 1))
                 for j in range(num_classes):
-                    if labels[i, j]>=0.5 and outputs[i, j]>=0.5: # TP
-                        A[j, 1, 1] += 1.0/normalization
-                    elif labels[i, j]<0.5 and outputs[i, j]>=0.5: # FP
-                        A[j, 1, 0] += 1.0/normalization
-                    elif labels[i, j]>=0.5 and outputs[i, j]<0.5: # FN
-                        A[j, 0, 1] += 1.0/normalization
-                    elif labels[i, j]<0.5 and outputs[i, j]<0.5: # TN
-                        A[j, 0, 0] += 1.0/normalization
-                    else: # This condition should not happen.
+                    if labels[i, j] >= 0.5 and outputs[i, j] >= 0.5:  # TP
+                        A[j, 1, 1] += 1.0 / normalization
+                    elif labels[i, j] < 0.5 and outputs[i, j] >= 0.5:  # FP
+                        A[j, 1, 0] += 1.0 / normalization
+                    elif labels[i, j] >= 0.5 and outputs[i, j] < 0.5:  # FN
+                        A[j, 0, 1] += 1.0 / normalization
+                    elif labels[i, j] < 0.5 and outputs[i, j] < 0.5:  # TN
+                        A[j, 0, 0] += 1.0 / normalization
+                    else:  # This condition should not happen.
                         raise ValueError('Error in computing the confusion matrix.')
 
         return A
@@ -135,10 +135,20 @@ class ChallengeMetric():
 
     # Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
     def macro_f_beta_measure(self, outputs, labels, beta=2):
-        return self.beta_measures(outputs, labels, beta)[0]
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = self.beta_measures(outputs, labels,
+                                                                                                        beta)
+        if self._return_metric_list:
+            return macro_f_beta_measure, f_beta_measure
+        else:
+            return macro_f_beta_measure
 
     def macro_g_beta_measure(self, outputs, labels, beta=2):
-        return self.beta_measures(outputs, labels, beta)[1]
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = self.beta_measures(outputs, labels,
+                                                                                                        beta)
+        if self._return_metric_list:
+            return macro_g_beta_measure, g_beta_measure
+        else:
+            return macro_g_beta_measure
 
     def beta_measures(self, outputs, labels, beta=2):
         outputs = self.get_pred(outputs)
@@ -152,12 +162,12 @@ class ChallengeMetric():
         g_beta_measure = np.zeros(num_classes)
         for k in range(num_classes):
             tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
-            if (1+beta**2)*tp + fp + beta**2*fn:
-                f_beta_measure[k] = float((1+beta**2)*tp) / float((1+beta**2)*tp + fp + beta**2*fn)
+            if (1 + beta ** 2) * tp + fp + beta ** 2 * fn:
+                f_beta_measure[k] = float((1 + beta ** 2) * tp) / float((1 + beta ** 2) * tp + fp + beta ** 2 * fn)
             else:
                 f_beta_measure[k] = float('nan')
-            if tp + fp + beta*fn:
-                g_beta_measure[k] = float(tp) / float(tp + fp + beta*fn)
+            if tp + fp + beta * fn:
+                g_beta_measure[k] = float(tp) / float(tp + fp + beta * fn)
             else:
                 g_beta_measure[k] = float('nan')
 
@@ -185,7 +195,7 @@ class ChallengeMetric():
         for k in range(num_classes):
             # We only need to compute TPs, FPs, FNs, and TNs at distinct output values.
             thresholds = np.unique(outputs[:, k])
-            thresholds = np.append(thresholds, thresholds[-1]+1)
+            thresholds = np.append(thresholds, thresholds[-1] + 1)
             thresholds = thresholds[::-1]
             num_thresholds = len(thresholds)
 
@@ -194,8 +204,8 @@ class ChallengeMetric():
             fp = np.zeros(num_thresholds)
             fn = np.zeros(num_thresholds)
             tn = np.zeros(num_thresholds)
-            fn[0] = np.sum(labels[:, k]>=0.5)
-            tn[0] = np.sum(labels[:, k]<0.5)
+            fn[0] = np.sum(labels[:, k] >= 0.5)
+            tn[0] = np.sum(labels[:, k] < 0.5)
 
             # Find the indices that result in sorted output values.
             idx = np.argsort(outputs[:, k])[::-1]
@@ -204,10 +214,10 @@ class ChallengeMetric():
             i = 0
             for j in range(1, num_thresholds):
                 # Initialize TPs, FPs, FNs, and TNs using values at previous threshold.
-                tp[j] = tp[j-1]
-                fp[j] = fp[j-1]
-                fn[j] = fn[j-1]
-                tn[j] = tn[j-1]
+                tp[j] = tp[j - 1]
+                fp[j] = fp[j - 1]
+                fn[j] = fn[j - 1]
+                tn[j] = tn[j - 1]
 
                 # Update the TPs, FPs, FNs, and TNs at i-th output value.
                 while i < num_recordings and outputs[idx[i], k] >= thresholds[j]:
@@ -243,9 +253,9 @@ class ChallengeMetric():
             # sensitivity (x-axis) and TNR/specificity (y-axis) and AUPRC as the area
             # under a piecewise constant with TPR/recall (x-axis) and PPV/precision
             # (y-axis) for class k.
-            for j in range(num_thresholds-1):
-                auroc[k] += 0.5 * (tpr[j+1] - tpr[j]) * (tnr[j+1] + tnr[j])
-                auprc[k] += (tpr[j+1] - tpr[j]) * ppv[j+1]
+            for j in range(num_thresholds - 1):
+                auroc[k] += 0.5 * (tpr[j + 1] - tpr[j]) * (tnr[j + 1] + tnr[j])
+                auprc[k] += (tpr[j + 1] - tpr[j]) * ppv[j + 1]
 
         # Compute macro AUROC and macro AUPRC across classes.
         macro_auroc = np.nanmean(auroc)
@@ -258,7 +268,6 @@ class ChallengeMetric():
         # Compute a binary multi-class, multi-label confusion matrix, where the rows
         # are the labels and the columns are the outputs.
         num_recordings, num_classes = np.shape(labels)
-        
         A = np.zeros((num_classes, num_classes))
 
         # Iterate over all of the recordings.
@@ -272,7 +281,6 @@ class ChallengeMetric():
                     for k in range(num_classes):
                         if outputs[i, k] > 0.5:
                             A[j, k] += 1.0/normalization
-
         return A
 
     # Compute the evaluation metric for the Challenge.
@@ -571,3 +579,10 @@ class ChallengeMetric2():
                 else:
                     outputs[i, j] = 0
         return outputs
+
+
+if __name__ == '__main__':
+    target = torch.tensor([[0, 0, 1, 1], [1, 0, 1, 1]])
+    pred = torch.tensor([[0.01, 0.3, 0.9, 0.1], [0.6, 0.1, 0.5, 0.8]])
+    acc = accuracy(pred, target)
+    print('test')

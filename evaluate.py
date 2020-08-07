@@ -9,13 +9,16 @@ import model.model as module_arch_model
 import model.resnet as module_arch_resnet
 import model.resnext as module_arch_resnext
 import model.inceptiontime as module_arch_inceptiontime
+import model.mc_inceptiontime as module_arch_mc_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
+import model.resnest as module_arch_resnest
 from parse_config import ConfigParser
-from trainer import Trainer
-from evaluater import Evaluater
+from trainer import Trainer, Trainer2
+from evaluater import Evaluater, Evaluater2
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
+import datetime
 
 # fix random seeds for reproducibility
 SEED = 123
@@ -28,8 +31,10 @@ np.random.seed(SEED)
 files_models = {
     "fcn": ['FCN'],
     "inceptiontime": ['InceptionTimeV1', 'InceptionTimeV2'],
+    "mc_inceptiontime": ['MCInceptionTimeV2'],
     "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
+    "resnest": ['resnest50', 'resnest'],
     "model": ['CNN', 'MLP'],
     "tcn": ['TCN']
 }
@@ -73,27 +78,26 @@ def main(config):
 
     metrics = [getattr(challenge_metrics, met) for met in config['metrics']]
 
-    # build optimizer, learning rate scheduler. delete every lines containing lr_scheduler for disabling scheduler
-    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
+    # prepare model for testing
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = model.to(device)
 
-    lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
-
-    trainer = Trainer(model, criterion, metrics, optimizer,
-                      config=config,
-                      data_loader=data_loader,
-                      valid_data_loader=valid_data_loader,
-                      lr_scheduler=lr_scheduler)
-
-    trainer.train()
-
+    # Evaluater
     evaluater = Evaluater(model, criterion, metrics,
                           config=config,
-                          test_data_loader=test_data_loader)
+                          test_data_loader=test_data_loader,
+                          checkpoint_dir='/home/weiyuhua/Code/physionet_challenge2020_pytorch/saved/models/MC_inception_V2/0806_234850',
+                          result_dir='/home/weiyuhua/Code/physionet_challenge2020_pytorch/saved/results/MC_inception_V2/0806_234850'
+                           )
 
     evaluater.evaluate()
 
+    challenge_metrics.return_metric_list()
+
+    evaluater.analyze(challenge_metrics)
+
 if __name__ == '__main__':
+    start_time = datetime.datetime.now()
     args = argparse.ArgumentParser(description='PyTorch Template')
     args.add_argument('-c', '--config', default=None, type=str,
                       help='config file path (default: None)')
@@ -114,4 +118,5 @@ if __name__ == '__main__':
     print(torch.cuda.device_count())
     print(os.environ["CUDA_VISIBLE_DEVICES"])
     print(torch.cuda.device_count())
+
     main(config)
