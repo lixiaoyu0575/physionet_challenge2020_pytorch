@@ -151,6 +151,7 @@ class Trainer(BaseTrainer):
         else:
             return tensor.detach().numpy()
 
+# For Variable length data
 class Trainer2(BaseTrainer):
     """
     Trainer class

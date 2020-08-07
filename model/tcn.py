@@ -63,10 +63,10 @@ class TemporalConvNet(nn.Module):
 
 
 class TCN(nn.Module):
-    def __init__(self, input_size, output_size, num_channels, kernel_size, dropout):
+    def __init__(self, input_size, num_classes, num_channels, kernel_size, dropout):
         super(TCN, self).__init__()
         self.tcn = TemporalConvNet(input_size, num_channels, kernel_size=kernel_size, dropout=dropout)
-        self.linear = nn.Linear(num_channels[-1], output_size)
+        self.linear = nn.Linear(num_channels[-1], num_classes)
         # self.linear = nn.Linear(3000*num_channels[-1], output_size)
         # self.sigmoid = nn.Sigmoid()
 
