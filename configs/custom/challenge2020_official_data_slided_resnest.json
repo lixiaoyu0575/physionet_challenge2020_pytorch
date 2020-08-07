@@ -9,7 +9,9 @@
             "stem_width": 16,
            "num_classes": 108,
             "kernel_size": 7
-        }
+        },
+        "checkpoint_dir": null,
+        "result_dir": null
     },
 
     "data_loader": {
@@ -17,7 +19,7 @@
         "args":{
             "label_dir": "/data/ecg/challenge2020/new_data/All_data_new",
             "data_dir": "/data/ecg/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000",
-            "batch_size": 128,
+            "batch_size": 64,
             "shuffle": true,
             "split_index": "process/data_split/split1.mat",
             "num_workers": 6,
@@ -63,7 +65,8 @@
         "early_stop": 5,
 
         "tensorboard": true,
-        "only_scored_class": true
+        "only_scored_class": true,
+        "mixup": true
     },
     "evaluater": {
         "result_dir": "/data/ecg/challenge2020/saved/",
