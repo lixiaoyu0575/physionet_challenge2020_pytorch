@@ -53,6 +53,10 @@ class ChallengeMetric():
         self.indices = indices
         self.classes = classes
         self.normal_class = normal_class
+        self._return_metric_list = False
+
+    def return_metric_list(self):
+        self._return_metric_list = True
 
         self._return_metric_list = False
 
@@ -143,8 +147,7 @@ class ChallengeMetric():
 
     # Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
     def macro_f_beta_measure(self, outputs, labels, beta=2):
-        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = self.beta_measures(outputs, labels,
-                                                                                                        beta)
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = self.beta_measures(outputs, labels, beta)
         if self._return_metric_list:
             return macro_f_beta_measure, f_beta_measure
         else:
