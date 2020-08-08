@@ -4,12 +4,11 @@
     "arch": {
         "type": "resnest",
         "args": {
-           "layers": [3, 3, 1, 3],
+           "layers": [3, 2, 1, 2],
             "bottleneck_width": 64,
             "stem_width": 16,
            "num_classes": 108,
-            "kernel_size": 7,
-            "deep_stem":false
+            "kernel_size": 7
         }
     },
 
@@ -21,8 +20,7 @@
             "batch_size": 128,
             "shuffle": true,
             "split_index": "process/data_split/split1.mat",
-            "num_workers": 6,
-            "training_size": null
+            "num_workers": 6
         }
     },
     "optimizer": {
@@ -48,10 +46,10 @@
     ],
     "lr_scheduler": {
         "type": "StepLR",
-        "args": {
-            "step_size": 50,
-            "gamma": 0.1
-        }
+      "args": {
+          "step_size": 50,
+          "gamma": 0.1
+      }
     },
     "trainer": {
         "epochs": 1000,
