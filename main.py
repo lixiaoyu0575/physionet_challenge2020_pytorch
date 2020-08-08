@@ -20,6 +20,7 @@ from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
 from utils.util import load_model
+from utils.lr_scheduler import CosineAnnealingWarmUpRestarts
 import datetime
 
 # fix random seeds for reproducibility
@@ -88,7 +89,12 @@ def main(config):
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = config.init_obj('optimizer', torch.optim, trainable_params)
 
-    lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
+    if config["lr_scheduler"]["type"] == "CosineAnnealingWarmRestarts":
+        params = config["lr_scheduler"]["args"]
+        lr_scheduler = CosineAnnealingWarmUpRestarts(optimizer, T_0=params["T_0"], T_mult=params["T_mult"],
+                                                     T_up=params["T_up"], gamma=params["gamma"], eta_max=params["eta_max"])
+    else:
+        lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
     trainer = Trainer(model, criterion, metrics, optimizer,
                       config=config,

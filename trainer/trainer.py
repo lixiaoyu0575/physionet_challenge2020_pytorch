@@ -106,7 +106,7 @@ class Trainer(BaseTrainer):
             val_log = self._valid_epoch(epoch)
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
-        if self.lr_scheduler is not None:
+        if self.lr_scheduler is not None and self.config["lr_scheduler"]["type"] != "ReduceLROnPlateau":
             self.lr_scheduler.step()
 
         return log
@@ -139,6 +139,9 @@ class Trainer(BaseTrainer):
                 for met in self.metric_ftns:
                     self.valid_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
                 # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+
+            if self.lr_scheduler is not None and self.config["lr_scheduler"]["type"] == "ReduceLROnPlateau":
+                self.lr_scheduler.step(self.valid_metrics.result()["challenge_metric"])
 
         # add histogram of model parameters to the tensorboard
         # for name, p in self.model.named_parameters():

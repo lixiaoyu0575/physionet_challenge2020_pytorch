@@ -8,7 +8,8 @@
             "bottleneck_width": 64,
             "stem_width": 16,
            "num_classes": 108,
-            "kernel_size": 7
+            "kernel_size": 7,
+            "deep_stem":false
         }
     },
 
@@ -60,7 +61,7 @@
         "verbosity": 2,
 
         "monitor": "max val_challenge_metric",
-        "early_stop": 5,
+        "early_stop": 10,
 
         "tensorboard": true,
         "only_scored_class": true
