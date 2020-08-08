@@ -83,6 +83,7 @@ class Bottleneck(nn.Module):
 class ResNeXt(nn.Module):
 
     def __init__(self, block, layers, num_classes=9, num_group=32):
+        self.num_classes = num_classes
         self.inplanes = 64
         super(ResNeXt, self).__init__()
         self.conv1 = nn.Conv1d(12, 64, kernel_size=7, stride=2, padding=3,

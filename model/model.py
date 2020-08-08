@@ -6,6 +6,7 @@ from ptflops import get_model_complexity_info
 class MnistModel(BaseModel):
     def __init__(self, num_classes=10):
         super().__init__()
+        self.num_classes = num_classes
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
@@ -24,6 +25,7 @@ class MnistModel(BaseModel):
 class CNN(BaseModel):
     def __init__(self, in_channels=12, num_classes=108):
         super().__init__()
+        self.num_classes = num_classes
         self.conv1 = nn.Conv1d(in_channels, 32, kernel_size=7, padding=3)
         self.conv2 = nn.Conv1d(32, 32, kernel_size=7, padding=3)
         self.conv3 = nn.Conv1d(32, 64, kernel_size=7, padding=3)

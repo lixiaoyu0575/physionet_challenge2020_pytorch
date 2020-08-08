@@ -566,6 +566,7 @@ class MCInceptionTimeV2(nn.Module):
         : param return_indices			Indices are needed only if we want to create decoder with InceptionTranspose with MaxUnpool1d.
         """
         super(MCInceptionTimeV2, self).__init__()
+        self.num_classes = num_classes
         self.groups = groups
         self.n_filters = n_filters
         self.kernel_sizes = kernel_sizes

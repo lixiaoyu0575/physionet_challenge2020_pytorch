@@ -399,6 +399,7 @@ class InceptionTimeV1(nn.Module):
         : param return_indices			Indices are needed only if we want to create decoder with InceptionTranspose with MaxUnpool1d.
         """
         super(InceptionTimeV1, self).__init__()
+        self.num_classes = num_classes
         self.return_indices = return_indices
         self.inception_block_1 = InceptionTimeBlockV1(
             in_channels=in_channels,
@@ -464,6 +465,7 @@ class InceptionTimeV2(nn.Module):
         : param return_indices			Indices are needed only if we want to create decoder with InceptionTranspose with MaxUnpool1d.
         """
         super(InceptionTimeV2, self).__init__()
+        self.num_classes = num_classes
         self.return_indices = return_indices
         self.inception_block_1 = InceptionTimeBlockV2(
             in_channels=in_channels,

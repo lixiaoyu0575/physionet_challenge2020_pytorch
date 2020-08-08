@@ -250,6 +250,7 @@ class ResNet(nn.Module):
                  avd=False, avd_first=False,
                  final_drop=0.0, dropblock_prob=0,
                  last_gamma=False, norm_layer=nn.BatchNorm1d, kernel_size=7):
+        self.num_classes = num_classes
         self.cardinality = groups
         self.bottleneck_width = bottleneck_width
         # ResNet-D params
