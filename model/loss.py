@@ -191,3 +191,16 @@ class LabelSmoothingBCE(nn.Module):
 def label_smoothing_bce(output, target):
     loss = LabelSmoothingBCE()
     return loss(output, target)
+
+class CustomBCE():
+    def __init__(self):
+        super(CustomBCE)
+    def __call__(self, output, target, *args, **kwargs):
+        output = torch.sigmoid(output)
+        loss = target * torch.log(output) + (1 - target) * torch.log(1 - output)
+        loss = torch.neg(loss)
+        return loss
+def custom_bce(output, target):
+    loss = CustomBCE()
+    # print(output.size(),target.size())
+    return loss(output, target)

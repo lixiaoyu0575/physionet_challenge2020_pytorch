@@ -58,6 +58,11 @@ class ChallengeMetric():
     def return_metric_list(self):
         self._return_metric_list = True
 
+        self._return_metric_list = False
+
+    def return_metric_list(self):
+        self._return_metric_list = True
+
     # Compute recording-wise accuracy.
     def accuracy(self, outputs, labels):
         outputs = self.get_pred(outputs)
@@ -294,7 +299,8 @@ class ChallengeMetric():
                 if labels[i, j] > 0.5:
                     for k in range(num_classes):
                         if outputs[i, k] > 0.5:
-                            A[j, k] += 1.0/normalization
+                            A[j, k] += 1.0 / normalization
+
         return A
 
     # Compute the evaluation metric for the Challenge.

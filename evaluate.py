@@ -13,6 +13,7 @@ import model.mc_inceptiontime as module_arch_mc_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
+import model.resnest2 as module_arch_resnest2
 from parse_config import ConfigParser
 from trainer import Trainer, Trainer2
 from evaluater import Evaluater, Evaluater2
@@ -35,6 +36,7 @@ files_models = {
     "resnet": ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'],
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
     "resnest": ['resnest50', 'resnest'],
+    "resnest2": ['resnest50', 'resnest2'],
     "model": ['CNN', 'MLP'],
     "tcn": ['TCN']
 }
@@ -83,11 +85,13 @@ def main(config):
     model = model.to(device)
 
     # Evaluater
+    checkpoint_dir = config["arch"]["checkpoint_dir"]
+    result_dir = config["arch"]["result_dir"]
     evaluater = Evaluater(model, criterion, metrics,
                           config=config,
                           test_data_loader=test_data_loader,
-                          checkpoint_dir='/home/weiyuhua/Code/physionet_challenge2020_pytorch/saved/models/MC_inception_V2/0806_234850',
-                          result_dir='/home/weiyuhua/Code/physionet_challenge2020_pytorch/saved/results/MC_inception_V2/0806_234850'
+                          checkpoint_dir=checkpoint_dir,
+                          result_dir=result_dir
                            )
 
     evaluater.evaluate()
