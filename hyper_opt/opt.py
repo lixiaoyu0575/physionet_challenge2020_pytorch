@@ -1,21 +1,19 @@
-import sys
-import numpy as np
-import argparse
-from filelock import FileLock
 import os
+import sys
+curPath = os.path.abspath(os.path.dirname(__file__))
+print(curPath)
+rootPath = curPath
+for i in range(1):
+    rootPath = os.path.split(rootPath)[0]
+print(rootPath)
+sys.path.append(rootPath)
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 from torch.autograd import Variable
-from torchvision import datasets, transforms
 import pickle
 import traceback
 import time
 from datetime import datetime
-
-from model.inceptiontime import InceptionTimeV2
-from scipy.io import loadmat, savemat
 from hyperopt import hp, tpe, fmin, Trials
 
 from data_loader.data_loaders import ChallengeDataLoader0
@@ -32,17 +30,24 @@ import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
 
 from hyper_opt.util import init_obj, to_np, get_mnt_mode, save_checkpoint, \
-    write_json, get_logger, analyze, progress
+    write_json, get_logger, analyze, progress, load_checkpoint
 
 from tensorboardX import SummaryWriter
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+
 in_channels = 12
 num_classes = 108
-label_dir = "/DATASET/challenge2020/new_data/All_data_new"
-data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
-weights_file = '/home/weiyuhua/physionet_challenge2020_pytorch/evaluation/weights.csv'
+# label_dir = "/DATASET/challenge2020/new_data/All_data_new"
+# data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
+# weights_file = '/home/weiyuhua/physionet_challenge2020_pytorch/evaluation/weights.csv'
+
+label_dir = "/home/weiyuhua/Data/All_data_new"
+data_dir = "/home/weiyuhua/Data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
+weights_file = '/home/weiyuhua/Code/physionet_challenge2020_pytorch/evaluation/weights.csv'
+
 batch_size = 64
-save_path = './runs'
+save_path = './inception'
 log_step = 1
 
 space = {
@@ -124,8 +129,8 @@ space = {
     'trainer':
         hp.choice('trainer', [
             {
-                "epochs": hp.choice('epochs', [1]),
-                "monitor": hp.choice('monitor', ['min val_loss', 'max challenge_metric']),
+                "epochs": hp.choice('epochs', [100]),
+                "monitor": hp.choice('monitor', ['min val_loss', 'max val_challenge_metric']),
                 'early_stop': hp.choice('early_stop', [10])
             },
         ])
@@ -253,7 +258,7 @@ def train_challenge2020(hype_space):
     val_writer = SummaryWriter(tb_dir + '/valid')
 
     # Hyper Parameters
-    split_index = "/home/weiyuhua/physionet_challenge2020_pytorch/process/data_split/" + hype_space['data_split']
+    split_index = "../process/data_split/" + hype_space['data_split']
 
     # Setup Cuda
     use_cuda = torch.cuda.is_available()
@@ -329,6 +334,7 @@ def train_challenge2020(hype_space):
 
             if not_improved_count > early_stop:
                 logger.info("Validation performance didn\'t improve for {} epochs. Training stops.".format(early_stop))
+                break
 
         if best == True:
             save_checkpoint(model, epoch, optimizer, mnt_best, hype_space, checkpoint_dir, save_best=True)
@@ -346,6 +352,10 @@ def train_challenge2020(hype_space):
     logger = get_logger(result_dir + '/info.log', name='test'+run_id)
     logger.propagate = False
 
+    # Load model_best checkpoint
+    model = load_checkpoint(model, checkpoint_dir + '/model_best.pth', logger)
+
+    # Testing
     test_loss, test_metric = test(model, test_loader, criterion, metric, device=device)
     logger.info('    {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('loss', test_loss, 'metric', test_metric))
 
@@ -357,7 +367,7 @@ def train_challenge2020(hype_space):
 
 def run_trials():
     """Run one TPE meta optimisation step and save its results."""
-    max_evals = nb_evals = 2
+    max_evals = nb_evals = 10
 
     logger = get_logger(save_path + '/trials.log', name='trials')
 
@@ -365,7 +375,7 @@ def run_trials():
 
     try:
         # https://github.com/hyperopt/hyperopt/issues/267
-        trials = pickle.load(open("results.pkl", "rb"))
+        trials = pickle.load(open(save_path + "/results.pkl", "rb"))
         logger.info("Found saved Trials! Loading...")
         max_evals = len(trials.trials) + nb_evals
         logger.info("Rerunning from {} trials to add another one.".format(
@@ -383,7 +393,7 @@ def run_trials():
     )
 
     logger.info("Best: {}".format(best))
-    pickle.dump(trials, open("results.pkl", "wb"))
+    pickle.dump(trials, open(save_path + "/results.pkl", "wb"))
     logger.info("\nOPTIMIZATION STEP COMPLETE.\n")
     logger.info("Trials:")
 

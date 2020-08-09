@@ -630,9 +630,9 @@ def save_checkpoint(model, epoch, optimizer, mnt_best, config, checkpoint_dir, s
         'monitor_best': mnt_best,
         'config': config
     }
-    filename = checkpoint_dir + '/checkpoint-epoch{}.pth'.format(epoch)
-    torch.save(state, filename)
-    print("Saving checkpoint: {} ...".format(filename))
+    # filename = checkpoint_dir + '/checkpoint-epoch{}.pth'.format(epoch)
+    # torch.save(state, filename)
+    # print("Saving checkpoint: {} ...".format(filename))
     if save_best:
         best_path = checkpoint_dir + '/model_best.pth'
         torch.save(state, best_path)
@@ -769,3 +769,20 @@ def progress(data_loader, batch_idx):
         total = len(data_loader)
     return base.format(current, total, 100.0 * current / total)
 
+def load_checkpoint(model, resume_path, logger):
+    """
+    Resume from saved checkpoints
+
+    :param resume_path: Checkpoint path to be resumed
+    """
+    logger.info("Loading checkpoint: {} ...".format(resume_path))
+    checkpoint = torch.load(resume_path)
+    epoch = checkpoint['epoch']
+    mnt_best = checkpoint['monitor_best']
+
+    # load architecture params from checkpoint.
+    model.load_state_dict(checkpoint['state_dict'])
+
+    logger.info("Checkpoint loaded from epoch {}".format(epoch))
+
+    return model

@@ -96,7 +96,7 @@ space = {
         hp.choice('trainer', [
             {
                 "epochs": hp.choice('epochs', [1]),
-                "monitor": hp.choice('monitor', ['min val_loss', 'max challenge_metric']),
+                "monitor": hp.choice('monitor', ['min val_loss', 'max val_challenge_metric']),
                 'early_stop': hp.choice('early_stop', [10, 15, 20])
             },
         ])
