@@ -112,3 +112,4 @@ datasets/
 __MACOSX/
 configs/custom
 *.npy
+./analysis/data
