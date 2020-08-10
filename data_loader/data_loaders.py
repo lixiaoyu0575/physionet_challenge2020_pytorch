@@ -117,7 +117,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
 
         recordings_all = np.array(recordings_all)
         labels_onehot_all = np.array(labels_onehot_all)
-
+        # np.random.shuffle(labels_onehot_all)
         # labels_onehot = np.array(labels_onehot, dtype='float64')
         # labels_onehot = smooth_labels(labels_onehot)
         print(np.isnan(recordings_all).any())

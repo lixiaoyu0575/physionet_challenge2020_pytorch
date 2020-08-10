@@ -34,7 +34,8 @@ class BaseEvaluater:
             self.result_dir = config.result_dir
 
         setup_logging(self.result_dir)
-        self._resume_checkpoint(self.checkpoint_dir / 'model_best.pth')
+        # self._resume_checkpoint(self.checkpoint_dir / 'model_best.pth')
+        self._resume_checkpoint(self.checkpoint_dir)
 
     @abstractmethod
     def evaluate(self):
