@@ -5,11 +5,14 @@ from scipy.io import loadmat, savemat
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from process.util import load_challenge_data, load_labels, load_label_files
-from augmentation.transformers import Jitter, Scaling, MagWarp, TimeWarp, Permutation, RandSampling
+from augmentation.transformers import Jitter, Scaling, MagWarp, TimeWarp, Permutation, RandSampling,Rotation
 import torch
 
 def plot_aug(data, data_aug, header_data, label, name, j, aug, save_path):
     fig, axs = plt.subplots(12, 1, sharey=True, figsize=(50, 50))
+
+    data = data.numpy()
+    data_aug = data_aug.numpy()
 
     for i in range(12):
         axs[i].plot(data[i])
@@ -42,8 +45,8 @@ if __name__ == '__main__':
     normal_class = '426783006'
     equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
 
-    input_directory_data = '/home/weiyuhua/Data/All_data_resampled_to_500HZ_and_filtered_slided_n_segment=1_meanIR=100'
-    input_directory_label = '/home/weiyuhua/Data/challenge2020'
+    input_directory_data = '/DATASET/challenge2020/All_data_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000'
+    input_directory_label = '/DATASET/challenge2020/All_data'
 
     save_path = '/home/weiyuhua/Data/challenge2020_plots/aug'
 
