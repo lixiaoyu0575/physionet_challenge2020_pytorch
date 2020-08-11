@@ -33,7 +33,7 @@ class Evaluater(BaseEvaluater):
                 output = self.model(data)
 
                 loss2save = self.criterion(output, target)
-                print(loss2save.cpu().detach().numpy())
+                # print(loss2save.cpu().detach().numpy())
                 losses.append(loss2save.cpu().detach().numpy())
                 loss = torch.mean(loss2save)
                 self.test_metrics.update('loss', loss.item())
@@ -41,7 +41,7 @@ class Evaluater(BaseEvaluater):
                 for met in self.metric_ftns:
                     self.test_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
             losses_array = np.concatenate(losses)
-            np.save('./epoch1_losses.npy', losses_array)
+            np.save('./data/epoch3_losses.npy', losses_array)
             print('save losses')
         result = self.test_metrics.result()
 

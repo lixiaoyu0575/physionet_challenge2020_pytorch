@@ -201,6 +201,7 @@ class CustomBCE():
         loss = torch.neg(loss)
         return loss
 def custom_bce(output, target):
+    output = torch.sigmoid(output)
     loss = CustomBCE()
     # print(output.size(),target.size())
     return loss(output, target)

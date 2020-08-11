@@ -16,6 +16,7 @@ import augmentation.transformers as module_transformers
 import random
 import time
 import pickle
+import scipy
 
 from utils.util import smooth_labels
 
@@ -136,7 +137,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # Get number of samples for each category
         self.count = np.sum(labels_onehot_all, axis=0)
         self.indices = indices
-
+        recordings_all = scipy.signal.detrend(recordings_all)
         X = torch.from_numpy(recordings_all).float()
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot_all).float()

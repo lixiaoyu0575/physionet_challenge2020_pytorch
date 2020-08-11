@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy.io import loadmat
-losses = np.load('epoch5_losses.npy')
+losses = np.load('./data/epoch3_losses.npy')
 losses = np.nan_to_num(losses, nan=0)
 indices = loadmat('../evaluation/scored_classes_indices.mat')['val']
 indices = indices.reshape([indices.shape[1],]).astype(bool)
