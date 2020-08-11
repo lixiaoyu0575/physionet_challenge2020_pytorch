@@ -1,5 +1,5 @@
 {
-    "name": "challenge2020_official_data_0806_aug_random",
+    "name": "challenge2020_official_data_aug_random",
     "n_gpu": 1,
     "arch": {
         "type": "InceptionTimeV2",
