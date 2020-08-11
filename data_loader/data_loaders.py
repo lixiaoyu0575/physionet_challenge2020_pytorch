@@ -24,7 +24,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
     """
     challenge2020 data loading
     """
-    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None):
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None, augmentations=None):
         start = time.time()
         self.label_dir = label_dir
         self.data_dir = data_dir
@@ -140,7 +140,21 @@ class ChallengeDataLoader0(BaseDataLoader2):
         X = torch.from_numpy(recordings_all).float()
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot_all).float()
-        self.dataset = TensorDataset(X, Y)
+
+        #add augmentation
+
+        if augmentations:
+            transformers = list()
+
+            for key, value in augmentations.items():
+                module_args = dict(value['args'])
+                transformers.append(getattr(module_transformers, key)(**module_args))
+
+            train_transform = transforms.Compose(transformers)
+            self.dataset = CustomTensorDataset(X, Y, transform=train_transform)
+        else:
+            self.dataset = TensorDataset(X, Y)
+
         end = time.time()
         print('time to get and process data: {}'.format(end-start))
         super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers)

@@ -42,7 +42,7 @@ class CustomTensorDataset(Dataset):
         torch.randn(1)
 
         if self.transform:
-            if torch.rand(1) >= 0.5:
+            if torch.rand(1) >= 0.8:
                 x = self.transform(x)
 
         y = self.tensors[1][index]
