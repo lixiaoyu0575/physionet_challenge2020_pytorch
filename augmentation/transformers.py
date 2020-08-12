@@ -137,7 +137,7 @@ class MagWarp(object):
         # print("This is MagWarp")
         # print(type(tensors * torch.from_numpy(GenerateRandomCurves(tensors, self.sigma))))
 
-        return (tensors * torch.from_numpy(GenerateRandomCurves(tensors, self.sigma))).float()
+        return tensors * torch.from_numpy(GenerateRandomCurves(tensors, self.sigma))
 
     def __repr__(self):
         return self.__class__.__name__ + '(sigma={0})'.format(self.sigma)
@@ -227,11 +227,11 @@ class Permutation(object):
             Tensor: Scaled Tensor.
         """
 
-        X_new = torch.zeros(tensors.shape, dtype=int)
+        X_new = torch.zeros(tensors.shape, dtype=torch.int64)
         idx = torch.randperm(self.nPerm)
         bWhile = True
         while bWhile == True:
-            segs = torch.zeros(self.nPerm + 1, dtype=int)
+            segs = torch.zeros(self.nPerm + 1, dtype=torch.int64)
             segs[1:-1] = torch.sort(torch.randint(self.minSegLength, tensors.shape[1] - self.minSegLength, (self.nPerm - 1,))).values
             segs[-1] = tensors.shape[1]
             if torch.min(segs[1:] - segs[0:-1]) > self.minSegLength:
@@ -278,7 +278,7 @@ class RandSampling(object):
         # print("This is RandSampling")
         # print(type(torch.from_numpy(X_new)))
 
-        return torch.from_numpy(X_new).float()
+        return (torch.from_numpy(X_new).float())
 
     def __repr__(self):
         return self.__class__.__name__

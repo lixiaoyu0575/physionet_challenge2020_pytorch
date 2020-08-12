@@ -4,7 +4,7 @@
     "arch": {
         "type": "resnest",
         "args": {
-           "layers": [2, 2, 2, 2],
+           "layers": [3, 2, 1, 3],
             "bottleneck_width": 64,
             "stem_width": 16,
            "num_classes": 108,
@@ -32,7 +32,7 @@
         }
     },
      "loss": {
-        "type":"bce_with_logits_loss"
+        "type":"weighted_bce_with_logits_loss"
     },
     "metrics":
     [

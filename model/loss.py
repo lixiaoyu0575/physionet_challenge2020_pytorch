@@ -200,7 +200,27 @@ class CustomBCE():
         loss = target * torch.log(output) + (1 - target) * torch.log(1 - output)
         loss = torch.neg(loss)
         return loss
+
+# from utils.dataset import get_weights
+def weighted_bce_with_logits_loss(output, target, weights):
+    loss = F.binary_cross_entropy_with_logits(input=output, target=target, reduce=False)
+    loss = torch.mm(loss, weights)
+    loss = torch.mean(loss)
+    # print('using weighted bce loss')
+    # loss = torch.nn.BCEWithLogitsLoss()
+    # print(output.size(),target.size())
+    return loss
+
 def custom_bce(output, target):
+    output = torch.sigmoid(output)
     loss = CustomBCE()
     # print(output.size(),target.size())
     return loss(output, target)
+
+if __name__ == "__main__":
+    a = torch.rand((16, 24))
+    b = torch.rand((16, 24))
+    w = torch.rand((24, 1))
+    loss = weighted_bce_with_logits_loss(a, b, w)
+    print(loss)
+    print('test')

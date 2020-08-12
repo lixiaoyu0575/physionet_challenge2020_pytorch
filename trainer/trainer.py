@@ -36,7 +36,8 @@ class Trainer(BaseTrainer):
             keys_val = ['val_' + k for k in self.keys]
             for key in keys_val:
                 self.log[key] = []
-
+        self.weights = torch.tensor(self.data_loader.weights)
+        self.weights = torch.mean(self.weights, dim=1)
 
         self.only_scored_classes = config['trainer'].get('only_scored_class', True)
         self.lable_smooth = config['trainer'].get('label_smooth', None)
@@ -45,6 +46,8 @@ class Trainer(BaseTrainer):
             # Only consider classes that are scored with the Challenge metric.
             indices = loadmat('evaluation/scored_classes_indices.mat')['val']
             self.indices = indices.reshape([indices.shape[1],]).astype(bool)
+            self.weights = self.weights[indices]
+            self.weights = self.weights.reshape((24, 1)).to(device=self.device, dtype=torch.float)
 
         self.sigmoid = nn.Sigmoid()
 
@@ -73,7 +76,10 @@ class Trainer(BaseTrainer):
 
             if self.only_scored_classes:
                 # Only consider classes that are scored with the Challenge metric.
-                loss = self.criterion(output[:, self.indices], target[:, self.indices])
+                if self.config["loss"]["type"] == "weighted_bce_with_logits_loss":
+                    loss = self.criterion(output[:, self.indices], target[:, self.indices], self.weights)
+                else:
+                    loss = self.criterion(output[:, self.indices], target[:, self.indices])
             else:
                 loss = self.criterion(output, target)
 
@@ -133,7 +139,10 @@ class Trainer(BaseTrainer):
 
                 if self.only_scored_classes:
                     # Only consider classes that are scored with the Challenge metric.
-                    loss = self.criterion(output[:, self.indices], target[:, self.indices])
+                    if self.config["loss"]["type"] == "weighted_bce_with_logits_loss":
+                        loss = self.criterion(output[:, self.indices], target[:, self.indices], self.weights)
+                    else:
+                        loss = self.criterion(output[:, self.indices], target[:, self.indices])
                 else:
                     loss = self.criterion(output, target)
 

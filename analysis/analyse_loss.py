@@ -89,7 +89,7 @@ def main(config):
     result_dir = config["arch"]["result_dir"]
     evaluater = Evaluater(model, criterion, metrics,
                           config=config,
-                          test_data_loader=test_data_loader,
+                          test_data_loader=data_loader,
                           checkpoint_dir=checkpoint_dir,
                           result_dir=result_dir
                            )

@@ -4,12 +4,13 @@
     "arch": {
         "type": "resnest",
         "args": {
-           "layers": [3, 2, 1, 2],
+           "layers": [2, 2, 1, 3],
             "bottleneck_width": 64,
             "stem_width": 16,
            "num_classes": 108,
             "kernel_size": 7
-        }
+        },
+        "weight_path": "/home/lixiaoyu/project/test/SupContrast/save/SupCon/cifar10_models/SimCLR_cifar10_resnet50_lr_0.001_decay_0.0001_bsz_1024_temp_0.1_trial_SimCLR_ecg_cosine_warm/ckpt_epoch_350.pth"
     },
 
     "data_loader": {

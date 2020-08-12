@@ -111,3 +111,5 @@ datasets/
 .idea/
 __MACOSX/
 configs/custom
+*.npy
+./analysis/data
