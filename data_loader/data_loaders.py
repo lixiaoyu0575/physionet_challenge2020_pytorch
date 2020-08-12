@@ -50,8 +50,9 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # Load the weights for the Challenge metric.
         print('Loading weights...')
         weights = load_weights(weights_file, classes)
+        self.weights = weights
         time_record_3 = time.time()
-        print("Loading label cost {}s".format(time_record_3-time_record_2))
+        print("Loading weights cost {}s".format(time_record_3-time_record_2))
 
         # Classes that are scored with the Challenge metric.
         indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
@@ -137,7 +138,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # Get number of samples for each category
         self.count = np.sum(labels_onehot_all, axis=0)
         self.indices = indices
-        recordings_all = scipy.signal.detrend(recordings_all)
+        # recordings_all = scipy.signal.detrend(recordings_all)
         X = torch.from_numpy(recordings_all).float()
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot_all).float()
