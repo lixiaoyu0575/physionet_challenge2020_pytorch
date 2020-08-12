@@ -434,8 +434,9 @@ class ChallengeDataLoader2(BaseDataLoader3):
         # Load the weights for the Challenge metric.
         print('Loading weights...')
         weights = load_weights(weights_file, classes)
+        self.weights = weights
         time_record_3 = time.time()
-        print("Loading label cost {}s".format(time_record_3 - time_record_2))
+        print("Loading weights cost {}s".format(time_record_3 - time_record_2))
 
         # Classes that are scored with the Challenge metric.
         indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
