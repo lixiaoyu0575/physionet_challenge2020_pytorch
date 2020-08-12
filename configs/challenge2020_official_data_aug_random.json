@@ -13,7 +13,7 @@
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader2,
+        "type": "ChallengeDataLoader2",
         "args":
         {
             "label_dir": "/DATASET/challenge2020/new_data/All_data_new",
