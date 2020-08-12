@@ -81,7 +81,7 @@ class Jitter(object):
         # print("This is Jitter")
         # print(type(tensors + myNoise))
 
-        return tensors + myNoise
+        return (tensors + myNoise).float()
 
     def __repr__(self):
         return self.__class__.__name__ + '(sigma={0})'.format(self.sigma)
@@ -111,7 +111,7 @@ class Scaling(object):
         # print("This is Scaling")
         # print(type(tensors * myNoise))
 
-        return tensors * myNoise
+        return (tensors * myNoise).float()
 
     def __repr__(self):
         return self.__class__.__name__ + '(sigma={0})'.format(self.sigma)
@@ -137,7 +137,7 @@ class MagWarp(object):
         # print("This is MagWarp")
         # print(type(tensors * torch.from_numpy(GenerateRandomCurves(tensors, self.sigma))))
 
-        return tensors * torch.from_numpy(GenerateRandomCurves(tensors, self.sigma))
+        return (tensors * torch.from_numpy(GenerateRandomCurves(tensors, self.sigma))).float()
 
     def __repr__(self):
         return self.__class__.__name__ + '(sigma={0})'.format(self.sigma)
@@ -170,7 +170,7 @@ class TimeWarp(object):
         # print("This is TimeWarp")
         # print(type(torch.from_numpy(X_new)))
 
-        return torch.from_numpy(X_new)
+        return torch.from_numpy(X_new).float()
 
     def __repr__(self):
         return self.__class__.__name__ + '(sigma={0})'.format(self.sigma)
@@ -200,7 +200,7 @@ class Rotation(object):
         # print("This is Rotation")
         # print(type(torch.matmul(axangle2mat(axis, angle), tensors)))
 
-        return torch.matmul(axangle2mat(axis, angle), tensors)
+        return torch.matmul(axangle2mat(axis, angle), tensors).float()
 
     def __repr__(self):
         return self.__class__.__name__
@@ -245,7 +245,7 @@ class Permutation(object):
         # print("This is Permutation")
         # print(type(X_new))
 
-        return (X_new)
+        return (X_new).float()
 
     def __repr__(self):
         return self.__class__.__name__
@@ -278,7 +278,7 @@ class RandSampling(object):
         # print("This is RandSampling")
         # print(type(torch.from_numpy(X_new)))
 
-        return (torch.from_numpy(X_new))
+        return torch.from_numpy(X_new).float()
 
     def __repr__(self):
         return self.__class__.__name__

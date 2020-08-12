@@ -58,11 +58,6 @@ class ChallengeMetric():
     def return_metric_list(self):
         self._return_metric_list = True
 
-        self._return_metric_list = False
-
-    def return_metric_list(self):
-        self._return_metric_list = True
-
     # Compute recording-wise accuracy.
     def accuracy(self, outputs, labels):
         outputs = self.get_pred(outputs)

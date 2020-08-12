@@ -106,8 +106,13 @@ class Trainer(BaseTrainer):
             val_log = self._valid_epoch(epoch)
             log.update(**{'val_'+k : v for k, v in val_log.items()})
 
-        if self.lr_scheduler is not None and self.config["lr_scheduler"]["type"] != "ReduceLROnPlateau":
-            self.lr_scheduler.step()
+        if self.lr_scheduler is not None:
+            if self.config['lr_scheduler']['type'] == 'ReduceLROnPlateau':
+                self.lr_scheduler.step(log['val_loss'])
+            elif self.config['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+                self.lr_scheduler.step(epoch, log['val_loss'])
+            else:
+                self.lr_scheduler.step()
 
         return log
 
@@ -223,6 +228,7 @@ class Trainer2(BaseTrainer):
 
             for i in range(len(data)):
                 data[i], target[i] = data[i].to(device=self.device, dtype=torch.float), target[i].to(self.device, dtype=torch.float)
+
                 output = self.model(data[i])
 
                 if self.only_scored_classes:
@@ -261,7 +267,13 @@ class Trainer2(BaseTrainer):
             log.update(**{'val_' + k: v for k, v in val_log.items()})
 
         if self.lr_scheduler is not None:
-            self.lr_scheduler.step()
+            if self.config['lr_scheduler']['type'] == 'ReduceLROnPlateau':
+                self.lr_scheduler.step(log['val_loss'])
+            elif self.config['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+                self.lr_scheduler.step(epoch, log['val_loss'])
+            else:
+                self.lr_scheduler.step()
+
         return log
 
     def _valid_epoch(self, epoch):

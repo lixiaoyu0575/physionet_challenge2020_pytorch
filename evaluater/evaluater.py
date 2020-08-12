@@ -69,9 +69,9 @@ class Evaluater(BaseEvaluater):
             loss = self.criterion(outputs, targets)
             self.test_metrics.update('loss', loss.item())
 
-        output_logit = self.sigmoid(outputs)
+        output_logits = self.sigmoid(outputs)
         for met in self.metric_ftns:
-            self.test_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(targets)))
+            self.test_metrics.update(met.__name__, met(self._to_np(output_logits), self._to_np(targets)))
 
         result = self.test_metrics.result()
 
@@ -87,7 +87,6 @@ class Evaluater(BaseEvaluater):
 
         outputs = torch.zeros((self.test_data_loader.n_samples, self.num_classes))
         targets = torch.zeros((self.test_data_loader.n_samples, self.num_classes))
-        inputs = torch.zeros((self.test_data_loader.n_samples, 12, 3000))
 
         with torch.no_grad():
             start = 0
@@ -99,7 +98,6 @@ class Evaluater(BaseEvaluater):
 
                 outputs[start:end, :] = output
                 targets[start:end, :] = target
-                inputs[start:end, :] = data
                 start = end
 
                 loss = self.criterion(output, target)
@@ -155,7 +153,7 @@ class Evaluater(BaseEvaluater):
                    'Georgia 12-Lead ECG Challenge Database', 'St Petersburg INCART 12-lead Arrhythmia Database']
         
         for i in range(len(Dataset)):
-            outputs_i_logit = self._to_np(outputs_logit)[np.array(dataset_idx_list[i])]
+            outputs_i_logit = self._to_np(outputs_logit)[dataset_idx_list[i]]
             targets_i = self._to_np(targets)[dataset_idx_list[i]]
 
             accuracy = challenge_metrics.accuracy(outputs_i_logit, targets_i)
@@ -360,7 +358,7 @@ class Evaluater2(BaseEvaluater):
                    'Georgia 12-Lead ECG Challenge Database', 'St Petersburg INCART 12-lead Arrhythmia Database']
 
         for i in range(len(Dataset)):
-            outputs_i_logit = self._to_np(Outputs_logit)[np.array(dataset_idx_list[i])]
+            outputs_i_logit = self._to_np(Outputs_logit)[dataset_idx_list[i]]
             targets_i = self._to_np(Targets)[dataset_idx_list[i]]
 
             accuracy = challenge_metrics.accuracy(outputs_i_logit, targets_i)
