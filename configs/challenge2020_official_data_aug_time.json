@@ -1,5 +1,5 @@
 {
-    "name": "challenge2020_official_data_aug_random",
+    "name": "challenge2020_official_data_0806_time",
     "n_gpu": 1,
     "arch": {
         "type": "InceptionTimeV2",
@@ -13,7 +13,7 @@
     },
 
     "data_loader": {
-        "type": "ChallengeDataLoader2,
+        "type": "ChallengeDataLoader2",
         "args":
         {
             "label_dir": "/DATASET/challenge2020/new_data/All_data_new",
@@ -24,11 +24,11 @@
             "num_workers": 6,
             "augmentations":
             {
-                "RandSampling":
+                "TimeWarp":
                 {
                     "args":
                     {
-                        "nSample": 1000
+                        "sigma": 0.2
                     }
                 }
             }
@@ -47,12 +47,6 @@
     },
     "metrics":
     [
-        "accuracy",
-        "f_measure",
-        "macro_f_beta_measure",
-        "macro_g_beta_measure",
-        "macro_auroc",
-        "macro_auprc",
         "challenge_metric"
     ],
    "lr_scheduler": {
