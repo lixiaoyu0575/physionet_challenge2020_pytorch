@@ -711,8 +711,111 @@ def analyze(model, test_data_loader, criterion, challenge_metrics, logger, resul
                'Georgia 12-Lead ECG Challenge Database', 'St Petersburg INCART 12-lead Arrhythmia Database']
 
     for i in range(len(Dataset)):
-        outputs_i_logit = to_np(outputs_logit, device)[np.array(dataset_idx_list[i])]
+        outputs_i_logit = to_np(outputs_logit, device)[dataset_idx_list[i]]
         targets_i = to_np(targets, device)[dataset_idx_list[i]]
+
+        accuracy = challenge_metrics.accuracy(outputs_i_logit, targets_i)
+        macro_f_measure, f_measure = challenge_metrics.f_measure(outputs_i_logit, targets_i)
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = challenge_metrics.beta_measures(
+            outputs_i_logit, targets_i)
+        macro_auroc, macro_auprc, auroc, auprc = challenge_metrics.auc(outputs_i_logit, targets_i)
+        challenge_metric = challenge_metrics.challenge_metric(outputs_i_logit, targets_i)
+
+        logger.info("**********************************************************************************")
+        logger.info(Dataset[i])
+        logger.info("challenge_metric:{}".format(challenge_metric))
+        logger.info("accuracy:{}".format(accuracy))
+        logger.info("macro_f_measure:{}".format(macro_f_measure))
+        logger.info("macro_g_beta_measure:{}".format(macro_g_beta_measure))
+        logger.info("macro_auroc:{}".format(macro_auroc))
+        logger.info("macro_auprc:{}".format(macro_auprc))
+
+        metrics = np.vstack((f_measure, f_beta_measure, g_beta_measure, auroc, auprc))
+        metrics_df = pd.DataFrame(data=metrics, columns=classes,
+                                  index=['f_measure', 'f_beta_measure', 'g_beta_measure', 'auroc', 'auprc'])
+        logger.info(metrics_df)
+        metrics_df.to_csv(result_dir + '/' + Dataset[i] + '.csv')
+
+def analyze2(model, test_data_loader, criterion, challenge_metrics, logger, result_dir, device=None):
+    """
+    Analyze after training procedure finished
+    """
+    model.eval()
+
+    Outputs = torch.zeros((test_data_loader.n_samples, model.num_classes))
+    Targets = torch.zeros((test_data_loader.n_samples, model.num_classes))
+
+    with torch.no_grad():
+        start = 0
+        for batch_idx, (data, target) in enumerate(test_data_loader):
+            end = len(data) + start
+
+            outputs = torch.zeros(len(target), model.num_classes)
+            targets = torch.zeros(len(target), model.num_classes)
+
+            for i in range(len(data)):
+                data[i], target[i] = data[i].to(device), target[i].to(device)
+                output = model(data[i])
+
+                outputs[i:i + 1, :] = output
+                targets[i:i + 1, :] = target[i]
+
+            Outputs[start:end, :] = outputs
+            Targets[start:end, :] = targets
+            start = end
+
+    indices = challenge_metrics.indices
+    classes = challenge_metrics.classes
+    test_idx = test_data_loader.idx
+    file_names = test_data_loader.file_names
+
+    dataset_idx_list = [[] for i in range(6)]
+    for i in range(len(test_idx)):
+        if file_names[test_idx[i]].startswith('A'):      # CPSC 2018 data, 6,877 recordings
+            dataset_idx_list[0].append(i)
+        elif file_names[test_idx[i]].startswith('Q'):     # Unused CPSC2018 data, 3,453 recordings
+            dataset_idx_list[1].append(i)
+        elif file_names[test_idx[i]].startswith('S'):     # PTB Diagnostic ECG Database, 516 recordings
+            dataset_idx_list[2].append(i)
+        elif file_names[test_idx[i]].startswith('HR'):     # PTB-XL electrocardiography Database, 21,837 recordings
+            dataset_idx_list[3].append(i)
+        elif file_names[test_idx[i]].startswith('E'):     # Georgia 12-Lead ECG Challenge Database, 10,344 recordings
+            dataset_idx_list[4].append(i)
+        else:
+            dataset_idx_list[5].append(i)       # St Petersburg INCART 12-lead Arrhythmia Database, 74 recordings
+
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+
+    # All Testing Data
+    logger.info("**********************************************************************************")
+    logger.info("All Testing Data")
+
+    Outputs_logit = torch.nn.Sigmoid()(Outputs)
+    accuracy = challenge_metrics.accuracy(to_np(Outputs_logit, device), to_np(Targets, device))
+    macro_f_measure, f_measure  = challenge_metrics.f_measure(to_np(Outputs_logit, device), to_np(Targets, device))
+    macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = challenge_metrics.beta_measures(to_np(Outputs_logit, device), to_np(Targets, device))
+    macro_auroc, macro_auprc, auroc, auprc = challenge_metrics.auc(to_np(Outputs_logit, device), to_np(Targets, device))
+    challenge_metric = challenge_metrics.challenge_metric(to_np(Outputs_logit, device), to_np(Targets, device))
+
+    logger.info("challenge_metric:{}".format(challenge_metric))
+    logger.info("accuracy:{}".format(accuracy))
+    logger.info("macro_f_measure:{}".format(macro_f_measure))
+    logger.info("macro_g_beta_measure:{}".format(macro_g_beta_measure))
+    logger.info("macro_auroc:{}".format(macro_auroc))
+    logger.info("macro_auprc:{}".format(macro_auprc))
+
+    metrics = np.vstack((f_measure, f_beta_measure, g_beta_measure, auroc, auprc))
+    metrics_df = pd.DataFrame(data=metrics, columns=classes, index=['f_measure', 'f_beta_measure', 'g_beta_measure', 'auroc', 'auprc'])
+    logger.info(metrics_df)
+    metrics_df.to_csv(result_dir+'/All.csv')
+
+    Dataset = ['CPSC 2018 data', 'Unused CPSC2018 data', 'PTB Diagnostic ECG Database', 'PTB-XL electrocardiography Database',
+               'Georgia 12-Lead ECG Challenge Database', 'St Petersburg INCART 12-lead Arrhythmia Database']
+
+    for i in range(len(Dataset)):
+        outputs_i_logit = to_np(Outputs_logit, device)[dataset_idx_list[i]]
+        targets_i = to_np(Targets, device)[dataset_idx_list[i]]
 
         accuracy = challenge_metrics.accuracy(outputs_i_logit, targets_i)
         macro_f_measure, f_measure = challenge_metrics.f_measure(outputs_i_logit, targets_i)

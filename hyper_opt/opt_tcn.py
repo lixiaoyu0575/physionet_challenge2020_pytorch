@@ -1,5 +1,6 @@
 import os
 import sys
+
 curPath = os.path.abspath(os.path.dirname(__file__))
 print(curPath)
 rootPath = curPath
@@ -16,8 +17,10 @@ import time
 from datetime import datetime
 from hyperopt import hp, tpe, fmin, Trials
 
-from data_loader.data_loaders import ChallengeDataLoader0
+from data_loader.data_loaders import ChallengeDataLoader7
 from model.metric import ChallengeMetric
+import augmentation.transformers as module_transformers
+from utils.lr_scheduler import GradualWarmupScheduler
 
 import model.loss as module_loss
 import model.metric as module_metric
@@ -28,46 +31,52 @@ import model.inceptiontime as module_arch_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
-
 from hyper_opt.util import init_obj, to_np, get_mnt_mode, save_checkpoint, \
-    write_json, get_logger, analyze, progress, load_checkpoint
-
+    write_json, get_logger, analyze2, progress, load_checkpoint
 from tensorboardX import SummaryWriter
+
+import torch.multiprocessing
+torch.multiprocessing.set_sharing_strategy('file_system')
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 in_channels = 12
 num_classes = 108
 # label_dir = "/DATASET/challenge2020/new_data/All_data_new"
-# data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
+# data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ"
 # weights_file = '/home/weiyuhua/physionet_challenge2020_pytorch/evaluation/weights.csv'
 
 label_dir = "/home/weiyuhua/Data/All_data_new"
-data_dir = "/home/weiyuhua/Data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
+data_dir = "/home/weiyuhua/Data/All_data_new_resampled_to_300HZ"
 weights_file = '/home/weiyuhua/Code/physionet_challenge2020_pytorch/evaluation/weights.csv'
 
-batch_size = 64
-save_path = './inception'
+batch_size = 32
+save_path = './tcn_vl'
 log_step = 1
 
 space = {
     'arch':
         hp.choice('arch', [
             {
-                'type': 'InceptionTimeV2',
+                'type': 'TCN',
                 'args':
                     {
-                        "in_channels": 12,
+                        "input_size": 12,
                         "num_classes": 108,
-                        "n_filters": hp.choice('n_filters', [32, 64]),
-                        "kernel_sizes": hp.choice('kernel_sizes', [[3, 7, 15], [9, 19, 39]]),
-                        "bottleneck_channels": hp.choice('bottleneck_channels', [16, 32])
-                    }
+                        # "num_channels": hp.choice('num_channels', [[32, 32, 32, 32, 32], [64, 64, 64, 64, 64], [32, 32, 32, 32, 32, 32, 32, 32]]),
+                        "num_channels": hp.choice('num_channels', [[20, 20, 20, 20, 20]]),
+                        "kernel_size": hp.choice('kernel_size', [16]),
+                        "dropout": hp.choice('dropout', [0.2])
+                    },
+
             }
         ]),
 
     'data_split':
         hp.choice('data_split', ['split1']),
+
+    'only_scored':
+        hp.choice('only_scores', [True]),
 
     'optimizer':
         hp.choice('optimizer', [
@@ -75,7 +84,7 @@ space = {
                 'type': 'Adam',
                 'args':
                     {
-                        'lr': hp.choice('lr', [0.01, 0.001, 0.0005]),
+                        'lr': hp.choice('lr', [0.001]),
                         'weight_decay': hp.choice('weight_decay', [1e-3, 1e-4]),
                         'amsgrad': True
                     }
@@ -110,17 +119,31 @@ space = {
                 "type": "StepLR",
                 "args":
                     {
-                        "step_size": hp.choice('step_size', [50]),
-                        "gamma": hp.choice('StepLR_gamma', [0.1])
+                        "step_size": hp.choice('step_size', [30, 50]),
+                        "gamma": hp.choice('StepLR_gamma', [0.1, 0.5])
                     }
             },
 
             {
-                "type": "CosineAnnealingWarmRestarts",
+                "type": "GradualWarmupScheduler",
                 "args": {
-                    "T_0": 10,
-                    "T_mult": 1,
-                    "eta_min": 0
+                    "multiplier": hp.choice('multiplier', [1, 1.5]),
+                    "total_epoch": hp.choice('total_epoch', [5, 10]),
+                    "after_scheduler": {
+                        "type": "ReduceLROnPlateau",
+                        "args": {
+                            "mode": "min",
+                            "factor": hp.choice('factor2', [0.1, 0.5]),
+                            "patience": 6,
+                            "verbose": False,
+                            "threshold": 0.0001,
+                            "threshold_mode": "rel",
+                            "cooldown": 0,
+                            "min_lr": 0,
+                            "eps": 1e-08
+                        }
+
+                    }
                 }
             },
 
@@ -131,7 +154,7 @@ space = {
             {
                 "epochs": hp.choice('epochs', [100]),
                 "monitor": hp.choice('monitor', ['min val_loss', 'max val_challenge_metric']),
-                'early_stop': hp.choice('early_stop', [10])
+                'early_stop': hp.choice('early_stop', [10, 15])
             },
         ])
 }
@@ -148,27 +171,53 @@ files_models = {
     "tcn": ['TCN']
 }
 
-
-def train(model, optimizer, lr_scheduler, train_loader, criterion, metric, epoch, logger, device=None):
+def train(model, optimizer, train_loader, criterion, metric, indices, epoch, device=None):
     sigmoid = nn.Sigmoid()
     model.train()
     cc = 0
     Loss = 0
-    total = 0
     batchs = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         batch_start = time.time()
-        data, target = data.to(device), target.to(device)
+
+        loss = torch.tensor(0).to(device, dtype=torch.float)
+        outputs = torch.zeros(len(target), target[0].shape[1])
+        targets = torch.zeros(len(target), target[0].shape[1])
+
         optimizer.zero_grad()
-        output = model(data)
-        loss = criterion(output, target)
+        # for name, param in model.named_parameters():
+        #     # print("para nan:")
+        #     # print(name,torch.isnan(param).any())
+
+
+        for i in range(len(data)):
+            data[i], target[i] = data[i].to(device), target[i].to(device)
+            output = model(data[i])
+
+            #######
+            # d = data[i]
+            # print("data nan:")
+            # print(torch.isnan(d).any())
+
+
+            if not indices is None:
+                loss_i = criterion(output[:, indices], target[i][:, indices])
+            else:
+                loss_i = criterion(output, target[i])
+            loss += loss_i
+            outputs[i:i + 1, :] = output
+            targets[i:i + 1, :] = target[i]
+
+        loss /= len(data)
         loss.backward()
+
+        aaa = [x.grad for x in optimizer.param_groups[0]['params']]
+        # torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=20, norm_type=2)
         optimizer.step()
 
-        c = metric(to_np(sigmoid(output), device), to_np(target, device))
+        c = metric(to_np(sigmoid(outputs), device), to_np(targets, device))
         cc += c
         Loss += loss
-        total += target.size(0)
         batchs += 1
 
         if batch_idx % log_step == 0:
@@ -177,59 +226,71 @@ def train(model, optimizer, lr_scheduler, train_loader, criterion, metric, epoch
             #                                                                           batch_end - batch_start))
             print('Train Epoch: {} {} Loss: {:.6f}, 1 batch cost time {:.2f}'.format(epoch, progress(train_loader, batch_idx), loss.item(), batch_end - batch_start))
 
-    return Loss / total, cc / batchs
+    return Loss / batchs, cc / batchs
 
-
-def valid(model, valid_loader, criterion, metric, device=None):
+def valid(model, valid_loader, criterion, metric, indices, device=None):
     sigmoid = nn.Sigmoid()
     model.eval()
     cc = 0
     Loss = 0
-    total = 0
     batchs = 0
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(valid_loader):
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            loss = criterion(output, target)
+            loss = torch.tensor(0).to(device, dtype=torch.float)
+            outputs = torch.zeros(len(target), target[0].shape[1])
+            targets = torch.zeros(len(target), target[0].shape[1])
 
-            c = metric(to_np(sigmoid(output), device), to_np(target, device))
+            for i in range(len(data)):
+                data[i], target[i] = data[i].to(device), target[i].to(device)
+                output = model(data[i])
+                if not indices is None:
+                    loss_i = criterion(output[:, indices], target[i][:, indices])
+                else:
+                    loss_i = criterion(output, target[i])
+                loss += loss_i
+                outputs[i:i + 1, :] = output
+                targets[i:i + 1, :] = target[i]
+
+            loss /= len(data)
+            c = metric(to_np(sigmoid(outputs), device), to_np(targets, device))
             cc += c
             Loss += loss
-            total += target.size(0)
             batchs += 1
 
-    return Loss / total, cc / batchs
+    return Loss / batchs, cc / batchs
 
-
-def test(model, test_loader, criterion, metric, device=None):
+def test(model, test_loader, criterion, metric, indices, device=None):
     model.eval()
     sigmoid = nn.Sigmoid()
-    batchs = 0
-    Loss = 0
-    total = 0
-    outputs = torch.zeros((test_loader.n_samples, model.num_classes))
-    targets = torch.zeros((test_loader.n_samples, model.num_classes))
+    Outputs = torch.zeros((test_loader.n_samples, model.num_classes))
+    Targets = torch.zeros((test_loader.n_samples, model.num_classes))
 
     with torch.no_grad():
         start = 0
         for batch_idx, (data, target) in enumerate(test_loader):
             end = len(data) + start
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-            loss = criterion(output, target)
 
-            outputs[start:end, :] = output
-            targets[start:end, :] = target
+            outputs = torch.zeros(len(target), model.num_classes)
+            targets = torch.zeros(len(target), model.num_classes)
+
+            for i in range(len(data)):
+                data[i], target[i] = data[i].to(device), target[i].to(device)
+                output = model(data[i])
+
+                outputs[i:i + 1, :] = output
+                targets[i:i + 1, :] = target[i]
+
+            Outputs[start:end, :] = outputs
+            Targets[start:end, :] = targets
             start = end
 
-            Loss += loss
-            batchs += 1
-            total += target.size(0)
+        if not indices is None:
+            loss = criterion(Outputs[:, indices], Targets[:, indices])
+        else:
+            loss = criterion(Outputs, Targets)
+        cc = metric(to_np(sigmoid(Outputs), device), to_np(Targets, device))
 
-        cc = metric(to_np(sigmoid(outputs), device), to_np(targets, device))
-
-    return Loss / total, cc
+    return loss, cc
 
 
 def train_challenge2020(hype_space):
@@ -250,7 +311,7 @@ def train_challenge2020(hype_space):
     os.makedirs(tb_dir)
 
     # Logger for train
-    logger = get_logger(log_dir + '/info.log', name='train'+run_id)
+    logger = get_logger(log_dir + '/info.log', name='train' + run_id)
     logger.info(hype_space)
 
     # Tensorboard
@@ -265,7 +326,7 @@ def train_challenge2020(hype_space):
     device = torch.device("cuda" if use_cuda else "cpu")
 
     # Data_loader
-    train_loader = ChallengeDataLoader0(label_dir, data_dir, split_index, batch_size)
+    train_loader = ChallengeDataLoader7(label_dir, data_dir, split_index, batch_size, num_workers=0)
     valid_loader = train_loader.valid_data_loader
     test_loader = train_loader.test_data_loader
 
@@ -288,10 +349,23 @@ def train_challenge2020(hype_space):
     challenge_metrics = ChallengeMetric(label_dir)
     metric = challenge_metrics.challenge_metric
 
+    # Get indices of the scored labels
+    if hype_space['only_scored']:
+        indices = challenge_metrics.indices
+    else:
+        indices = None
+
     # Build optimizer, learning rate scheduler
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())
     optimizer = init_obj(hype_space, 'optimizer', torch.optim, trainable_params)
-    lr_scheduler = init_obj(hype_space, 'lr_scheduler', torch.optim.lr_scheduler, optimizer)
+    if hype_space['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+        params = hype_space["lr_scheduler"]["args"]
+        scheduler_steplr_args = dict(params["after_scheduler"]["args"])
+        scheduler_steplr = getattr(torch.optim.lr_scheduler, params["after_scheduler"]["type"])(optimizer, **scheduler_steplr_args)
+        lr_scheduler = GradualWarmupScheduler(optimizer, multiplier=params["multiplier"],
+                                              total_epoch=params["total_epoch"], after_scheduler=scheduler_steplr)
+    else:
+        lr_scheduler = init_obj(hype_space, 'lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
     # Begin training process
     trainer = hype_space['trainer']
@@ -303,21 +377,25 @@ def train_challenge2020(hype_space):
 
     for epoch in range(epochs):
         best = False
-        train_loss, train_metric = train(model, optimizer, lr_scheduler, train_loader, criterion, metric, epoch, logger, device=device)
+        train_loss, train_metric = train(model, optimizer, train_loader, criterion, metric, indices, epoch, device=device)
+        val_loss, val_metric = valid(model, valid_loader, criterion, metric, indices, device=device)
 
         if hype_space['lr_scheduler']['type'] == 'ReduceLROnPlateau':
             # if hype_space['lr_scheduler']['args']['mode'] == 'min':
             #     lr_scheduler.step(train_loss)
             # else:
             #     lr_scheduler.step(train_metric)
-            lr_scheduler.step(train_loss)
+            lr_scheduler.step(val_loss)
+        elif hype_space['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+            lr_scheduler.step(epoch, val_loss)
         else:
             lr_scheduler.step()
 
-        val_loss, val_metric = valid(model, valid_loader, criterion, metric, device=device)
-
-        logger.info('Epoch:[{}/{}]\t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format(epoch, epochs, 'loss', train_loss, 'metric', train_metric))
-        logger.info('             \t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('val_loss', val_loss, 'val_metric', val_metric))
+        logger.info(
+            'Epoch:[{}/{}]\t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format(epoch, epochs, 'loss', train_loss, 'metric',
+                                                                     train_metric))
+        logger.info(
+            '             \t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('val_loss', val_loss, 'val_metric', val_metric))
         logger.info('             \t learning_rate: {}'.format(optimizer.param_groups[0]['lr']))
 
         # check whether model performance improved or not, according to specified metric(mnt_metric)
@@ -349,18 +427,20 @@ def train_challenge2020(hype_space):
         val_writer.add_scalar('metric', val_metric, epoch)
 
     # Logger for test
-    logger = get_logger(result_dir + '/info.log', name='test'+run_id)
+    logger = get_logger(result_dir + '/info.log', name='test' + run_id)
     logger.propagate = False
 
     # Load model_best checkpoint
     model = load_checkpoint(model, checkpoint_dir + '/model_best.pth', logger)
 
     # Testing
-    test_loss, test_metric = test(model, test_loader, criterion, metric, device=device)
+    test_loss, test_metric = test(model, test_loader, criterion, metric, indices, device=device)
     logger.info('    {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('loss', test_loss, 'metric', test_metric))
 
     challenge_metrics.return_metric_list()
-    analyze(model, test_loader, criterion, challenge_metrics, logger, result_dir, device=device)
+    analyze2(model, test_loader, criterion, challenge_metrics, logger, result_dir, device=device)
+
+    write_json(hype_space, '{}/{}_{:.5f}.json'.format(save_path, run_id, test_metric))
 
     return test_metric
 
@@ -399,6 +479,7 @@ def run_trials():
 
     for trial in trials:
         logger.info(trial)
+
 
 if __name__ == "__main__":
     try:
