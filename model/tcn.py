@@ -33,11 +33,16 @@ class TemporalBlock(nn.Module):
         self.relu = nn.ReLU()
         self.init_weights()
 
+    # def init_weights(self):
+    #     self.conv1.weight.data.normal_(0, 0.01)
+    #     self.conv2.weight.data.normal_(0, 0.01)
+    #     if self.downsample is not None:
+    #         self.downsample.weight.data.normal_(0, 0.01)
     def init_weights(self):
-        self.conv1.weight.data.normal_(0, 0.01)
-        self.conv2.weight.data.normal_(0, 0.01)
+        nn.init.xavier_uniform_(self.conv1.weight)
+        nn.init.xavier_uniform_(self.conv2.weight)
         if self.downsample is not None:
-            self.downsample.weight.data.normal_(0, 0.01)
+            nn.init.xavier_uniform_(self.downsample.weight)
 
     def forward(self, x):
         out = self.net(x)
@@ -70,6 +75,10 @@ class TCN(nn.Module):
         self.linear = nn.Linear(num_channels[-1], num_classes)
         # self.linear = nn.Linear(3000*num_channels[-1], output_size)
         # self.sigmoid = nn.Sigmoid()
+        self.init_weights()
+
+    def init_weights(self):
+        nn.init.xavier_uniform_(self.linear.weight)
 
     def forward(self, inputs):
         """Inputs have to have dimension (N, C_in, L_in)"""
