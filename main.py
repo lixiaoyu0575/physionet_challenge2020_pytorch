@@ -14,14 +14,16 @@ import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
 import model.resnest2 as module_arch_resnest2
+import model.vanilla_cnn as module_arch_vanilla_cnn
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
 from utils.util import load_model
-from utils.lr_scheduler import CosineAnnealingWarmUpRestarts
+from utils.lr_scheduler import CosineAnnealingWarmUpRestarts, GradualWarmupScheduler
 import datetime
+import random
 
 # fix random seeds for reproducibility
 SEED = 123
@@ -40,7 +42,8 @@ files_models = {
     "resnest": ['resnest50', 'resnest'],
     "resnest2": ['resnest2'],
     "model": ['CNN', 'MLP'],
-    "tcn": ['TCN']
+    "tcn": ['TCN'],
+    "vanilla_cnn": ['VanillaCNN']
 }
 
 def main(config):
@@ -93,6 +96,11 @@ def main(config):
         params = config["lr_scheduler"]["args"]
         lr_scheduler = CosineAnnealingWarmUpRestarts(optimizer, T_0=params["T_0"], T_mult=params["T_mult"],
                                                      T_up=params["T_up"], gamma=params["gamma"], eta_max=params["eta_max"])
+    elif config["lr_scheduler"]["type"] == "GradualWarmupScheduler":
+        params = config["lr_scheduler"]["args"]
+        scheduler_steplr_args = dict(params["after_scheduler"]["args"])
+        scheduler_steplr = getattr(torch.optim.lr_scheduler, params["after_scheduler"]["type"])(optimizer, **scheduler_steplr_args)
+        lr_scheduler = GradualWarmupScheduler(optimizer, multiplier=params["multiplier"], total_epoch=params["total_epoch"], after_scheduler=scheduler_steplr)
     else:
         lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
