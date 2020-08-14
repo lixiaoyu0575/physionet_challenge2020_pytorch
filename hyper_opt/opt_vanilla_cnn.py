@@ -16,6 +16,7 @@ import traceback
 import time
 from datetime import datetime
 from hyperopt import hp, tpe, fmin, Trials
+import numpy as np
 
 from data_loader.data_loaders import ChallengeDataLoader2
 from model.metric import ChallengeMetric
@@ -31,6 +32,7 @@ import model.inceptiontime as module_arch_inceptiontime
 import model.fcn as module_arch_fcn
 import model.tcn as module_arch_tcn
 import model.resnest as module_arch_resnest
+import model.vanilla_cnn as module_arch_vanilla_cnn
 
 from hyper_opt.util import init_obj, to_np, get_mnt_mode, save_checkpoint, \
     write_json, get_logger, analyze, progress, load_checkpoint
@@ -39,35 +41,43 @@ from tensorboardX import SummaryWriter
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
+import random
+seed = 123
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+np.random.seed(seed)
+random.seed(seed)
+torch.backends.cudnn.deterministic = True
+
 in_channels = 12
 num_classes = 108
-# label_dir = "/DATASET/challenge2020/new_data/All_data_new"
-# data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
-# weights_file = '/home/weiyuhua/physionet_challenge2020_pytorch/evaluation/weights.csv'
+label_dir = "/DATASET/challenge2020/new_data/All_data_new"
+data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
+weights_file = '/home/weiyuhua/physionet_challenge2020_pytorch/evaluation/weights.csv'
 
-label_dir = "/home/weiyuhua/Data/All_data_new"
-data_dir = "/home/weiyuhua/Data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
-weights_file = '/home/weiyuhua/Code/physionet_challenge2020_pytorch/evaluation/weights.csv'
+# label_dir = "/home/weiyuhua/Data/All_data_new"
+# data_dir = "/home/weiyuhua/Data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
+# weights_file = '/home/weiyuhua/Code/physionet_challenge2020_pytorch/evaluation/weights.csv'
 
 
-save_path = './inception_S'
+save_path = './vanilla_cnn_test'
 log_step = 1
 
-space = {
+space2 = {
     'arch':
         hp.choice('arch', [
             {
-                'type': 'InceptionTimeV2',
+                'type': 'VanillaCNN',
                 'args':
                     {
                         "in_channels": 12,
                         "num_classes": 108,
-                        "n_blocks": hp.choice('n_blocks', [2, 3, 4, 5]),
-                        "n_filters": hp.choice('n_filters', [32, 64]),
-                        "kernel_sizes": hp.choice('kernel_sizes', [[3, 7, 15], [9, 19, 39], [15, 31, 65]]),
-                        "bottleneck_channels": hp.choice('bottleneck_channels', [16, 32, 64]),
-                        "input_bottleneck": hp.choice('input_bottleneck', [True, False]),
-                        "attention": hp.choice('attention', [None, 'SENet', 'CBAM', 'CBAM_Channel'])
+                        "channels": hp.choice('channels', [[32, 64, 128, 256, 512]]),
+                        "kernel_size": hp.choice('kernel_size', [[5, 5, 5, 5, 5]]),
+                        "pool": hp.choice('pool', ['max']),
+                        "pool_kernel_size": hp.choice('pool_kernel_size', [2]),
+                        "n_hid": hp.choice('n_hid', [[100, 80]]),
+                        "drop_rate": hp.choice('drop_rate', [0.2])
                     }
             }
         ]),
@@ -76,7 +86,7 @@ space = {
         hp.choice('data_split', ['split1']),
 
     'data_normalization':
-        hp.choice('data_normalization', [False, True]),
+        hp.choice('data_normalization', [False]),
 
     'only_scored':
         hp.choice('only_scores', [True]),
@@ -103,7 +113,7 @@ space = {
                 'type': 'Adam',
                 'args':
                     {
-                        'lr': hp.choice('lr', [0.001, 0.0005]),
+                        'lr': hp.choice('lr', [0.001]),
                         'weight_decay': hp.choice('weight_decay', [1e-3, 1e-4]),
                         'amsgrad': True
                     }
@@ -178,6 +188,86 @@ space = {
         ])
 }
 
+space = {
+    'arch':
+        hp.choice('arch', [
+            {
+                'type': 'VanillaCNN',
+                'args':
+                    {
+                        "in_channels": 12,
+                        "num_classes": 108,
+                        "channels": hp.choice('channels', [[32, 64, 128, 256, 512]]),
+                        "kernel_size": hp.choice('kernel_size', [[5, 5, 5, 5, 5]]),
+                        "pool": hp.choice('pool', ['max']),
+                        "pool_kernel_size": hp.choice('pool_kernel_size', [2]),
+                        "n_hid": hp.choice('n_hid', [[100, 80]]),
+                        "drop_rate": hp.choice('drop_rate', [0.2])
+                    }
+            }
+        ]),
+
+    'data_split':
+        hp.choice('data_split', ['split1']),
+
+    'data_normalization':
+        hp.choice('data_normalization', [False]),
+
+    'only_scored':
+        hp.choice('only_scores', [False]),
+
+    'augmentation':
+        {
+            'method': hp.choice('method', [
+                None,
+        ]),
+
+            'prob': hp.choice('prob', [0.8])
+        },
+
+    'optimizer':
+        hp.choice('optimizer', [
+            {
+                'type': 'Adam',
+                'args':
+                    {
+                        'lr': hp.choice('lr', [0.001]),
+                        'weight_decay': hp.choice('weight_decay', [0]),
+                        'amsgrad': True
+                    }
+            }
+        ]),
+
+    'loss':
+        hp.choice('loss', [
+            {
+                'type': 'bce_with_logits_loss'
+            }
+        ]),
+
+    'lr_scheduler':
+        hp.choice('lr_scheduler', [
+            {
+                "type": "StepLR",
+                "args":
+                    {
+                        "step_size": hp.choice('step_size', [50]),
+                        "gamma": hp.choice('StepLR_gamma', [0.1])
+                    }
+            }
+        ]),
+
+    'trainer':
+        hp.choice('trainer', [
+            {
+                "epochs": hp.choice('epochs', [100]),
+                "batch_size": hp.choice('batch_size', [128]),
+                "monitor": hp.choice('monitor', ['min val_loss']),
+                'early_stop': hp.choice('early_stop', [10])
+            },
+        ])
+}
+
 # model selection
 files_models = {
     "fcn": ['FCN'],
@@ -187,7 +277,8 @@ files_models = {
     "resnext": ['ResNeXt', 'resnext18', 'resnext34', 'resnext50', 'resnext101', 'resnext152'],
     "resnest": ['resnest50', 'resnest'],
     "model": ['CNN', 'MLP'],
-    "tcn": ['TCN']
+    "tcn": ['TCN'],
+    "vanilla_cnn": ['VanillaCNN']
 }
 
 
@@ -307,144 +398,141 @@ def train_challenge2020(hype_space):
     train_writer = SummaryWriter(tb_dir + '/train')
     val_writer = SummaryWriter(tb_dir + '/valid')
 
-    try:
-        # Hyper Parameters
-        split_index = "../process/data_split/" + hype_space['data_split']
 
-        # Setup Cuda
-        use_cuda = torch.cuda.is_available()
-        device = torch.device("cuda" if use_cuda else "cpu")
+    # Hyper Parameters
+    split_index = "../process/data_split/" + hype_space['data_split']
 
-        # Data_loader
-        train_loader = ChallengeDataLoader2(label_dir, data_dir, split_index,
-                                              batch_size=hype_space['trainer']['batch_size'],
-                                              normalization=hype_space['data_normalization'],
-                                              augmentations=hype_space['augmentation']['method'],
-                                              p=hype_space['augmentation']['prob'])
-        valid_loader = train_loader.valid_data_loader
-        test_loader = train_loader.test_data_loader
+    # Setup Cuda
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
 
-        # Build model architecture
-        global model
-        for file, types in files_models.items():
-            for type in types:
-                if hype_space["arch"]["type"] == type:
-                    model = init_obj(hype_space, 'arch', eval("module_arch_" + file))
+    # Data_loader
+    train_loader = ChallengeDataLoader2(label_dir, data_dir, split_index,
+                                          batch_size=hype_space['trainer']['batch_size'],
+                                          normalization=hype_space['data_normalization'],
+                                          augmentations=hype_space['augmentation']['method'],
+                                          p=hype_space['augmentation']['prob'])
+    valid_loader = train_loader.valid_data_loader
+    test_loader = train_loader.test_data_loader
 
-        dummy_input = Variable(torch.rand(16, 12, 3000))
-        train_writer.add_graph(model, (dummy_input,))
+    # Build model architecture
+    global model
+    for file, types in files_models.items():
+        for type in types:
+            if hype_space["arch"]["type"] == type:
+                model = init_obj(hype_space, 'arch', eval("module_arch_" + file))
 
-        model.to(device)
+    dummy_input = Variable(torch.rand(16, 12, 3000))
+    train_writer.add_graph(model, (dummy_input,))
 
-        # Get function handles of loss and metrics
-        criterion = getattr(module_loss, hype_space['loss']['type'])
+    model.to(device)
 
-        # Get function handles of metrics
-        challenge_metrics = ChallengeMetric(label_dir)
-        metric = challenge_metrics.challenge_metric
+    # Get function handles of loss and metrics
+    criterion = getattr(module_loss, hype_space['loss']['type'])
 
-        # Get indices of the scored labels
-        if hype_space['only_scored']:
-            indices = challenge_metrics.indices
+    # Get function handles of metrics
+    challenge_metrics = ChallengeMetric(label_dir)
+    metric = challenge_metrics.challenge_metric
+
+    # Get indices of the scored labels
+    if hype_space['only_scored']:
+        indices = challenge_metrics.indices
+    else:
+        indices = None
+
+    # Build optimizer, learning rate scheduler
+    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = init_obj(hype_space, 'optimizer', torch.optim, trainable_params)
+    if hype_space['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+        params = hype_space["lr_scheduler"]["args"]
+        scheduler_steplr_args = dict(params["after_scheduler"]["args"])
+        scheduler_steplr = getattr(torch.optim.lr_scheduler, params["after_scheduler"]["type"])(optimizer, **scheduler_steplr_args)
+        lr_scheduler = GradualWarmupScheduler(optimizer, multiplier=params["multiplier"],
+                                              total_epoch=params["total_epoch"], after_scheduler=scheduler_steplr)
+    else:
+        lr_scheduler = init_obj(hype_space, 'lr_scheduler', torch.optim.lr_scheduler, optimizer)
+
+    # Begin training process
+    trainer = hype_space['trainer']
+    epochs = trainer['epochs']
+
+    # Full train and valid logic
+    mnt_metric_name, mnt_mode, mnt_best, early_stop = get_mnt_mode(trainer)
+    not_improved_count = 0
+
+    for epoch in range(epochs):
+        best = False
+        train_loss, train_metric = train(model, optimizer, train_loader, criterion, metric, indices, epoch, device=device)
+        val_loss, val_metric = valid(model, valid_loader, criterion, metric, indices, device=device)
+
+        if hype_space['lr_scheduler']['type'] == 'ReduceLROnPlateau':
+            # if hype_space['lr_scheduler']['args']['mode'] == 'min':
+            #     lr_scheduler.step(train_loss)
+            # else:
+            #     lr_scheduler.step(train_metric)
+            lr_scheduler.step(val_loss)
+        elif hype_space['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+            lr_scheduler.step(epoch, val_loss)
         else:
-            indices = None
+            lr_scheduler.step()
 
-        # Build optimizer, learning rate scheduler
-        trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-        optimizer = init_obj(hype_space, 'optimizer', torch.optim, trainable_params)
-        if hype_space['lr_scheduler']['type'] == 'GradualWarmupScheduler':
-            params = hype_space["lr_scheduler"]["args"]
-            scheduler_steplr_args = dict(params["after_scheduler"]["args"])
-            scheduler_steplr = getattr(torch.optim.lr_scheduler, params["after_scheduler"]["type"])(optimizer, **scheduler_steplr_args)
-            lr_scheduler = GradualWarmupScheduler(optimizer, multiplier=params["multiplier"],
-                                                  total_epoch=params["total_epoch"], after_scheduler=scheduler_steplr)
-        else:
-            lr_scheduler = init_obj(hype_space, 'lr_scheduler', torch.optim.lr_scheduler, optimizer)
+        logger.info(
+            'Epoch:[{}/{}]\t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format(epoch, epochs, 'loss', train_loss, 'metric',
+                                                                     train_metric))
+        logger.info(
+            '             \t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('val_loss', val_loss, 'val_metric', val_metric))
+        logger.info('             \t learning_rate: {}'.format(optimizer.param_groups[0]['lr']))
 
-        # Begin training process
-        trainer = hype_space['trainer']
-        epochs = trainer['epochs']
-
-        # Full train and valid logic
-        mnt_metric_name, mnt_mode, mnt_best, early_stop = get_mnt_mode(trainer)
-        not_improved_count = 0
-
-        for epoch in range(epochs):
-            best = False
-            train_loss, train_metric = train(model, optimizer, train_loader, criterion, metric, indices, epoch, device=device)
-            val_loss, val_metric = valid(model, valid_loader, criterion, metric, indices, device=device)
-
-            if hype_space['lr_scheduler']['type'] == 'ReduceLROnPlateau':
-                # if hype_space['lr_scheduler']['args']['mode'] == 'min':
-                #     lr_scheduler.step(train_loss)
-                # else:
-                #     lr_scheduler.step(train_metric)
-                lr_scheduler.step(val_loss)
-            elif hype_space['lr_scheduler']['type'] == 'GradualWarmupScheduler':
-                lr_scheduler.step(epoch, val_loss)
+        # check whether model performance improved or not, according to specified metric(mnt_metric)
+        if mnt_mode != 'off':
+            mnt_metric = val_loss if mnt_metric_name == 'val_loss' else val_metric
+            improved = (mnt_mode == 'min' and mnt_metric <= mnt_best) or \
+                       (mnt_mode == 'max' and mnt_metric >= mnt_best)
+            if improved:
+                mnt_best = mnt_metric
+                not_improved_count = 0
+                best = True
             else:
-                lr_scheduler.step()
+                not_improved_count += 1
 
-            logger.info(
-                'Epoch:[{}/{}]\t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format(epoch, epochs, 'loss', train_loss, 'metric',
-                                                                         train_metric))
-            logger.info(
-                '             \t {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('val_loss', val_loss, 'val_metric', val_metric))
-            logger.info('             \t learning_rate: {}'.format(optimizer.param_groups[0]['lr']))
+            if not_improved_count > early_stop:
+                logger.info("Validation performance didn\'t improve for {} epochs. Training stops.".format(early_stop))
+                break
 
-            # check whether model performance improved or not, according to specified metric(mnt_metric)
-            if mnt_mode != 'off':
-                mnt_metric = val_loss if mnt_metric_name == 'val_loss' else val_metric
-                improved = (mnt_mode == 'min' and mnt_metric <= mnt_best) or \
-                           (mnt_mode == 'max' and mnt_metric >= mnt_best)
-                if improved:
-                    mnt_best = mnt_metric
-                    not_improved_count = 0
-                    best = True
-                else:
-                    not_improved_count += 1
+        if best == True:
+            save_checkpoint(model, epoch, optimizer, mnt_best, hype_space, checkpoint_dir, save_best=True)
+            logger.info("Saving current best: model_best.pth ...")
 
-                if not_improved_count > early_stop:
-                    logger.info("Validation performance didn\'t improve for {} epochs. Training stops.".format(early_stop))
-                    break
+        # Tensorboard log
+        train_writer.add_scalar('loss', train_loss, epoch)
+        train_writer.add_scalar('metric', train_metric, epoch)
+        train_writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
 
-            if best == True:
-                save_checkpoint(model, epoch, optimizer, mnt_best, hype_space, checkpoint_dir, save_best=True)
-                logger.info("Saving current best: model_best.pth ...")
+        val_writer.add_scalar('loss', val_loss, epoch)
+        val_writer.add_scalar('metric', val_metric, epoch)
 
-            # Tensorboard log
-            train_writer.add_scalar('loss', train_loss, epoch)
-            train_writer.add_scalar('metric', train_metric, epoch)
-            train_writer.add_scalar('learning_rate', optimizer.param_groups[0]['lr'], epoch)
+    # Logger for test
+    logger = get_logger(result_dir + '/info.log', name='test' + run_id)
+    logger.propagate = False
 
-            val_writer.add_scalar('loss', val_loss, epoch)
-            val_writer.add_scalar('metric', val_metric, epoch)
+    # Load model_best checkpoint
+    model = load_checkpoint(model, checkpoint_dir + '/model_best.pth', logger)
 
-        # Logger for test
-        logger = get_logger(result_dir + '/info.log', name='test' + run_id)
-        logger.propagate = False
+    # Testing
+    test_loss, test_metric = test(model, test_loader, criterion, metric, device=device)
+    logger.info('    {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('loss', test_loss, 'metric', test_metric))
 
-        # Load model_best checkpoint
-        model = load_checkpoint(model, checkpoint_dir + '/model_best.pth', logger)
+    challenge_metrics.return_metric_list()
+    analyze(model, test_loader, criterion, challenge_metrics, logger, result_dir, device=device)
 
-        # Testing
-        test_loss, test_metric = test(model, test_loader, criterion, metric, device=device)
-        logger.info('    {:10s}: {:.5f}\t {:10s}: {:.5f}'.format('loss', test_loss, 'metric', test_metric))
-
-        challenge_metrics.return_metric_list()
-        analyze(model, test_loader, criterion, challenge_metrics, logger, result_dir, device=device)
-
-        write_json(hype_space, '{}/{}_{:.5f}.json'.format(save_path, run_id, test_metric))
-
-    except:
-        test_metric = -10
+    write_json(hype_space, '{}/{}_{:.5f}.json'.format(save_path, run_id, test_metric))
 
     return -test_metric
 
 
 def run_trials():
     """Run one TPE meta optimisation step and save its results."""
-    max_evals = nb_evals = 15
+    max_evals = nb_evals = 1
 
     logger = get_logger(save_path + '/trials.log', name='trials')
 
