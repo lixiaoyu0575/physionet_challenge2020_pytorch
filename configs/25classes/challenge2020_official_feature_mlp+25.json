@@ -1,11 +1,11 @@
 {
-    "name": "challenge2020_official_feature_mlp_1000x3",
+    "name": "challenge2020_official_feature_mlp+25",
     "n_gpu": 1,
     "arch": {
         "type": "MLP",
         "args": {
-            "input_dim":2414,
-            "num_classes": 108,
+            "input_dim":11560,
+            "num_classes": 25,
             "n_hid":[1000, 1000, 1000]
         }
     },
@@ -14,14 +14,20 @@
         "type": "ChallengeDataLoader5",
 
         "args":{
-            "data_dir": "/home/weiyuhua/Data/Out_Feature_New_Data.csv",
-            "label_dir": "/home/weiyuhua/Data/challenge2020",
+             "data_dir": "/DATASET/challenge2020_Feature/new_data_extreme/Out_extreme.csv",
+            "label_dir": "/DATASET/challenge2020/new_data/All_data_new",
+
             "batch_size": 64,
             "shuffle": true,
-            "validation_split": 0.1,
-            "test_split": 0.1,
-            "num_workers": 4
+            "split_index": "process/data_split/split1.mat",
+            "num_workers": 0,
+            "_25classes": true
         }
+    },
+    "zhushi":
+    {
+            "data_dir": "/home/weiyuhua/Data/Out_extreme.csv",
+            "label_dir": "/home/weiyuhua/Data/All_data_new"
     },
     "optimizer": {
         "type": "Adam",
@@ -31,7 +37,9 @@
             "amsgrad": true
         }
     },
-    "loss": "bce_loss",
+    "loss": {
+        "type":"bce_with_logits_loss"
+    },
     "metrics":
     [
         "accuracy",
@@ -58,8 +66,8 @@
 
         "monitor": "min val_loss",
         "early_stop": 10,
-
-        "tensorboard": true
+        "tensorboard": true,
+        "only_scored_class": false
     },
     "evaluater": {
         "result_dir": "saved/",
