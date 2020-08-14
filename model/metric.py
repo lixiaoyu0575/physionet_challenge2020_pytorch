@@ -22,7 +22,7 @@ def top_k_acc(output, target, k=3):
 # Challenge2020 official evaluation
 class ChallengeMetric():
 
-    def __init__(self, input_directory):
+    def __init__(self, input_directory, _25classes=False):
 
         # challengeMetric initialization
         weights_file = 'evaluation/weights.csv'
@@ -50,10 +50,16 @@ class ChallengeMetric():
         weights = weights[np.ix_(indices, indices)]
 
         self.weights = weights
-        self.indices = indices
         self.classes = classes
         self.normal_class = normal_class
         self._return_metric_list = False
+
+        if _25classes:
+            indices_25 = np.ones((25, ))
+            indices_25[24] = 0
+            self.indices = indices_25.astype(bool)
+        else:
+            self.indices = indices
 
     def return_metric_list(self):
         self._return_metric_list = True
@@ -593,7 +599,7 @@ class ChallengeMetric2():
                     outputs[i, j] = 1
                 else:
                     outputs[i, j] = 0
-        return outputs
+        return outp
 
 
 if __name__ == '__main__':
