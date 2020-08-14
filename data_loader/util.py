@@ -32,17 +32,18 @@ def load_challenge_data(label_file, data_dir):
 class CustomTensorDataset(Dataset):
     """TensorDataset with support of transforms.
     """
-    def __init__(self, *tensors, transform=None):
+    def __init__(self, *tensors, transform=None, p=0.5):
         assert all(tensors[0].size(0) == tensor.size(0) for tensor in tensors)
         self.tensors = tensors
         self.transform = transform
+        self.p = p
 
     def __getitem__(self, index):
         x = self.tensors[0][index]
         torch.randn(1)
 
         if self.transform:
-            if torch.rand(1) >= 0.8:
+            if torch.rand(1) >= self.p:
                 x = self.transform(x)
 
         y = self.tensors[1][index]
