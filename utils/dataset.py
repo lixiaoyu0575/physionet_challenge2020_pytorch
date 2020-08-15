@@ -240,22 +240,3 @@ class ECGDataset(Dataset):
         sample = (self.x[idx], self.y[idx])
 
         return sample
-
-def get_weights():
-    label_dir = "/data/ecg/challenge2020/new_data/All_data_new"
-    weights_file = 'evaluation/weights.csv'
-    normal_class = '426783006'
-    equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
-
-    # Find the label files.
-    print('Finding label...')
-    label_files = load_label_files(label_dir)
-
-    # Load the labels and classes.
-    print('Loading labels...')
-    classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
-
-    # Load the weights for the Challenge metric.
-    print('Loading weights...')
-    weights = load_weights(weights_file, classes)
-    return weights
