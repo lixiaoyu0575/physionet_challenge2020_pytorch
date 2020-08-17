@@ -21,8 +21,8 @@
     "data_loader": {
         "type": "ChallengeDataLoader2",
         "args": {
-            "label_dir": "/DATASET/challenge2020/new_data/All_data_new",
-            "data_dir": "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000",
+            "label_dir": "/data/ecg/challenge2020/new_data/All_data_new",
+            "data_dir": "/data/ecg/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000",
             "split_index": "process/data_split/split1.mat",
             "batch_size": 64,
             "shuffle": true,
