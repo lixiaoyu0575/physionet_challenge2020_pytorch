@@ -39,8 +39,8 @@ def is_Brady(data,FS=300):
     
     #output： True: It's bradycardia(心动过缓)
     #         False； It's other label
-    print("now is Brady")
-    print(data.shape)
+    # print("now is Brady")
+    # print(data.shape)
     result= []
     for i in range(len(data)):
         rpeaks_indices_1 = biosppy.signals.ecg.hamilton_segmenter(signal=data[i][1],sampling_rate=FS)
@@ -54,8 +54,8 @@ def is_Brady(data,FS=300):
 
 ####窦性心动过速 [index]:70
 def is_STach(data,FS=300):
-    print("now is STach")
-    print(data.shape)
+    # print("now is STach")
+    # print(data.shape)
     result= []
     for i in range(len(data)):
         rpeaks_indices_1 = biosppy.signals.ecg.hamilton_segmenter(signal=data[i][1], sampling_rate=FS)
@@ -69,8 +69,8 @@ def is_STach(data,FS=300):
 
 ####窦性心动过缓 [index]:61
 def is_SB(data,FS=300):
-    print("now is SB")
-    print(data.shape)
+    # print("now is SB")
+    # print(data.shape)
     result= []
     for i in range(len(data)):
         rpeaks_indices_1 = biosppy.signals.ecg.hamilton_segmenter(signal=data[i][1], sampling_rate=FS)
@@ -84,8 +84,8 @@ def is_SB(data,FS=300):
 
 ####窦性心律不齐  [index]:72
 def is_SA(data,FS=300):
-    print("now is SA")
-    print(data.shape)
+    # print("now is SA")
+    # print(data.shape)
     result= []
     for i in range(len(data)):
         rpeaks_indices_1 = biosppy.signals.ecg.hamilton_segmenter(signal=data[i][1], sampling_rate=FS)

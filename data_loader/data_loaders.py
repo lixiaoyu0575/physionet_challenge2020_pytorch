@@ -24,7 +24,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
     """
     challenge2020 data loading
     """
-    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None, rule_based=False, index_rb = [63,70,61], is_for_meta=False):
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None, rule_based=False, index_rb = [63,70,61], is_for_meta=False, modify_E=True, modify_label=True):
         start = time.time()
         self.label_dir = label_dir
         self.data_dir = data_dir
@@ -77,19 +77,25 @@ class ChallengeDataLoader0(BaseDataLoader2):
         num_files = len(label_files)
         recordings = list()
         labels_onehot_new = list()
-        labels_new = list()
         file_names = list()
 
         bb = []
         dd = []
 
+        global files_lxy
+        global labels_lxy
+        if modify_label:
+            df = pd.read_csv('process/data_lxy/data _lxy.csv', error_bad_lines=False)
+            files_lxy = list(df.iloc[:, 0][2:].values)
+            labels_lxy = df.iloc[2:252, 1:26].values.astype(int)
+
         for i in range(num_files):
-            # if i in short_signals_ids:
-            #     recording = np.zeros((1, 12, 3000))
-            #
-            # else:
+
             recording, header, name = load_challenge_data(label_files[i], data_dir)
             recording[np.isnan(recording)] = 0
+
+            if modify_E and name.startswith('E'):
+                recording *= 4.88
             recordings.append(recording)
             file_names.append(name)
 
@@ -99,8 +105,17 @@ class ChallengeDataLoader0(BaseDataLoader2):
                 bb.append(i)
                 dd.append(rr)
 
+            if modify_label:
+                if name in files_lxy:
+                    idx = files_lxy.index(name)
+                    label = np.zeros((108,))
+                    label[indices] = labels_lxy[idx][:24]
+                    label = label.astype(bool)
+                    labels_onehot_new.append(label)
+                else:
+                    labels_onehot_new.append(labels_onehot[i])
+
             labels_onehot_new.append(labels_onehot[i])
-            labels_new.append(labels[i])
 
         time_record_4 = time.time()
         print("Loading data cost {}s".format(time_record_4-time_record_3))
@@ -112,13 +127,11 @@ class ChallengeDataLoader0(BaseDataLoader2):
         # slided data
         recordings_all = list()
         labels_onehot_all = list()
-        labels_all = list()
 
         for i in range(len(recordings)):
             for j in range(recordings[i].shape[0]):
                 recordings_all.append(recordings[i][j])
                 labels_onehot_all.append(labels_onehot_new[i])
-                labels_all.append(labels_new[i])
 
         recordings_all = np.array(recordings_all)
         labels_onehot_all = np.array(labels_onehot_all)
