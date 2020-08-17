@@ -12,7 +12,7 @@ class Trainer(BaseTrainer):
     """
     Trainer class
     """
-    def __init__(self, model, criterion, metric_ftns, optimizer, config, data_loader, _25classes=False,
+    def __init__(self, model, criterion, metric_ftns, optimizer, config, data_loader, rule_based_ftns=None, _25classes=False,
                  valid_data_loader=None, lr_scheduler=None, len_epoch=None):
         super().__init__(model, criterion, metric_ftns, optimizer, config)
         self.config = config
@@ -32,6 +32,8 @@ class Trainer(BaseTrainer):
         self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
         self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
 
+        self.rule_based_ftnsm = rule_based_ftns
+
         if self.do_validation:
             keys_val = ['val_' + k for k in self.keys]
             for key in keys_val:
@@ -42,10 +44,15 @@ class Trainer(BaseTrainer):
         self.only_scored_classes = config['trainer'].get('only_scored_class', True)
         self.lable_smooth = config['trainer'].get('label_smooth', None)
         self.mixup = config['trainer'].get('mixup', None)
+
         if self.only_scored_classes:
             # Only consider classes that are scored with the Challenge metric.
-            indices = loadmat('evaluation/scored_classes_indices.mat')['val']
-            self.weights = self.weights[indices]
+            indices = self.data_loader.indices
+            weights = list()
+            for i in range(self.weights.shape[0]):
+                if indices[i]:
+                    weights.append(self.weights[i])
+            self.weights = torch.tensor(weights)
             self.weights = self.weights.reshape((24, 1)).to(device=self.device, dtype=torch.float)
 
             if _25classes:
@@ -53,7 +60,7 @@ class Trainer(BaseTrainer):
                 indices_25[24] = 0
                 self.indices = indices_25.astype(bool)
             else:
-                self.indices = indices.reshape([indices.shape[1], ]).astype(bool)
+                self.indices = indices
 
         self.sigmoid = nn.Sigmoid()
 
@@ -80,14 +87,18 @@ class Trainer(BaseTrainer):
             self.optimizer.zero_grad()
             output = self.model(data)
 
+            indices = np.ones((108,)).astype(bool)
+            if self.rule_based_ftnsm:
+                indices = self.data_loader.indices_rb & indices
+
             if self.only_scored_classes:
                 # Only consider classes that are scored with the Challenge metric.
                 if self.config["loss"]["type"] == "weighted_bce_with_logits_loss":
-                    loss = self.criterion(output[:, self.indices], target[:, self.indices], self.weights)
+                    loss = self.criterion(output[:, self.indices & indices], target[:, self.indices & indices], self.weights)
                 else:
-                    loss = self.criterion(output[:, self.indices], target[:, self.indices])
+                    loss = self.criterion(output[:, self.indices & indices], target[:, self.indices & indices])
             else:
-                loss = self.criterion(output, target)
+                loss = self.criterion(output[:, indices], target[:, indices])
 
             loss.backward()
             self.optimizer.step()
@@ -96,8 +107,16 @@ class Trainer(BaseTrainer):
             self.train_metrics.update('loss', loss.item())
 
             output_logit = self.sigmoid(output)
+            output_logit = self._to_np(output_logit)
+            target = self._to_np(target)
+
+            # rule-based
+            if self.rule_based_ftnsm:
+                for i, fn_rb in enumerate(self.rule_based_ftnsm):
+                    output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data))
+
             for met in self.metric_ftns:
-                self.train_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
+                self.train_metrics.update(met.__name__, met(output_logit, target))
 
             if batch_idx % self.log_step == 0:
                 batch_end = time.time()

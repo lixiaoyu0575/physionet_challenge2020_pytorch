@@ -24,7 +24,7 @@ class ChallengeDataLoader0(BaseDataLoader2):
     """
     challenge2020 data loading
     """
-    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None):
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None, rule_based=False, index_rb = [63,70,61]):
         start = time.time()
         self.label_dir = label_dir
         self.data_dir = data_dir
@@ -45,6 +45,9 @@ class ChallengeDataLoader0(BaseDataLoader2):
         classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
         time_record_2 = time.time()
         print("Loading label cost {}s".format(time_record_2-time_record_1))
+
+        # from scipy.io import savemat
+        # savemat('./classes.mat', {'val': classes})
 
         # Load the weights for the Challenge metric.
         print('Loading weights...')
@@ -139,6 +142,15 @@ class ChallengeDataLoader0(BaseDataLoader2):
         self.count = np.sum(labels_onehot_all, axis=0)
         self.indices = indices
 
+        # Get rule-based classed index
+        if rule_based:
+            # index_rb = loadmat('rule_based/index.mat')['val']
+            # index_rb = index_rb.reshape([index_rb.shape[1], ])
+            indices_rb = np.ones((indices.shape[0], ))
+            indices_rb[index_rb] = 0
+            self.indices_rb = indices_rb.astype(bool)
+            self.index_rb = index_rb
+
         X = torch.from_numpy(recordings_all).float()
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot_all).float()
@@ -149,6 +161,10 @@ class ChallengeDataLoader0(BaseDataLoader2):
 
         self.valid_data_loader.file_names = file_names
         self.test_data_loader.file_names = file_names
+
+        if rule_based:
+            self.test_data_loader.indices_rb = self.indices_rb
+            self.test_data_loader.index_rb = self.index_rb
 
 # official data (filtered\balanced\slided_and_cut)
 class ChallengeDataLoader1(BaseDataLoader2):
@@ -456,6 +472,171 @@ class ChallengeDataLoader2(BaseDataLoader3):
             recording[np.isnan(recording)] = 0
 
             file_names.append(name)
+            if i in train_index:
+                for j in range(recording.shape[0]):
+                    train_recordings.append(recording[j])
+                    if _25classes:
+                        label = np.ones((25, )).astype(bool)
+                        label[:24] = labels_onehot[i, indices]
+                        label[24] = labels_onehot[i, indices_unscored].any()
+                        train_labels_onehot.append(label)
+                    else:
+                        train_labels_onehot.append(labels_onehot[i])
+            elif i in val_index:
+                for j in range(recording.shape[0]):
+                    val_recordings.append(recording[j])
+                    if _25classes:
+                        label = np.ones((25, )).astype(bool)
+                        label[:24] = labels_onehot[i, indices]
+                        label[24] = labels_onehot[i, indices_unscored].any()
+                        val_labels_onehot.append(label)
+                    else:
+                        val_labels_onehot.append(labels_onehot[i])
+            else:
+                for j in range(recording.shape[0]):
+                    test_recordings.append(recording[j])
+                    if _25classes:
+                        label = np.ones((25, )).astype(bool)
+                        label[:24] = labels_onehot[i, indices]
+                        label[24] = labels_onehot[i, indices_unscored].any()
+                        test_labels_onehot.append(label)
+                    else:
+                        test_labels_onehot.append(labels_onehot[i])
+
+        time_record_4 = time.time()
+        print("Loading data cost {}s".format(time_record_4 - time_record_3))
+
+        print(np.isnan(train_recordings).any())
+        print(np.isnan(val_recordings).any())
+        print(np.isnan(test_recordings).any())
+
+        train_recordings = np.array(train_recordings)
+        train_labels_onehot = np.array(train_labels_onehot)
+
+        val_recordings = np.array(val_recordings)
+        val_labels_onehot = np.array(val_labels_onehot)
+
+        test_recordings = np.array(test_recordings)
+        test_labels_onehot = np.array(test_labels_onehot)
+
+        # Normalization
+        if normalization:
+            train_recordings = self.normalization(train_recordings)
+            val_recordings = self.normalization(val_recordings)
+            test_recordings = self.normalization(test_recordings)
+
+        X_train = torch.from_numpy(train_recordings).float()
+        Y_train = torch.from_numpy(train_labels_onehot).float()
+
+        X_val = torch.from_numpy(val_recordings).float()
+        Y_val = torch.from_numpy(val_labels_onehot).float()
+
+        X_test = torch.from_numpy(test_recordings).float()
+        Y_test = torch.from_numpy(test_labels_onehot).float()
+
+        #############################################################
+        if augmentations:
+            transformers = list()
+
+            for key, value in augmentations.items():
+                module_args = dict(value['args'])
+                transformers.append(getattr(module_transformers, key)(**module_args))
+
+            train_transform = transforms.Compose(transformers)
+            self.train_dataset = CustomTensorDataset(X_train, Y_train, transform=train_transform, p=p)
+        else:
+            self.train_dataset = TensorDataset(X_train, Y_train)
+        #############################################################
+
+        self.val_dataset = TensorDataset(X_val, Y_val)
+        self.test_dataset = TensorDataset(X_test, Y_test)
+
+        end = time.time()
+        print('time to get and process data: {}'.format(end - start))
+        super().__init__(self.train_dataset, self.val_dataset, self.test_dataset, batch_size, shuffle, num_workers)
+
+        self.valid_data_loader.file_names = file_names
+        self.valid_data_loader.idx = val_index
+        self.test_data_loader.file_names = file_names
+        self.test_data_loader.idx = test_index
+
+    def normalization(self, X):
+        mm = MinMaxScaler()
+        for i in range(len(X)):
+            data = X[i].swapaxes(0, 1)
+            data_scaled = mm.fit_transform(data)
+            data_scaled = data_scaled.swapaxes(0, 1)
+            X[i] = data_scaled
+        return X
+
+# DataLoader (augmentation + 25 classes) + modify E adc_gain
+class ChallengeDataLoader4(BaseDataLoader3):
+    """
+    challenge2020 data loading
+    """
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=4, training=True, training_size=None, normalization=False, augmentations=None, p=0.5, _25classes=False):
+        start = time.time()
+        self.label_dir = label_dir
+        self.data_dir = data_dir
+        print('Loading data...')
+
+        weights_file = 'evaluation/weights.csv'
+        normal_class = '426783006'
+        equivalent_classes = [['713427006', '59118001'], ['284470004', '63593006'], ['427172004', '17338001']]
+
+        # Find the label files.
+        print('Finding label...')
+        label_files = load_label_files(label_dir)
+        time_record_1 = time.time()
+        print("Finding label cost {}s".format(time_record_1 - start))
+
+        # Load the labels and classes.
+        print('Loading labels...')
+        classes, labels_onehot, labels = load_labels(label_files, normal_class, equivalent_classes)
+        time_record_2 = time.time()
+        print("Loading label cost {}s".format(time_record_2 - time_record_1))
+
+        # Load the weights for the Challenge metric.
+        print('Loading weights...')
+        weights = load_weights(weights_file, classes)
+        self.weights = weights
+        time_record_3 = time.time()
+        print("Loading label cost {}s".format(time_record_3 - time_record_2))
+
+        # Classes that are scored with the Challenge metric.
+        indices = np.any(weights, axis=0)  # Find indices of classes in weight matrix.
+        indices_unscored = ~indices
+
+        # Get number of samples for each category
+        self.indices = indices
+
+        split_idx = loadmat(split_index)
+        train_index, val_index, test_index = split_idx['train_index'], split_idx['val_index'], split_idx['test_index']
+        train_index = train_index.reshape((train_index.shape[1],))
+        if training_size is not None:
+            train_index = train_index[0:training_size]
+        val_index = val_index.reshape((val_index.shape[1],))
+        test_index = test_index.reshape((test_index.shape[1],))
+
+        num_files = len(label_files)
+        train_recordings = list()
+        train_labels_onehot = list()
+
+        val_recordings = list()
+        val_labels_onehot = list()
+
+        test_recordings = list()
+        test_labels_onehot = list()
+
+        file_names = list()
+
+        for i in range(num_files):
+            recording, header, name = load_challenge_data(label_files[i], data_dir)
+            recording[np.isnan(recording)] = 0
+
+            file_names.append(name)
+            if name.startswith('E'):
+                recording *= 4.88
             if i in train_index:
                 for j in range(recording.shape[0]):
                     train_recordings.append(recording[j])
