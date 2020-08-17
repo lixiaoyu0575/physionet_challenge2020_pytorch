@@ -6,7 +6,7 @@ import torch
 from torchvision import datasets, transforms
 from torch.utils.data import TensorDataset, Dataset
 from base import BaseDataLoader, BaseDataLoader2, BaseDataLoader3
-from utils.dataset import ECGDataset
+from utils.dataset import ECGDatasetWithIndex
 from sklearn.preprocessing import MinMaxScaler
 from utils.dataset import load_label_files, load_labels, load_weights
 from scipy.signal import savgol_filter, medfilt, wiener
@@ -24,7 +24,8 @@ class ChallengeDataLoader0(BaseDataLoader2):
     """
     challenge2020 data loading
     """
-    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True, training_size=None):
+    def __init__(self, label_dir, data_dir, split_index, batch_size, shuffle=True, num_workers=2, training=True,
+                 training_size=None, is_for_meta=False):
         start = time.time()
         self.label_dir = label_dir
         self.data_dir = data_dir
@@ -142,7 +143,11 @@ class ChallengeDataLoader0(BaseDataLoader2):
         X = torch.from_numpy(recordings_all).float()
         # Y = torch.from_numpy(labels_onehot)
         Y = torch.from_numpy(labels_onehot_all).float()
-        self.dataset = TensorDataset(X, Y)
+
+        if is_for_meta == False:
+            self.dataset = TensorDataset(X, Y)
+        else:
+            self.dataset = ECGDatasetWithIndex(X, Y)
         end = time.time()
         print('time to get and process data: {}'.format(end-start))
         super().__init__(self.dataset, batch_size, shuffle, train_index, val_index, test_index, num_workers)

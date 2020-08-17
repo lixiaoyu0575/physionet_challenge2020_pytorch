@@ -225,11 +225,10 @@ def loaddata(data_path):
 
     return (x_train, y_train), (x_val, y_val), (x_test, y_test)
 
-class ECGDataset(Dataset):
+class ECGDatasetWithIndex(Dataset):
     '''Challenge 2017'''
-    def __init__(self, data_path):
-        (x_train, y_train), (x_val, y_val), (x_test, y_test) = loaddata(data_path)
-        self.x, self.y = x_train, y_train
+    def __init__(self, X, Y):
+        self.x, self.y = X, Y
 
     def __len__(self):
         return len(self.x)
@@ -237,6 +236,6 @@ class ECGDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-        sample = (self.x[idx], self.y[idx])
+        sample = (self.x[idx], self.y[idx], idx)
 
         return sample
