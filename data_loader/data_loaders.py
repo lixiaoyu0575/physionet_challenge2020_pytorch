@@ -82,12 +82,19 @@ class ChallengeDataLoader0(BaseDataLoader2):
         bb = []
         dd = []
 
-        global files_lxy
-        global labels_lxy
         if modify_label:
             df = pd.read_csv('process/data_lxy/data_lxy.csv', error_bad_lines=False)
             files_lxy = list(df.iloc[:, 0][2:].values)
             labels_lxy = df.iloc[2:252, 1:26].values.astype(int)
+            for i in range(num_files):
+                file = os.path.basename(label_files[i])
+                name, ext = os.path.splitext(file)
+                if name in files_lxy:
+                    idx = files_lxy.index(name)
+                    label = labels_onehot[i]
+                    label[indices] = labels_lxy[idx][:24]
+                    label = label.astype(bool)
+                    labels_onehot[i] = label
 
         for i in range(num_files):
 
@@ -104,16 +111,6 @@ class ChallengeDataLoader0(BaseDataLoader2):
                 print(i)
                 bb.append(i)
                 dd.append(rr)
-
-            if modify_label:
-                if name in files_lxy:
-                    idx = files_lxy.index(name)
-                    label = np.zeros((108,))
-                    label[indices] = labels_lxy[idx][:24]
-                    label = label.astype(bool)
-                    labels_onehot_new.append(label)
-                else:
-                    labels_onehot_new.append(labels_onehot[i])
 
             labels_onehot_new.append(labels_onehot[i])
 
@@ -379,7 +376,7 @@ class ChallengeDataLoader2(BaseDataLoader3):
                 name, ext = os.path.splitext(file)
                 if name in files_lxy:
                     idx = files_lxy.index(name)
-                    label = np.zeros((108,))
+                    label = labels_onehot[i]
                     label[indices] = labels_lxy[idx][:24]
                     label = label.astype(bool)
                     labels_onehot[i] = label
