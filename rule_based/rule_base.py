@@ -88,12 +88,15 @@ def is_SA(data,FS=300):
     # print(data.shape)
     result= []
     for i in range(len(data)):
-        rpeaks_indices_1 = biosppy.signals.ecg.hamilton_segmenter(signal=data[i][1], sampling_rate=FS)
-        rpeaks_indices_1_c = biosppy.signals.ecg.correct_rpeaks(signal=data[i][1], rpeaks=rpeaks_indices_1[0],sampling_rate=FS, tol=0.07)
-        RR_list = np.diff(rpeaks_indices_1_c[0]).tolist()
-        sinus_arrhythmia_RR =(np.max(RR_list) - np.min(RR_list))/FS
-        if sinus_arrhythmia_RR >0.12:
-            result.append(1)
-        else:
+        try:
+            rpeaks_indices_1 = biosppy.signals.ecg.hamilton_segmenter(signal=data[i][1], sampling_rate=FS)
+            rpeaks_indices_1_c = biosppy.signals.ecg.correct_rpeaks(signal=data[i][1], rpeaks=rpeaks_indices_1[0],sampling_rate=FS, tol=0.07)
+            RR_list = np.diff(rpeaks_indices_1_c[0]).tolist()
+            sinus_arrhythmia_RR =(np.max(RR_list) - np.min(RR_list))/FS
+            if sinus_arrhythmia_RR > 0.12:
+                result.append(1)
+            else:
+                result.append(0)
+        except:
             result.append(0)
     return np.array(result)

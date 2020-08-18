@@ -153,6 +153,13 @@ class ChallengeDataLoader0(BaseDataLoader2):
         self.indices = indices
 
         # Get rule-based classed index
+
+        # name = ['心动过缓', '窦性心动过速', '窦性心动过缓', '窦性心律不齐', '窦性心率']
+        # dx = ['bradycardia', 'sinus tachycardia', 'sinus bradycardia', 'sinus arrhythmia', 'sinus rhythm']
+        # abb = ['Brady', 'STach', 'SB', 'SA', 'SNR']
+        # code = ['426627000', '427084000', '426177001', '427393009', '426783006']
+        # idx = [63, 70, 61, 72, 68]
+
         if rule_based:
             # index_rb = loadmat('rule_based/index.mat')['val']
             # index_rb = index_rb.reshape([index_rb.shape[1], ])

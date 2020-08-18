@@ -79,7 +79,10 @@ class Evaluater(BaseEvaluater):
         # rule-based
         if self.rule_based_ftnsm:
             for i, fn_rb in enumerate(self.rule_based_ftnsm):
-                output_logits[:, self.test_data_loader.index_rb[i]] = fn_rb(self._to_np(inputs))
+                if self.test_data_loader.index_rb in [70, 61, 72]:
+                    output_logits[:, self.test_data_loader.index_rb[i]] = fn_rb(self._to_np(inputs)) * output_logits[:, 68]
+                else:
+                    output_logits[:, self.test_data_loader.index_rb[i]] = fn_rb(self._to_np(inputs))
     
         for met in self.metric_ftns:
             self.test_metrics.update(met.__name__, met(output_logits, targets))
@@ -142,20 +145,23 @@ class Evaluater(BaseEvaluater):
         self.logger.info("**********************************************************************************")
         self.logger.info("All Testing Data")
 
-        outputs_logits = self.sigmoid(outputs)
-        outputs_logits = self._to_np(outputs_logits)
+        output_logits = self.sigmoid(outputs)
+        output_logits = self._to_np(output_logits)
         targets = self._to_np(targets)
 
         # rule-based
         if self.rule_based_ftnsm:
             for i, fn_rb in enumerate(self.rule_based_ftnsm):
-                outputs_logits[:, self.test_data_loader.index_rb[i]] = fn_rb(self._to_np(inputs))
+                if self.test_data_loader.index_rb in [70, 61, 72]:
+                    output_logits[:, self.test_data_loader.index_rb[i]] = fn_rb(self._to_np(inputs)) * output_logits[:,68]
+                else:
+                    output_logits[:, self.test_data_loader.index_rb[i]] = fn_rb(self._to_np(inputs))
 
-        accuracy = challenge_metrics.accuracy(outputs_logits, targets)
-        macro_f_measure, f_measure  = challenge_metrics.f_measure(outputs_logits, targets)
-        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = challenge_metrics.beta_measures(outputs_logits, targets)
-        macro_auroc, macro_auprc, auroc, auprc = challenge_metrics.auc(outputs_logits, targets)
-        challenge_metric = challenge_metrics.challenge_metric(outputs_logits, targets)
+        accuracy = challenge_metrics.accuracy(output_logits, targets)
+        macro_f_measure, f_measure  = challenge_metrics.f_measure(output_logits, targets)
+        macro_f_beta_measure, macro_g_beta_measure, f_beta_measure, g_beta_measure = challenge_metrics.beta_measures(output_logits, targets)
+        macro_auroc, macro_auprc, auroc, auprc = challenge_metrics.auc(output_logits, targets)
+        challenge_metric = challenge_metrics.challenge_metric(output_logits, targets)
 
         self.logger.info("challenge_metric:{}".format(challenge_metric))
         self.logger.info("accuracy:{}".format(accuracy))
@@ -173,7 +179,7 @@ class Evaluater(BaseEvaluater):
                    'Georgia 12-Lead ECG Challenge Database', 'St Petersburg INCART 12-lead Arrhythmia Database']
         
         for i in range(len(Dataset)):
-            outputs_i_logit = outputs_logits[dataset_idx_list[i]]
+            outputs_i_logit = output_logits[dataset_idx_list[i]]
             targets_i = targets[dataset_idx_list[i]]
 
             accuracy = challenge_metrics.accuracy(outputs_i_logit, targets_i)

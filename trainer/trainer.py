@@ -111,9 +111,19 @@ class Trainer(BaseTrainer):
             target = self._to_np(target)
 
             # rule-based
+
+            # name = ['心动过缓', '窦性心动过速', '窦性心动过缓', '窦性心律不齐', '窦性心率']
+            # dx = ['bradycardia', 'sinus tachycardia', 'sinus bradycardia', 'sinus arrhythmia', 'sinus rhythm']
+            # abb = ['Brady', 'STach', 'SB', 'SA', 'SNR']
+            # code = ['426627000', '427084000', '426177001', '427393009', '426783006']
+            # idx = [63, 70, 61, 72, 68]
+
             if self.rule_based_ftnsm:
                 for i, fn_rb in enumerate(self.rule_based_ftnsm):
-                    output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data))
+                    if self.data_loader.index_rb in [70, 61, 72]:
+                        output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data)) * output_logit[:, 68]
+                    else:
+                        output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data))
 
             for met in self.metric_ftns:
                 self.train_metrics.update(met.__name__, met(output_logit, target))
@@ -162,29 +172,37 @@ class Trainer(BaseTrainer):
 
                 output = self.model(data)
 
+                indices = np.ones((108,)).astype(bool)
+                if self.rule_based_ftnsm:
+                    indices = self.data_loader.indices_rb & indices
+
                 if self.only_scored_classes:
                     # Only consider classes that are scored with the Challenge metric.
                     if self.config["loss"]["type"] == "weighted_bce_with_logits_loss":
-                        loss = self.criterion(output[:, self.indices], target[:, self.indices], self.weights)
+                        loss = self.criterion(output[:, self.indices & indices], target[:, self.indices & indices],
+                                              self.weights)
                     else:
-                        loss = self.criterion(output[:, self.indices], target[:, self.indices])
+                        loss = self.criterion(output[:, self.indices & indices], target[:, self.indices & indices])
                 else:
-                    loss = self.criterion(output, target)
+                    loss = self.criterion(output[:, indices], target[:, indices])
 
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.valid_metrics.update('loss', loss.item())
 
                 output_logit = self.sigmoid(output)
+                output_logit = self._to_np(output_logit)
+                target = self._to_np(target)
+
+                if self.rule_based_ftnsm:
+                    for i, fn_rb in enumerate(self.rule_based_ftnsm):
+                        if self.data_loader.index_rb in [70, 61, 72]:
+                            output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data)) * output_logit[:,68]
+                        else:
+                            output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data))
+
                 for met in self.metric_ftns:
                     self.valid_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
-                # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
-            if self.lr_scheduler is not None and self.config["lr_scheduler"]["type"] == "ReduceLROnPlateau":
-                self.lr_scheduler.step(self.valid_metrics.result()["challenge_metric"])
-
-        # add histogram of model parameters to the tensorboard
-        # for name, p in self.model.named_parameters():
-        #     self.writer.add_histogram(name, p, bins='auto')
         return self.valid_metrics.result()
 
     def _progress(self, batch_idx):
@@ -370,6 +388,201 @@ class Trainer2(BaseTrainer):
         else:
             return tensor.detach().numpy()
 
+# For Weighted Loss
+class Trainer3(BaseTrainer):
+    """
+    Trainer class
+    """
+    def __init__(self, model, criterion, metric_ftns, optimizer, config, data_loader, rule_based_ftns=None, _25classes=False,
+                 valid_data_loader=None, lr_scheduler=None, len_epoch=None):
+        super().__init__(model, criterion, metric_ftns, optimizer, config)
+        self.config = config
+        self.data_loader = data_loader
+        if len_epoch is None:
+            # epoch-based training
+            self.len_epoch = len(self.data_loader)
+        else:
+            # iteration-based training
+            self.data_loader = inf_loop(data_loader)
+            self.len_epoch = len_epoch
+        self.valid_data_loader = valid_data_loader
+        self.do_validation = self.valid_data_loader is not None
+        self.lr_scheduler = lr_scheduler
+        self.log_step = int(np.sqrt(data_loader.batch_size))
+
+        self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
+        self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
+
+        self.rule_based_ftnsm = rule_based_ftns
+
+        if self.do_validation:
+            keys_val = ['val_' + k for k in self.keys]
+            for key in keys_val:
+                self.log[key] = []
+        self.weights = torch.tensor(self.data_loader.weights)
+        self.weights = torch.mean(self.weights, dim=1)
+
+        self.only_scored_classes = config['trainer'].get('only_scored_class', True)
+        self.lable_smooth = config['trainer'].get('label_smooth', None)
+        self.mixup = config['trainer'].get('mixup', None)
+
+        if self.only_scored_classes:
+            # Only consider classes that are scored with the Challenge metric.
+            indices = self.data_loader.indices
+            weights = list()
+            for i in range(self.weights.shape[0]):
+                if indices[i]:
+                    weights.append(self.weights[i])
+            self.weights = torch.tensor(weights)
+            self.weights = self.weights.reshape((24, 1)).to(device=self.device, dtype=torch.float)
+
+            if _25classes:
+                indices_25 = np.ones((25, ))
+                indices_25[24] = 0
+                self.indices = indices_25.astype(bool)
+            else:
+                self.indices = indices
+
+        self.sigmoid = nn.Sigmoid()
+
+    def _train_epoch(self, epoch):
+        """
+        Training logic for an epoch
+
+        :param epoch: Integer, current training epoch.
+        :return: A log that contains average loss and metric in this epoch.
+        """
+        start_time = time.time()
+        self.model.train()
+        self.train_metrics.reset()
+        for batch_idx, (data, target) in enumerate(self.data_loader):
+            batch_start = time.time()
+            data, target = data.to(device=self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
+            if self.mixup is not None:
+                data, target = mixup(data, target, np.random.beta(1, 1))
+            # if self.lable_smooth is not None:
+            #     target = target.long()
+            #     print('getting smooth label')
+            #     target = smooth_one_hot(true_labels=target, classes=108, smoothing=self.lable_smooth)
+
+            self.optimizer.zero_grad()
+            output = self.model(data)
+
+            indices = np.ones((108,)).astype(bool)
+            if self.rule_based_ftnsm:
+                indices = self.data_loader.indices_rb & indices
+
+            if self.only_scored_classes:
+                # Only consider classes that are scored with the Challenge metric.
+                if self.config["loss"]["type"] == "weighted_bce_with_logits_loss":
+                    loss = self.criterion(output[:, self.indices & indices], target[:, self.indices & indices], self.weights)
+                else:
+                    loss = self.criterion(output[:, self.indices & indices], target[:, self.indices & indices])
+            else:
+                loss = self.criterion(output[:, indices], target[:, indices])
+
+            loss.backward()
+            self.optimizer.step()
+
+            self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
+            self.train_metrics.update('loss', loss.item())
+
+            output_logit = self.sigmoid(output)
+            output_logit = self._to_np(output_logit)
+            target = self._to_np(target)
+
+            # rule-based
+            if self.rule_based_ftnsm:
+                for i, fn_rb in enumerate(self.rule_based_ftnsm):
+                    output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data))
+
+            for met in self.metric_ftns:
+                self.train_metrics.update(met.__name__, met(output_logit, target))
+
+            if batch_idx % self.log_step == 0:
+                batch_end = time.time()
+                self.logger.debug('Train Epoch: {} {} Loss: {:.6f}, 1 batch cost time {:.2f}'.format(
+                    epoch,
+                    self._progress(batch_idx),
+                    loss.item(),
+                    batch_end - batch_start))
+                # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+
+            if batch_idx == self.len_epoch:
+                break
+        log = self.train_metrics.result()
+
+        end_time = time.time()
+        print("training epoch cost {} seconds".format(end_time-start_time))
+        if self.do_validation:
+            val_log = self._valid_epoch(epoch)
+            log.update(**{'val_'+k : v for k, v in val_log.items()})
+
+        if self.lr_scheduler is not None:
+            if self.config['lr_scheduler']['type'] == 'ReduceLROnPlateau':
+                self.lr_scheduler.step(log['val_loss'])
+            elif self.config['lr_scheduler']['type'] == 'GradualWarmupScheduler':
+                self.lr_scheduler.step(epoch, log['val_loss'])
+            else:
+                self.lr_scheduler.step()
+
+        return log
+
+    def _valid_epoch(self, epoch):
+        """
+        Validate after training an epoch
+
+        :param epoch: Integer, current training epoch.
+        :return: A log that contains information about validation
+        """
+        self.model.eval()
+        self.valid_metrics.reset()
+        with torch.no_grad():
+            for batch_idx, (data, target) in enumerate(self.valid_data_loader):
+                data, target = data.to(device=self.device, dtype=torch.float), target.to(self.device, dtype=torch.float)
+
+                output = self.model(data)
+
+                if self.only_scored_classes:
+                    # Only consider classes that are scored with the Challenge metric.
+                    if self.config["loss"]["type"] == "weighted_bce_with_logits_loss":
+                        loss = self.criterion(output[:, self.indices], target[:, self.indices], self.weights)
+                    else:
+                        loss = self.criterion(output[:, self.indices], target[:, self.indices])
+                else:
+                    loss = self.criterion(output, target)
+
+                self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
+                self.valid_metrics.update('loss', loss.item())
+
+                output_logit = self.sigmoid(output)
+                for met in self.metric_ftns:
+                    self.valid_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
+                # self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+
+            if self.lr_scheduler is not None and self.config["lr_scheduler"]["type"] == "ReduceLROnPlateau":
+                self.lr_scheduler.step(self.valid_metrics.result()["challenge_metric"])
+
+        # add histogram of model parameters to the tensorboard
+        # for name, p in self.model.named_parameters():
+        #     self.writer.add_histogram(name, p, bins='auto')
+        return self.valid_metrics.result()
+
+    def _progress(self, batch_idx):
+        base = '[{}/{} ({:.0f}%)]'
+        if hasattr(self.data_loader, 'n_samples'):
+            current = batch_idx * self.data_loader.batch_size
+            total = self.data_loader.n_samples
+        else:
+            current = batch_idx
+            total = self.len_epoch
+        return base.format(current, total, 100.0 * current / total)
+
+    def _to_np(self, tensor):
+        if self.device.type == 'cuda':
+            return tensor.cpu().detach().numpy()
+        else:
+            return tensor.detach().numpy()
 
 def get_pred(output, alpha=0.5):
     output = F.sigmoid(output)

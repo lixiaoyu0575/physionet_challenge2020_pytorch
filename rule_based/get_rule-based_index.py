@@ -33,11 +33,12 @@ if __name__ == '__main__':
 
     ###################################
 
-    name = ['心动过缓', '窦性心动过速', '窦性心动过缓', '窦性心律不齐']
-    dx = ['bradycardia', 'sinus tachycardia', 'sinus bradycardia', 'sinus arrhythmia']
-    abb = ['Brady', 'STach', 'SB', 'SA']
-    code = ['426627000', '427084000', '426177001', '427393009']
-    code2 = ['426627000', '427084000', '426177001', '427393009']
+    name = ['心动过缓', '窦性心动过速', '窦性心动过缓', '窦性心律不齐', '窦性心率']
+    dx = ['bradycardia', 'sinus tachycardia', 'sinus bradycardia', 'sinus arrhythmia', 'sinus rhythm']
+    abb = ['Brady', 'STach', 'SB', 'SA', 'SNR']
+    code = ['426627000', '427084000', '426177001', '427393009', '426783006']
+    code2 = ['426627000', '427084000', '426177001', '427393009', '426783006']
+    idx = [63, 70, 61, 72, 68]
 
     index = list()
     for c in code2:
@@ -48,6 +49,7 @@ if __name__ == '__main__':
     # for c in code2:
     #     index[classes.index(c)] = 1
 
-    savemat('./index.mat', {'val': index})
+    # savemat('./index.mat', {'val': index})
+    print(index)
 
 
