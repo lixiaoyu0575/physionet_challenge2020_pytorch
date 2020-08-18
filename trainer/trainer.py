@@ -201,7 +201,7 @@ class Trainer(BaseTrainer):
                             output_logit[:, self.data_loader.index_rb[i]] = fn_rb(self._to_np(data))
 
                 for met in self.metric_ftns:
-                    self.valid_metrics.update(met.__name__, met(self._to_np(output_logit), self._to_np(target)))
+                    self.valid_metrics.update(met.__name__, met(output_logit, target))
 
         return self.valid_metrics.result()
 

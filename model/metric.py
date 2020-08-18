@@ -599,7 +599,7 @@ class ChallengeMetric2():
                     outputs[i, j] = 1
                 else:
                     outputs[i, j] = 0
-        return outp
+        return outputs
 
 
 if __name__ == '__main__':
