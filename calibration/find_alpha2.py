@@ -1,5 +1,6 @@
 import os
 import sys
+
 curPath = os.path.abspath(os.path.dirname(__file__))
 print(curPath)
 rootPath = curPath
@@ -9,6 +10,7 @@ print(rootPath)
 sys.path.append(rootPath)
 import torch
 import torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
@@ -50,70 +52,20 @@ files_models = {
 }
 
 arch = {
+    "type": "resnest",
     "args": {
-        "channels": [
-            32,
-            64,
-            128,
-            256,
-            512
-        ],
-        "drop_rate": None,
-        "in_channels": 12,
-        "kernel_size": [
-            11,
-            11,
-            11,
-            11,
-            11
-        ],
-        "n_hid": [
-            100,
-            80
-        ],
+        "layers": [2, 2, 1, 3],
+        "bottleneck_width": 64,
+        "stem_width": 16,
         "num_classes": 108,
-        "pool": "max",
-        "pool_kernel_size": 2
-    },
-    "type": "VanillaCNN"
+        "kernel_size": 7
     }
-
-# label_dir = "/home/weiyuhua/Data/All_data_new"
-# data_dir = "/home/weiyuhua/Data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
-# split_index = "../process/data_split/split1.mat"
-# model_dir = "/home/weiyuhua/Code/physionet_challenge2020_pytorch/saved/models/0810_104844_0.54831+cbam_channel/0812_173414/model_best.pth"
+}
 
 label_dir = "/DATASET/challenge2020/new_data/All_data_new"
 data_dir = "/DATASET/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000"
 split_index = "../process/data_split/split1.mat"
-model_dir = "/home/weiyuhua/physionet_challenge2020_pytorch/hyper_opt/vanilla_cnn_test/0814_192243/checkpoints/model_best.pth"
-
-space0 = {
-    "alpha1": hp.uniform("alpha1", 0, 1),
-    "alpha2": hp.uniform("alpha2", 0, 1),
-    "alpha3": hp.uniform("alpha3", 0, 1),
-    "alpha4": hp.uniform("alpha4", 0, 1),
-    "alpha5": hp.uniform("alpha5", 0, 1),
-    "alpha6": hp.uniform("alpha6", 0, 1),
-    "alpha7": hp.uniform("alpha7", 0, 1),
-    "alpha8": hp.uniform("alpha8", 0, 1),
-    "alpha9": hp.uniform("alpha9", 0, 1),
-    "alpha10": hp.uniform("alpha10", 0, 1),
-    "alpha11": hp.uniform("alpha11", 0, 1),
-    "alpha12": hp.uniform("alpha12", 0, 1),
-    "alpha13": hp.uniform("alpha13", 0, 1),
-    "alpha14": hp.uniform("alpha14", 0, 1),
-    "alpha15": hp.uniform("alpha15", 0, 1),
-    "alpha16": hp.uniform("alpha16", 0, 1),
-    "alpha17": hp.uniform("alpha17", 0, 1),
-    "alpha18": hp.uniform("alpha18", 0, 1),
-    "alpha19": hp.uniform("alpha19", 0, 1),
-    "alpha20": hp.uniform("alpha20", 0, 1),
-    "alpha21": hp.uniform("alpha21", 0, 1),
-    "alpha22": hp.uniform("alpha22", 0, 1),
-    "alpha23": hp.uniform("alpha23", 0, 1),
-    "alpha24": hp.uniform("alpha24", 0, 1),
-}
+model_dir = "/home/weiyuhua/physionet_challenge2020_pytorch/saved/Resnest/model_resnest_0.571/model_best.pth"
 
 space = {
     "alpha1": hp.quniform("alpha1", 0, 1, 0.1),
@@ -142,13 +94,18 @@ space = {
     "alpha24": hp.quniform("alpha24", 0, 1, 0.1),
 }
 
-(train_data, train_label), (val_data, val_label), (test_data, test_label) = load_data(label_dir, data_dir,split_index)
+# Data
+(train_data, train_label), (val_data, val_label), (test_data, test_label) = load_data(label_dir, data_dir, split_index)
+# Dataset
+val_dataset = TensorDataset(torch.from_numpy(val_data))
+test_dataset = TensorDataset(torch.from_numpy(test_data))
+# Dataloader
+batch_size = 32
+val_dataloader = DataLoader(val_dataset, batch_size)
+test_dataloader = DataLoader(test_dataset, batch_size)
 
+# device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# data = torch.from_numpy(val_data).to(device=device, dtype=torch.float)
-data = torch.from_numpy(val_data).to(dtype=torch.float32)
-targets = val_label
 
 for file, types in files_models.items():
     for type in types:
@@ -156,27 +113,39 @@ for file, types in files_models.items():
             model = getattr(eval("module_arch_" + file), arch['type'])(**arch['args'])
 checkpoint = load_checkpoint(model_dir)
 model.load_state_dict(checkpoint['state_dict'])
+model.to(device)
 
 # Inference
 model.eval()
-outputs = model(data)
-outputs = nn.Sigmoid()(outputs)
+with torch.no_grad():
+    outputs = torch.zeros((len(val_dataset), 108))
+    start = 0
+    for i, [data] in enumerate(val_dataloader):
+        data = data.to(device=device, dtype=torch.float32)
+        output = nn.Sigmoid()(model(data))
+        end = len(data) + start
+        outputs[start:end, :] = output
+        start = end
 
 def find_alpha(hp):
-    alphas = [hp['alpha1'], hp['alpha2'], hp['alpha3'], hp['alpha4'], hp['alpha5'], hp['alpha6'], hp['alpha7'], hp['alpha8'],
-        hp['alpha9'], hp['alpha10'], hp['alpha11'], hp['alpha12'], hp['alpha13'], hp['alpha14'], hp['alpha15'], hp['alpha16'],
-        hp['alpha17'], hp['alpha18'], hp['alpha19'], hp['alpha20'], hp['alpha21'], hp['alpha22'], hp['alpha23'], hp['alpha24']]
+    alphas = [hp['alpha1'], hp['alpha2'], hp['alpha3'], hp['alpha4'], hp['alpha5'], hp['alpha6'], hp['alpha7'],
+              hp['alpha8'],
+              hp['alpha9'], hp['alpha10'], hp['alpha11'], hp['alpha12'], hp['alpha13'], hp['alpha14'], hp['alpha15'],
+              hp['alpha16'],
+              hp['alpha17'], hp['alpha18'], hp['alpha19'], hp['alpha20'], hp['alpha21'], hp['alpha22'], hp['alpha23'],
+              hp['alpha24']]
 
     challenge_metrics = ChallengeMetric(label_dir, alphas)
 
-    accuracy, macro_f_measure, macro_f_beta_measure, macro_g_beta_measure, challenge_metric = get_metrics(to_np(outputs, device), targets, challenge_metrics=challenge_metrics)
+    accuracy, macro_f_measure, macro_f_beta_measure, macro_g_beta_measure, challenge_metric = get_metrics(
+        to_np(outputs, device), val_label, challenge_metrics=challenge_metrics)
 
     return -challenge_metric
 
 
 if __name__ == '__main__':
     trials = Trials()
-    max_evals = 100
+    max_evals = 500
     best = fmin(
         find_alpha,
         space,
@@ -187,3 +156,30 @@ if __name__ == '__main__':
     print("BEST:", best)
     for trial in trials:
         print(trial)
+
+    best_alphas = list()
+    for (k, v) in dict.items(best):
+        best_alphas.append(v)
+
+    # For testing
+    model.eval()
+    with torch.no_grad():
+        outputs = torch.zeros((len(test_dataset), 108))
+        start = 0
+        for i, [data] in enumerate(test_dataloader):
+            data = data.to(device=device, dtype=torch.float32)
+            end = start + len(data)
+            output = nn.Sigmoid()(model(data))
+            outputs[start:end, :] = output
+            start = end
+
+    challenge_metrics = ChallengeMetric(label_dir, best_alphas)
+    accuracy, macro_f_measure, macro_f_beta_measure, macro_g_beta_measure, challenge_metric = get_metrics(
+        to_np(outputs, device), test_label, challenge_metrics=challenge_metrics)
+
+    print("Testing data:")
+    print("accuracy", accuracy)
+    print("macro_f_measure", macro_f_measure)
+    print("macro_g_beta_measure", macro_g_beta_measure)
+    print("macro_f_beta_measure", macro_f_beta_measure)
+    print("challenge_metric", challenge_metric)
