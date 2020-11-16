@@ -16,6 +16,8 @@ import model.resnest as module_arch_resnest
 import model.resnest2 as module_arch_resnest2
 import model.vanilla_cnn as module_arch_vanilla_cnn
 import model.xception as module_arch_xception
+import model.attention as module_arch_attention
+import model.transformer as module_arch_transformer
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -45,7 +47,9 @@ files_models = {
     "model": ['CNN', 'MLP'],
     "tcn": ['TCN'],
     "vanilla_cnn": ['VanillaCNN'],
-    "xception": ['Xception', 'Gception']
+    "xception": ['Xception', 'Gception'],
+    "attention": ['Attention'],
+    "transformer": ['Transformer']
 }
 
 def main(config):

@@ -1,0 +1,86 @@
+{
+    "name": "challenge2020_official_data_slided_transformer",
+    "n_gpu": 1,
+    "arch": {
+        "args": {
+            "d_input": 768,
+            "d_model": 3000,
+            "d_output": 108,
+            "q": 8,
+            "v": 8,
+            "h": 8,
+            "N": 8
+        },
+        "type": "Transformer"
+    },
+    "data_loader": {
+        "type": "ChallengeDataLoader2",
+        "args": {
+            "label_dir": "/data/ecg/challenge2020/new_data/All_data_new",
+            "data_dir": "/data/ecg/challenge2020/new_data/All_data_new_resampled_to_300HZ_and_slided_n_segment=1_windowsize=3000",
+            "split_index": "process/data_split/split1.mat",
+            "batch_size": 64,
+            "shuffle": true,
+            "num_workers": 6
+        }
+    },
+ "optimizer": {
+        "args": {
+            "lr": 0.0005,
+            "amsgrad": true,
+            "weight_decay": 0.0001
+        },
+        "type": "Adam"
+    },
+    "loss": {
+        "type": "bce_with_logits_loss"
+    },
+    "metrics": [
+        "accuracy",
+        "f_measure",
+        "macro_f_beta_measure",
+        "macro_g_beta_measure",
+        "macro_auroc",
+        "macro_auprc",
+        "challenge_metric"
+    ],
+        "lr_scheduler": {
+        "args": {
+            "multiplier": 1.5,
+            "total_epoch": 5,
+            "after_scheduler": {
+                "args": {
+                    "min_lr": 0,
+                    "mode": "min",
+                    "threshold_mode": "rel",
+                    "factor": 0.1,
+                    "eps": 1e-08,
+                    "cooldown": 0,
+                    "patience": 6,
+                    "verbose": false,
+                    "threshold": 0.0001
+                },
+                "type": "ReduceLROnPlateau"
+            }
+        },
+        "type": "GradualWarmupScheduler"
+    },
+    "trainer": {
+        "epochs": 100,
+        "save_dir": "saved/",
+        "save_period": 1,
+        "verbosity": 2,
+        "monitor": "max val_challenge_metric",
+        "early_stop": 15,
+        "tensorboard": false,
+        "only_scored_class": false
+
+    },
+    "evaluater": {
+        "result_dir": "saved/",
+        "verbosity": 2,
+        "visualization": {
+            "scatter": true
+        }
+    }
+}
