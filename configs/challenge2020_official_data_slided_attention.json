@@ -70,7 +70,7 @@
         "monitor": "max val_challenge_metric",
         "early_stop": 15,
         "tensorboard": false,
-        "only_scored_class": true
+        "only_scored_class": false
 
     },
     "evaluater": {

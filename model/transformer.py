@@ -45,237 +45,87 @@ def generate_local_map_mask(chunk_size: int,
 
     return torch.BoolTensor(local_map).to(device)
 
+class ScaledDotProductAttention(nn.Module):
+    """Scaled dot-product attention mechanism."""
+
+    def __init__(self, attention_dropout=0.0):
+        super(ScaledDotProductAttention, self).__init__()
+        self.dropout = nn.Dropout(attention_dropout)
+        self.softmax = nn.Softmax(dim=2)
+
+    def forward(self, q, k, v, scale=None, attn_mask=None):
+        attention = torch.bmm(q, k.transpose(1, 2))
+        if scale:
+        	attention = attention * scale
+        if attn_mask:
+        	# 给需要mask的地方设置一个负无穷
+        	attention = attention.masked_fill_(attn_mask, -np.inf)
+		# 计算softmax
+        attention = self.softmax(attention)
+		# 添加dropout
+        attention = self.dropout(attention)
+		# 和V做点积
+        context = torch.bmm(attention, v)
+        return context, attention
+
 class MultiHeadAttention(nn.Module):
 
-    def __init__(self,
-                 d_model: int,
-                 q: int,
-                 v: int,
-                 h: int,
-                 attention_size: int = None):
-        """Initialize the Multi Head Block."""
-        super().__init__()
+    def __init__(self, model_dim=64, num_heads = 8, d_output = 108, dropout=0.1):
+        super(MultiHeadAttention, self).__init__()
 
-        self._h = h
-        self._attention_size = attention_size
+        self.model_dim = model_dim
+        self.dim_per_head = model_dim // num_heads
+        self.num_heads = num_heads
+        self.linear_k = nn.Linear(self.dim_per_head * num_heads, model_dim * d_output)
+        self.linear_v = nn.Linear(self.dim_per_head * num_heads, model_dim * d_output)
+        self.linear_q = nn.Linear(self.dim_per_head * num_heads, model_dim * d_output)
 
-        # Query, keys and value matrices
-        self._W_q = nn.Linear(d_model, q*self._h)
-        self._W_k = nn.Linear(d_model, q*self._h)
-        self._W_v = nn.Linear(d_model, v*self._h)
+        self.dot_product_attention = ScaledDotProductAttention(dropout)
+        self.linear_final = nn.Linear(model_dim, model_dim)
+        self.dropout = nn.Dropout(dropout)
+		# multi-head attention之后需要做layer norm
+        self.layer_norm = nn.LayerNorm(model_dim)
 
-        # Output linear function
-        self._W_o = nn.Linear(self._h*v, d_model)
+    def forward(self, key, value, query, attn_mask=None):
+		# 残差连接
+        residual = query
+        model_dim = self.model_dim
+        dim_per_head = self.dim_per_head
+        num_heads = self.num_heads
+        batch_size = key.size(0)
 
-        # Score placeholder
-        self._scores = None
+        # linear projection
+        key = self.linear_k(key)
+        value = self.linear_v(value)
+        query = self.linear_q(query)
 
-    def forward(self,
-                query: torch.Tensor,
-                key: torch.Tensor,
-                value: torch.Tensor,
-                mask: Optional[str] = None) -> torch.Tensor:
-        K = query.shape[1]
+        # split by heads
+        key = key.view(batch_size * num_heads, -1, dim_per_head)
+        value = value.view(batch_size * num_heads, -1, dim_per_head)
+        query = query.view(batch_size * num_heads, -1, dim_per_head)
 
-        # Compute Q, K and V, concatenate heads on batch dimension
-        queries = torch.cat(self._W_q(query).chunk(self._h, dim=-1), dim=0)
-        keys = torch.cat(self._W_k(key).chunk(self._h, dim=-1), dim=0)
-        values = torch.cat(self._W_v(value).chunk(self._h, dim=-1), dim=0)
+        if attn_mask:
+            attn_mask = attn_mask.repeat(num_heads, 1, 1)
+        # scaled dot product attention
+        scale = (key.size(-1) // num_heads) ** -0.5
+        context, attention = self.dot_product_attention(
+          query, key, value, scale, attn_mask)
 
-        # Scaled Dot Product
-        self._scores = torch.bmm(queries, keys.transpose(1, 2)) / np.sqrt(K)
+        # concat heads
+        context = context.view(batch_size, -1, dim_per_head * num_heads)
 
-        # Compute local map mask
-        if self._attention_size is not None:
-            attention_mask = generate_local_map_mask(K, self._attention_size, mask_future=False, device=self._scores.device)
-            self._scores = self._scores.masked_fill(attention_mask, float('-inf'))
+        # final linear projection
+        output = self.linear_final(context)
 
-        # Compute future mask
-        if mask == "subsequent":
-            future_mask = torch.triu(torch.ones((K, K)), diagonal=1).bool()
-            future_mask = future_mask.to(self._scores.device)
-            self._scores = self._scores.masked_fill(future_mask, float('-inf'))
+        # dropout
+        output = self.dropout(output)
 
-        # Apply sotfmax
-        self._scores = F.softmax(self._scores, dim=-1)
+        # add residual and norm layer
+        output = self.layer_norm(residual + output)
 
-        attention = torch.bmm(self._scores, values)
-
-        # Concatenat the heads
-        attention_heads = torch.cat(attention.chunk(self._h, dim=0), dim=-1)
-
-        # Apply linear transformation W^O
-        self_attention = self._W_o(attention_heads)
-
-        return self_attention
-
-    @property
-    def attention_map(self) -> torch.Tensor:
-        """Attention map after a forward propagation,
-        variable `score` in the original paper.
-        """
-        if self._scores is None:
-            raise RuntimeError(
-                "Evaluate the model once to generate attention map")
-        return self._scores
-
-
-class MultiHeadAttentionChunk(MultiHeadAttention):
-
-    def __init__(self,
-                 d_model: int,
-                 q: int,
-                 v: int,
-                 h: int,
-                 attention_size: int = None,
-                 chunk_size: Optional[int] = 4,
-                 **kwargs):
-        """Initialize the Multi Head Block."""
-        super().__init__(d_model, q, v, h, attention_size, **kwargs)
-
-        self._chunk_size = chunk_size
-
-        # Score mask for decoder
-        self._future_mask = nn.Parameter(torch.triu(torch.ones((self._chunk_size, self._chunk_size)), diagonal=1).bool(),
-                                         requires_grad=False)
-
-        if self._attention_size is not None:
-            self._attention_mask = nn.Parameter(generate_local_map_mask(self._chunk_size, self._attention_size),
-                                                requires_grad=False)
-
-    def forward(self,
-                query: torch.Tensor,
-                key: torch.Tensor,
-                value: torch.Tensor,
-                mask: Optional[str] = None) -> torch.Tensor:
-
-        K = query.shape[1]
-        n_chunk = K // self._chunk_size
-
-        # Compute Q, K and V, concatenate heads on batch dimension
-        queries = torch.cat(torch.cat(self._W_q(query).chunk(self._h, dim=-1), dim=0).chunk(n_chunk, dim=1), dim=0)
-        keys = torch.cat(torch.cat(self._W_k(key).chunk(self._h, dim=-1), dim=0).chunk(n_chunk, dim=1), dim=0)
-        values = torch.cat(torch.cat(self._W_v(value).chunk(self._h, dim=-1), dim=0).chunk(n_chunk, dim=1), dim=0)
-
-        # Scaled Dot Product
-        self._scores = torch.bmm(queries, keys.transpose(1, 2)) / np.sqrt(self._chunk_size)
-
-        # Compute local map mask
-        if self._attention_size is not None:
-            self._scores = self._scores.masked_fill(self._attention_mask, float('-inf'))
-
-        # Compute future mask
-        if mask == "subsequent":
-            self._scores = self._scores.masked_fill(self._future_mask, float('-inf'))
-
-        # Apply softmax
-        self._scores = F.softmax(self._scores, dim=-1)
-
-        attention = torch.bmm(self._scores, values)
-
-        # Concatenat the heads
-        attention_heads = torch.cat(torch.cat(attention.chunk(
-            n_chunk, dim=0), dim=1).chunk(self._h, dim=0), dim=-1)
-
-        # Apply linear transformation W^O
-        self_attention = self._W_o(attention_heads)
-
-        return self_attention
-
-
-class MultiHeadAttentionWindow(MultiHeadAttention):
-
-    def __init__(self,
-                 d_model: int,
-                 q: int,
-                 v: int,
-                 h: int,
-                 attention_size: int = None,
-                 window_size: Optional[int] = 168,
-                 padding: Optional[int] = 168 // 4,
-                 **kwargs):
-        """Initialize the Multi Head Block."""
-        super().__init__(d_model, q, v, h, attention_size, **kwargs)
-
-        self._window_size = window_size
-        self._padding = padding
-        self._q = q
-        self._v = v
-
-        # Step size for the moving window
-        self._step = self._window_size - 2 * self._padding
-
-        # Score mask for decoder
-        self._future_mask = nn.Parameter(torch.triu(torch.ones((self._window_size, self._window_size)), diagonal=1).bool(),
-                                         requires_grad=False)
-
-        if self._attention_size is not None:
-            self._attention_mask = nn.Parameter(generate_local_map_mask(self._window_size, self._attention_size),
-                                                requires_grad=False)
-
-    def forward(self,
-                query: torch.Tensor,
-                key: torch.Tensor,
-                value: torch.Tensor,
-                mask: Optional[str] = None) -> torch.Tensor:
-
-        batch_size = query.shape[0]
-
-        # Apply padding to input sequence
-        query = F.pad(query.transpose(1, 2), (self._padding, self._padding), 'replicate').transpose(1, 2)
-        key = F.pad(key.transpose(1, 2), (self._padding, self._padding), 'replicate').transpose(1, 2)
-        value = F.pad(value.transpose(1, 2), (self._padding, self._padding), 'replicate').transpose(1, 2)
-
-        # Compute Q, K and V, concatenate heads on batch dimension
-        queries = torch.cat(self._W_q(query).chunk(self._h, dim=-1), dim=0)
-        keys = torch.cat(self._W_k(key).chunk(self._h, dim=-1), dim=0)
-        values = torch.cat(self._W_v(value).chunk(self._h, dim=-1), dim=0)
-
-        # Divide Q, K and V using a moving window
-        queries = queries.unfold(dimension=1, size=self._window_size, step=self._step).reshape((-1, self._q, self._window_size)).transpose(1, 2)
-        keys = keys.unfold(dimension=1, size=self._window_size, step=self._step).reshape((-1, self._q, self._window_size)).transpose(1, 2)
-        values = values.unfold(dimension=1, size=self._window_size, step=self._step).reshape((-1, self._v, self._window_size)).transpose(1, 2)
-
-        # Scaled Dot Product
-        self._scores = torch.bmm(queries, keys.transpose(1, 2)) / np.sqrt(self._window_size)
-
-        # Compute local map mask
-        if self._attention_size is not None:
-            self._scores = self._scores.masked_fill(self._attention_mask, float('-inf'))
-
-        # Compute future mask
-        if mask == "subsequent":
-            self._scores = self._scores.masked_fill(self._future_mask, float('-inf'))
-
-        # Apply softmax
-        self._scores = F.softmax(self._scores, dim=-1)
-
-        attention = torch.bmm(self._scores, values)
-
-        # Fold chunks back
-        attention = attention.reshape((batch_size*self._h, -1, self._window_size, self._v))
-        attention = attention[:, :, self._padding:-self._padding, :]
-        attention = attention.reshape((batch_size*self._h, -1, self._v))
-
-        # Concatenat the heads
-        attention_heads = torch.cat(attention.chunk(self._h, dim=0), dim=-1)
-
-        # Apply linear transformation W^O
-        self_attention = self._W_o(attention_heads)
-
-        return self_attention
+        return output, attention
 
 class PositionwiseFeedForward(nn.Module):
-    """Position-wise Feed Forward Network block from Attention is All You Need.
-    Apply two linear transformations to each input, separately but indetically. We
-    implement them as 1D convolutions. Input and output have a shape (batch_size, d_model).
-    Parameters
-    ----------
-    d_model:
-        Dimension of input tensor.
-    d_ff:
-        Dimension of hidden layer, default is 2048.
-    """
 
     def __init__(self,
                  d_model: int,
@@ -304,29 +154,17 @@ class Encoder(nn.Module):
 
     def __init__(self,
                  d_model: int,
+                 d_output:int,
                  q: int,
                  v: int,
                  h: int,
                  attention_size: int = None,
-                 dropout: float = 0.3,
-                 chunk_mode: str = 'chunk'):
+                 dropout: float = 0.3
+                 ):
         """Initialize the Encoder block"""
         super().__init__()
 
-        chunk_mode_modules = {
-            'chunk': MultiHeadAttentionChunk,
-            'window': MultiHeadAttentionWindow,
-        }
-
-        if chunk_mode in chunk_mode_modules.keys():
-            MHA = chunk_mode_modules[chunk_mode]
-        elif chunk_mode is None:
-            MHA = MultiHeadAttention
-        else:
-            raise NameError(
-                f'chunk_mode "{chunk_mode}" not understood. Must be one of {", ".join(chunk_mode_modules.keys())} or None.')
-
-        self._selfAttention = MHA(d_model, q, v, h, attention_size=attention_size)
+        self._selfAttention = MultiHeadAttention(d_model, h, d_output, dropout)
         self._feedForward = PositionwiseFeedForward(d_model)
 
         self._layerNorm1 = nn.LayerNorm(d_model)
@@ -348,7 +186,7 @@ class Encoder(nn.Module):
         """
         # Self attention
         residual = x
-        x = self._selfAttention(query=x, key=x, value=x)
+        x, attention = self._selfAttention(query=x, key=x, value=x)
         x = self._dopout(x)
         x = self._layerNorm1(x + residual)
 
@@ -371,7 +209,6 @@ class Encoder(nn.Module):
 class Transformer(nn.Module):
 
     def __init__(self,
-                 d_input: int,
                  d_model: int,
                  d_output: int,
                  q: int,
@@ -380,24 +217,23 @@ class Transformer(nn.Module):
                  N: int,
                  attention_size: int = None,
                  dropout: float = 0.2,
-                 chunk_mode: str = 'chunk',
                  pe: str = None):
         """Create transformer structure from Encoder and Decoder blocks."""
         super().__init__()
 
         self._d_model = d_model
 
+        self.layers_cnn = CNN()
+
         self.layers_encoding = nn.ModuleList([Encoder(d_model,
+                                                      d_output,
                                                       q,
                                                       v,
                                                       h,
                                                       attention_size=attention_size,
-                                                      dropout=dropout,
-                                                      chunk_mode=chunk_mode) for _ in range(N)])
+                                                      dropout=dropout) for _ in range(N)])
 
-        self._embedding = nn.Linear(d_input, d_model)
-        self._linear = nn.Linear(d_model, d_output)
-        self.softmax = nn.Softmax(dim=d_output)
+        self.fc = nn.Linear(in_features=d_model, out_features=d_output)
 
         pe_functions = {
             'original': generate_original_PE,
@@ -417,9 +253,9 @@ class Transformer(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         K = x.shape[1]
 
-        # Embeddin module
-        encoding = x
-        # encoding = self._embedding(x)
+        # CNN module
+        cnn = self.layers_cnn(x)
+        encoding = cnn
 
         # Add position encoding
         if self._generate_PE is not None:
@@ -436,8 +272,8 @@ class Transformer(nn.Module):
             positional_encoding = self._generate_PE(K, self._d_model)
 
         # Output module
-        output = self._linear(encoding)
-        output = torch.sigmoid(output)
+        output = self.fc(encoding)
+        output = torch.mean(output, dim=2)
         return output
 
 class CNN(nn.Module):
@@ -445,20 +281,25 @@ class CNN(nn.Module):
         super().__init__()
         self.num_classes = num_classes
         self.conv1 = nn.Conv1d(in_channels, 32, kernel_size=14, padding=2, stride=3)
-        self.conv2 = nn.Conv1d(128, 256, kernel_size=14, padding=0,stride=3)
-        self.conv3 = nn.Conv1d(256, 256, kernel_size=10, padding=0,stride = 2)
-        self.conv4 = nn.Conv1d(256, 256, kernel_size=10, padding=0,stride=2)
-        self.conv5 = nn.Conv1d(256, 256, kernel_size=10, padding=0,stride=1)
-        self.conv5 = nn.Conv1d(256, 256, kernel_size=10, padding=0, stride=1)
+        self.conv2 = nn.Conv1d(32, 32, kernel_size=14, padding=0,stride=3)
+        self.conv3 = nn.Conv1d(32, 64, kernel_size=12, padding=0,stride=2)
+        self.conv4 = nn.Conv1d(64, 128, kernel_size=10, padding=0,stride=2)
+        self.conv5 = nn.Conv1d(128, 108, kernel_size=12, padding=0,stride=1)
+
+        self.drop = nn.Dropout()
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)
-        x = self.conv6(x)
-        return x
+        x = self.drop(x)
+        x1 = self.conv2(x)
+        x1 = self.drop(x1)
+        x2 = self.conv3(x1)
+        x2 = self.drop(x2)
+        x3 = self.conv4(x2)
+        x3 = self.drop(x3)
+        x4 = self.conv5(x3)
+        x4 = self.drop(x4)
+        return x4
 
 import torch
 if __name__ == '__main__':

@@ -3,11 +3,10 @@
     "n_gpu": 1,
     "arch": {
         "args": {
-            "d_input": 768,
-            "d_model": 3000,
+            "d_model": 64,
             "d_output": 108,
-            "q": 8,
-            "v": 8,
+            "q": 64,
+            "v": 64,
             "h": 8,
             "N": 8
         },
@@ -73,7 +72,7 @@
         "monitor": "max val_challenge_metric",
         "early_stop": 15,
         "tensorboard": false,
-        "only_scored_class": false
+        "only_scored_class": true
 
     },
     "evaluater": {
