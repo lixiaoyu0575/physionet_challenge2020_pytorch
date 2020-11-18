@@ -54,50 +54,61 @@ class ScaledDotProductAttention(nn.Module):
         self.softmax = nn.Softmax(dim=2)
 
     def forward(self, q, k, v, scale=None, attn_mask=None):
+        """
+        前向传播.
+        Args:
+        	q: Queries张量，形状为[B, L_q, D_q]
+        	k: Keys张量，形状为[B, L_k, D_k]
+        	v: Values张量，形状为[B, L_v, D_v]，一般来说就是k
+        	scale: 缩放因子，一个浮点标量
+        	attn_mask: Masking张量，形状为[B, L_q, L_k]
+        Returns:
+        	上下文张量和attention张量
+        """
         attention = torch.bmm(q, k.transpose(1, 2))
         if scale:
-        	attention = attention * scale
+            attention = attention * scale
         if attn_mask:
-        	# 给需要mask的地方设置一个负无穷
+            # 给需要mask的地方设置一个负无穷
         	attention = attention.masked_fill_(attn_mask, -np.inf)
-		# 计算softmax
+        # 计算softmax
         attention = self.softmax(attention)
-		# 添加dropout
+        # 添加dropout
         attention = self.dropout(attention)
-		# 和V做点积
+        # 和V做点积
         context = torch.bmm(attention, v)
         return context, attention
 
+
 class MultiHeadAttention(nn.Module):
 
-    def __init__(self, model_dim=64, num_heads = 8, d_output = 108, dropout=0.1):
+    def __init__(self, model_dim=64, num_heads=8, d_output=108, dropout=0.1):
         super(MultiHeadAttention, self).__init__()
 
-        self.model_dim = model_dim
         self.dim_per_head = model_dim // num_heads
         self.num_heads = num_heads
-        self.linear_k = nn.Linear(self.dim_per_head * num_heads, model_dim * d_output)
-        self.linear_v = nn.Linear(self.dim_per_head * num_heads, model_dim * d_output)
-        self.linear_q = nn.Linear(self.dim_per_head * num_heads, model_dim * d_output)
+        # self.linear_k = nn.Linear(model_dim, self.dim_per_head * num_heads * d_output)
+        # self.linear_v = nn.Linear(model_dim, self.dim_per_head * num_heads * d_output)
+        # self.linear_q = nn.Linear(model_dim, self.dim_per_head * num_heads * d_output)
 
         self.dot_product_attention = ScaledDotProductAttention(dropout)
         self.linear_final = nn.Linear(model_dim, model_dim)
         self.dropout = nn.Dropout(dropout)
-		# multi-head attention之后需要做layer norm
+
+        # multi-head attention之后需要做layer norm
         self.layer_norm = nn.LayerNorm(model_dim)
 
     def forward(self, key, value, query, attn_mask=None):
-		# 残差连接
+        # 残差连接
         residual = query
-        model_dim = self.model_dim
         dim_per_head = self.dim_per_head
         num_heads = self.num_heads
         batch_size = key.size(0)
 
         # linear projection
-        key = self.linear_k(key)
-        value = self.linear_v(value)
-        query = self.linear_q(query)
+        # key = self.linear_k(key)
+        # value = self.linear_v(value)
+        # query = self.linear_q(query)
 
         # split by heads
         key = key.view(batch_size * num_heads, -1, dim_per_head)
@@ -106,10 +117,11 @@ class MultiHeadAttention(nn.Module):
 
         if attn_mask:
             attn_mask = attn_mask.repeat(num_heads, 1, 1)
+
         # scaled dot product attention
-        scale = (key.size(-1) // num_heads) ** -0.5
+        scale = (key.size(-1)) ** -0.5
         context, attention = self.dot_product_attention(
-          query, key, value, scale, attn_mask)
+            query, key, value, scale, attn_mask)
 
         # concat heads
         context = context.view(batch_size, -1, dim_per_head * num_heads)
@@ -159,7 +171,7 @@ class Encoder(nn.Module):
                  v: int,
                  h: int,
                  attention_size: int = None,
-                 dropout: float = 0.3
+                 dropout: float = 0.1
                  ):
         """Initialize the Encoder block"""
         super().__init__()

@@ -17,6 +17,7 @@ import model.resnest2 as module_arch_resnest2
 import model.vanilla_cnn as module_arch_vanilla_cnn
 import model.xception as module_arch_xception
 import model.transformer as module_arch_transformer
+import model.ltae as module_arch_ltae
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -47,7 +48,8 @@ files_models = {
     "tcn": ['TCN'],
     "vanilla_cnn": ['VanillaCNN'],
     "xception": ['Xception', 'Gception'],
-    "transformer": ['Transformer']
+    "transformer": ['Transformer'],
+    "ltae": ["LTAE"]
 }
 
 def main(config):
