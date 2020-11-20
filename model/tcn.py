@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn.utils import weight_norm
 import numpy as np
+from torch import sigmoid
 
 class ScaledDotProductAttention(nn.Module):
     """Scaled dot-product attention mechanism."""
@@ -107,7 +108,7 @@ class TemporalBlock(nn.Module):
         self.relu2 = nn.ReLU()
         self.dropout2 = nn.Dropout(dropout)
 
-        self.attention = MultiHeadAttention(model_dim=256, num_heads=8)
+        # self.attention = MultiHeadAttention(model_dim=256, num_heads=8)
 
         self.net = nn.Sequential(self.conv1, self.chomp1, self.relu1, self.dropout1,
                                  self.conv2, self.chomp2, self.relu2, self.dropout2)

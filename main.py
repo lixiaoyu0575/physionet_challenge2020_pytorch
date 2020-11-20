@@ -19,7 +19,7 @@ import model.xception as module_arch_xception
 import model.transformer as module_arch_transformer
 import model.ltae as module_arch_ltae
 from parse_config import ConfigParser
-from trainer import Trainer
+from trainer import Trainer2
 from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
@@ -72,6 +72,7 @@ def main(config):
 
 
     # get function handles of loss and metrics
+    print(config)
     if config['loss']['type'] == 'FocalLoss2d':
         count = data_loader.count
         indices = data_loader.indices
@@ -110,7 +111,7 @@ def main(config):
     else:
         lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
-    trainer = Trainer(model, criterion, metrics, optimizer,
+    trainer = Trainer2(model, criterion, metrics, optimizer,
                       config=config,
                       data_loader=data_loader,
                       valid_data_loader=valid_data_loader,
