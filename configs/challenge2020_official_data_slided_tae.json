@@ -1,17 +1,10 @@
 {
-    "name": "challenge2020_official_data_slided_transformer",
+    "name": "challenge2020_official_data_slided_ltae",
     "n_gpu": 1,
     "arch": {
         "args": {
-            "d_model": 64,
-            "d_input": 3000,
-            "d_output": 108,
-            "q": 64,
-            "v": 64,
-            "h": 8,
-            "N": 8
         },
-        "type": "Transformer"
+        "type": "TemporalAttentionEncoder"
     },
     "data_loader": {
         "type": "ChallengeDataLoader2",

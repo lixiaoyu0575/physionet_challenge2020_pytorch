@@ -1,17 +1,23 @@
 {
-    "name": "challenge2020_official_data_slided_transformer",
+    "name": "challenge2020_official_data_slided_dsanet",
     "n_gpu": 1,
     "arch": {
         "args": {
-            "d_model": 64,
-            "d_input": 3000,
-            "d_output": 108,
-            "q": 64,
-            "v": 64,
-            "h": 8,
-            "N": 8
+             "batch_size": 16,
+             "local": 3,
+             "window": 64,
+             "n_multiv": 1000,
+             "n_kernels": 32,
+             "w_kernel": 1,
+             "d_k": 64,
+             "d_v": 64,
+             "d_model": 64,
+             "d_inner": 256,
+             "n_layers": 1,
+             "n_head": 8,
+             "drop_prob": 0.1
         },
-        "type": "Transformer"
+        "type": "DSANet"
     },
     "data_loader": {
         "type": "ChallengeDataLoader2",

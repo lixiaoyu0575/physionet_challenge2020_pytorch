@@ -18,8 +18,10 @@ import model.vanilla_cnn as module_arch_vanilla_cnn
 import model.xception as module_arch_xception
 import model.transformer as module_arch_transformer
 import model.ltae as module_arch_ltae
+import model.tae as module_arch_tae
+import model.dsanet as module_arch_dsanet
 from parse_config import ConfigParser
-from trainer import Trainer2
+from trainer import Trainer
 from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
@@ -49,7 +51,9 @@ files_models = {
     "vanilla_cnn": ['VanillaCNN'],
     "xception": ['Xception', 'Gception'],
     "transformer": ['Transformer'],
-    "ltae": ["LTAE"]
+    "ltae": ["LTAE"],
+    "tae": ["TemporalAttentionEncoder"],
+    "dsanet": ["DSANet"]
 }
 
 def main(config):
@@ -111,7 +115,7 @@ def main(config):
     else:
         lr_scheduler = config.init_obj('lr_scheduler', torch.optim.lr_scheduler, optimizer)
 
-    trainer = Trainer2(model, criterion, metrics, optimizer,
+    trainer = Trainer(model, criterion, metrics, optimizer,
                       config=config,
                       data_loader=data_loader,
                       valid_data_loader=valid_data_loader,

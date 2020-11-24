@@ -222,6 +222,7 @@ class Transformer(nn.Module):
 
     def __init__(self,
                  d_model: int,
+                 d_input: int,
                  d_output: int,
                  q: int,
                  v: int,
@@ -234,6 +235,8 @@ class Transformer(nn.Module):
         super().__init__()
 
         self._d_model = d_model
+
+        self._embedding = nn.Linear(d_input, d_model)
 
         self.layers_cnn = CNN()
 
@@ -266,8 +269,10 @@ class Transformer(nn.Module):
         K = x.shape[1]
 
         # CNN module
-        cnn = self.layers_cnn(x)
-        encoding = cnn
+        encoding = self.layers_cnn(x)
+        # x = self.cnn(x)
+        # encoding = self._embedding(x)
+        # encoding = x
 
         # Add position encoding
         if self._generate_PE is not None:
