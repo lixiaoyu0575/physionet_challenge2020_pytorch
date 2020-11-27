@@ -349,8 +349,8 @@ class DSANet(LightningModule):
 
         sf_output = torch.transpose(sf_output, 1, 2)
 
-        ar_output = self.ar(x)
+        # ar_output = self.ar(x)
 
-        output = sf_output + ar_output
+        output = sf_output
 
         return output

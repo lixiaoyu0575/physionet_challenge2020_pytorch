@@ -20,6 +20,7 @@ import model.transformer as module_arch_transformer
 import model.ltae as module_arch_ltae
 import model.tae as module_arch_tae
 import model.dsanet as module_arch_dsanet
+import model.conformer as module_arch_conformer
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -53,7 +54,8 @@ files_models = {
     "transformer": ['Transformer'],
     "ltae": ["LTAE"],
     "tae": ["TemporalAttentionEncoder"],
-    "dsanet": ["DSANet"]
+    "dsanet": ["DSANet"],
+    "conformer": ["Conformer"]
 }
 
 def main(config):
