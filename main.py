@@ -21,6 +21,7 @@ import model.ltae as module_arch_ltae
 import model.tae as module_arch_tae
 import model.dsanet as module_arch_dsanet
 import model.conformer as module_arch_conformer
+import model.pnasnet as module_arch_pnasnet
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -55,7 +56,8 @@ files_models = {
     "ltae": ["LTAE"],
     "tae": ["TemporalAttentionEncoder"],
     "dsanet": ["DSANet"],
-    "conformer": ["Conformer"]
+    "conformer": ["Conformer"],
+    "pnasnet": ["PNASNet5Large"]
 }
 
 def main(config):

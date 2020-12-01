@@ -3,13 +3,6 @@
     "n_gpu": 1,
     "arch": {
         "args": {
-            "d_model": 64,
-            "d_input": 3000,
-            "d_output": 108,
-            "q": 64,
-            "v": 64,
-            "h": 8,
-            "N": 8
         },
         "type": "Transformer"
     },

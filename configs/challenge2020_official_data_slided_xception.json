@@ -1,10 +1,12 @@
 {
-    "name": "challenge2020_official_data_slided_conformer",
+    "name": "challenge2020_official_data_slided_xception",
     "n_gpu": 1,
     "arch": {
         "args": {
+            "in_channels": 12,
+            "num_classes": 108
         },
-        "type": "Conformer"
+        "type": "Xception"
     },
     "data_loader": {
         "type": "ChallengeDataLoader2",
