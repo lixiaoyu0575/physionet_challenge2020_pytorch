@@ -20,8 +20,25 @@ class SeparableConv1d(nn.Module):
 
 
 class Block(nn.Module):
-    def __init__(self,in_filters,out_filters,reps,strides=1,start_with_relu=True,grow_first=True):
+    def __init__(self,in_filters,out_filters,reps,strides,filter_size,nhead,start_with_relu=True,activation="relu",grow_first=True,dim_feedforward=1248,dropout=0.1):
         super(Block, self).__init__()
+        try:
+            from torch.nn import MultiheadAttention
+        except:
+            raise ImportError('MultiheadAttention module does not exist in PyTorch 1.1 or lower.')
+
+        # Implementation of Feedforward model
+        self.linear1 = nn.Linear(filter_size, dim_feedforward)
+        self.dropout = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(dim_feedforward, filter_size)
+
+        self.norm = nn.LayerNorm(filter_size)
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
+
+        self.activation = _get_activation_fn(activation)
+
+        self.self_attn = MultiheadAttention(filter_size, nhead, dropout=dropout)
 
         if out_filters != in_filters or strides!=1:
             self.skip = nn.Conv1d(in_filters,out_filters,1,stride=strides, bias=False)
@@ -58,7 +75,14 @@ class Block(nn.Module):
         self.rep = nn.Sequential(*rep)
 
     def forward(self,inp):
-        x = self.rep(inp)
+        feed = self.linear2(self.dropout(self.activation(self.linear1(inp))))
+        feed = inp + self.dropout1(feed)
+
+        att = self.self_attn(feed,feed,feed,attn_mask=None,
+                              key_padding_mask=None)[0]
+        att += feed
+
+        x = self.rep(att)
 
         if self.skip is not None:
             skip = self.skip(inp)
@@ -69,6 +93,13 @@ class Block(nn.Module):
         x+=skip
         return x
 
+def _get_activation_fn(activation):
+    if activation == "relu":
+        return F.relu
+    elif activation == "gelu":
+        return F.gelu
+
+    raise RuntimeError("activation should be relu/gelu, not {}".format(activation))
 
 class Xception(nn.Module):
     """
@@ -94,21 +125,21 @@ class Xception(nn.Module):
         self.relu2 = nn.ReLU(inplace=True)
         #do relu here
 
-        self.block1=Block(64,128,2,2,start_with_relu=False,grow_first=True)
-        self.block2=Block(128,256,2,2,start_with_relu=True,grow_first=True)
-        self.block3=Block(256,728,2,2,start_with_relu=True,grow_first=True)
+        self.block1=Block(64,128,2,2,1497,3,start_with_relu=False,grow_first=True, dim_feedforward=1024,dropout=0.1)
+        self.block2=Block(128,256,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1, filter_size = 749 , nhead = 7)
+        self.block3=Block(256,728,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 375, nhead= 5)
 
-        self.block4=Block(728,728,3,1,start_with_relu=True,grow_first=True)
-        self.block5=Block(728,728,3,1,start_with_relu=True,grow_first=True)
-        self.block6=Block(728,728,3,1,start_with_relu=True,grow_first=True)
-        self.block7=Block(728,728,3,1,start_with_relu=True,grow_first=True)
+        self.block4=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block5=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block6=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block7=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
 
-        self.block8=Block(728,728,3,1,start_with_relu=True,grow_first=True)
-        self.block9=Block(728,728,3,1,start_with_relu=True,grow_first=True)
-        self.block10=Block(728,728,3,1,start_with_relu=True,grow_first=True)
-        self.block11=Block(728,728,3,1,start_with_relu=True,grow_first=True)
+        self.block8=Block(728,728,3,1,start_with_relu=True,grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block9=Block(728,728,3,1,start_with_relu=True,grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block10=Block(728,728,3,1,start_with_relu=True,grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block11=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
 
-        self.block12=Block(728,1024,2,2,start_with_relu=True,grow_first=False)
+        self.block12=Block(728,1024,2,1,start_with_relu=True,grow_first=False,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
 
         self.conv3 = SeparableConv1d(1024,1536,3,1,1)
         self.bn3 = nn.BatchNorm1d(1536)
