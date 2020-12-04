@@ -75,14 +75,8 @@ class Block(nn.Module):
         self.rep = nn.Sequential(*rep)
 
     def forward(self,inp):
-        feed = self.linear2(self.dropout(self.activation(self.linear1(inp))))
-        feed = inp + self.dropout1(feed)
 
-        att = self.self_attn(feed,feed,feed,attn_mask=None,
-                              key_padding_mask=None)[0]
-        att += feed
-
-        x = self.rep(att)
+        x = self.rep(inp)
 
         if self.skip is not None:
             skip = self.skip(inp)
@@ -91,7 +85,14 @@ class Block(nn.Module):
             skip = inp
 
         x+=skip
-        return x
+
+        att = self.self_attn(x,x,x,attn_mask=None, key_padding_mask=None)[0]
+        att += x
+
+        feed = self.linear2(self.dropout(self.activation(self.linear1(att))))
+        feed = att + self.dropout1(feed)
+
+        return feed
 
 def _get_activation_fn(activation):
     if activation == "relu":
@@ -125,9 +126,9 @@ class Xception(nn.Module):
         self.relu2 = nn.ReLU(inplace=True)
         #do relu here
 
-        self.block1=Block(64,128,2,2,1497,3,start_with_relu=False,grow_first=True, dim_feedforward=1024,dropout=0.1)
-        self.block2=Block(128,256,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1, filter_size = 749 , nhead = 7)
-        self.block3=Block(256,728,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 375, nhead= 5)
+        self.block1=Block(64,128,2,2,749,7,start_with_relu=False,grow_first=True, dim_feedforward=1024,dropout=0.1)
+        self.block2=Block(128,256,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1, filter_size = 375 , nhead = 5)
+        self.block3=Block(256,728,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead= 4)
 
         self.block4=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
         self.block5=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
