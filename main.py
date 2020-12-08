@@ -22,6 +22,7 @@ import model.tae as module_arch_tae
 import model.dsanet as module_arch_dsanet
 import model.conformer as module_arch_conformer
 import model.pnasnet as module_arch_pnasnet
+import model.inceptionResNet as module_arch_inceptionResNet
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -57,7 +58,8 @@ files_models = {
     "tae": ["TemporalAttentionEncoder"],
     "dsanet": ["DSANet"],
     "conformer": ["Conformer"],
-    "pnasnet": ["PNASNet5Large"]
+    "pnasnet": ["PNASNet5Large"],
+    "inceptionResNet": ["InceptionModel", "ResNet34", "VGGNet"]
 }
 
 def main(config):

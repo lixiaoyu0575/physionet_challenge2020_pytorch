@@ -1,15 +1,14 @@
 {
-    "name": "challenge2020_official_data_slided_attention",
+    "name": "challenge2020_official_data_slided_inceptionResnet",
     "n_gpu": 1,
     "arch": {
+        "type": "VGGNet",
         "args": {
-            "num_classes": 108,
-            "src_vocab_size": 2000,
-            "src_max_len": 15,
-            "tgt_vocab_size": 200
-        },
-        "type": "Attention"
+            "net_arch":[64, 64, "M", 128, 128, "M", 256, 256, 256, 256, "M", 512, 512, 512, 512, "M", 512, 512, 512, 512, "M5", "FC1", "FC2", "FC"],
+            "num_classes": 108
+        }
     },
+
     "data_loader": {
         "type": "ChallengeDataLoader2",
         "args": {
@@ -18,10 +17,10 @@
             "split_index": "process/data_split/split1.mat",
             "batch_size": 64,
             "shuffle": true,
-            "num_workers": 6
+            "num_workers": 20
         }
     },
- "optimizer": {
+   "optimizer": {
         "args": {
             "lr": 0.0005,
             "amsgrad": true,
@@ -70,7 +69,7 @@
         "monitor": "max val_challenge_metric",
         "early_stop": 15,
         "tensorboard": false,
-        "only_scored_class": false
+        "only_scored_class": true
 
     },
     "evaluater": {

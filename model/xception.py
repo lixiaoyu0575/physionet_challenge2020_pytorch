@@ -87,12 +87,12 @@ class Block(nn.Module):
         x+=skip
 
         att = self.self_attn(x,x,x,attn_mask=None, key_padding_mask=None)[0]
-        att += x
+        att = x + self.dropout1(att)
 
-        feed = self.linear2(self.dropout(self.activation(self.linear1(att))))
-        feed = att + self.dropout1(feed)
+        # feed = self.linear2(self.dropout(self.activation(self.linear1(att))))
+        # feed = att + self.dropout1(feed)
 
-        return feed
+        return att
 
 def _get_activation_fn(activation):
     if activation == "relu":
