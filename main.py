@@ -29,8 +29,11 @@ from evaluater import Evaluater
 from model.metric import ChallengeMetric, ChallengeMetric2
 from utils.dataset import load_label_files, load_labels, load_weights
 from utils.util import load_model
+from utils.gradcam import GradCam
 from utils.lr_scheduler import CosineAnnealingWarmUpRestarts, GradualWarmupScheduler
 import datetime
+import cv2
+from torchvision import models
 import random
 
 # fix random seeds for reproducibility
@@ -59,8 +62,31 @@ files_models = {
     "dsanet": ["DSANet"],
     "conformer": ["Conformer"],
     "pnasnet": ["PNASNet5Large"],
-    "inceptionResNet": ["InceptionModel", "ResNet34", "VGGNet"]
+    "inceptionResNet": ["InceptionModel", "ResNetModule", "VGGNet", "FCNModule","LinearModule","DenseNetModule"]
 }
+
+def preprocess_image(img):
+    means = [0.485, 0.456, 0.406]
+    stds = [0.229, 0.224, 0.225]
+
+    preprocessed_img = img.copy()[:, :, ::-1]
+    for i in range(3):
+        preprocessed_img[:, :, i] = preprocessed_img[:, :, i] - means[i]
+        preprocessed_img[:, :, i] = preprocessed_img[:, :, i] / stds[i]
+    preprocessed_img = \
+        np.ascontiguousarray(np.transpose(preprocessed_img, (2, 0, 1)))
+    preprocessed_img = torch.from_numpy(preprocessed_img)
+    preprocessed_img.unsqueeze_(0)
+    input = preprocessed_img.requires_grad_(True)
+    return input
+
+def show_cam_on_image(img, mask):
+    heatmap = cv2.applyColorMap(np.uint8(255 * mask), cv2.COLORMAP_JET)
+    heatmap = np.float32(heatmap) / 255
+    cam = heatmap + np.float32(img)
+    cam = cam / np.max(cam)
+    cv2.imwrite("cam.jpg", np.uint8(255 * cam))
+
 
 def main(config):
     logger = config.get_logger('train')
@@ -80,6 +106,8 @@ def main(config):
                 if config['arch'].get('weight_path', False):
                     model = load_model(model, config["arch"]["weight_path"])
 
+    #cam
+    # target_layer = model.my_submodule
 
     # get function handles of loss and metrics
     print(config)

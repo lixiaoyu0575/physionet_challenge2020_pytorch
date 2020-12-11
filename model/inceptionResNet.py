@@ -2,8 +2,10 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import math
+
+from collections import OrderedDict
+
 from typing import cast, Union, List
-from numpy import *
 
 class Conv1dSamePadding(nn.Conv1d):
     """Represents the "Same" padding functionality from Tensorflow.
@@ -13,7 +15,6 @@ class Conv1dSamePadding(nn.Conv1d):
     def forward(self, input):
         return conv1d_same_padding(input, self.weight, self.bias, self.stride,
                                    self.dilation, self.groups)
-
 
 def conv1d_same_padding(input, weight, bias, stride, dilation, groups):
     # stride and dilation are expected to be tuples.
@@ -26,8 +27,6 @@ def conv1d_same_padding(input, weight, bias, stride, dilation, groups):
     return F.conv1d(input=input, weight=weight, bias=bias, stride=stride,
                     padding=padding // 2,
                     dilation=dilation, groups=groups)
-
-
 
 class InceptionModel(nn.Module):
     """A PyTorch implementation of the InceptionTime model.
@@ -57,7 +56,7 @@ class InceptionModel(nn.Module):
     def __init__(self, num_blocks: int, in_channels: int, out_channels: Union[List[int], int],
                  bottleneck_channels: Union[List[int], int], kernel_sizes: Union[List[int], int],
                  use_residuals: Union[List[bool], bool, str] = 'default',
-                 num_pred_classes: int = 1
+                 num_classes: int = 1
                  ) -> None:
         super().__init__()
 
@@ -69,7 +68,7 @@ class InceptionModel(nn.Module):
             'bottleneck_channels': bottleneck_channels,
             'kernel_sizes': kernel_sizes,
             'use_residuals': use_residuals,
-            'num_pred_classes': num_pred_classes
+            'num_classes': num_classes
         }
 
         channels = [in_channels] + cast(List[int], self._expand_to_blocks(out_channels,
@@ -91,7 +90,7 @@ class InceptionModel(nn.Module):
 
         # a global average pooling (i.e. mean of the time dimension) is why
         # in_features=channels[-1]
-        self.linear = nn.Linear(in_features=channels[-1], out_features=num_pred_classes)
+        self.linear = nn.Linear(in_features=channels[-1], out_features=num_classes)
 
     @staticmethod
     def _expand_to_blocks(value: Union[int, bool, List[int], List[bool]],
@@ -155,133 +154,263 @@ class InceptionBlock(nn.Module):
         return x
 
 
-#ResNet
-class BasicBlock(nn.Module):
-    expansion = 1
+#Resnet18
 
-    def __init__(self, in_planes, planes, stride=1):
-        super(BasicBlock, self).__init__()
-        self.conv1 = nn.Conv1d(
-            in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm1d(planes)
-        self.conv2 = nn.Conv1d(planes, planes, kernel_size=3,
-                               stride=1, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm1d(planes)
+class ConvBlock(nn.Module):
 
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv1d(in_planes, self.expansion*planes,
-                          kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm1d(self.expansion*planes)
-            )
+    def __init__(self, in_channels: int, out_channels: int, kernel_size: int,
+                 stride: int) -> None:
+        super().__init__()
+
+        self.layers = nn.Sequential(
+            Conv1dSamePadding(in_channels=in_channels,
+                              out_channels=out_channels,
+                              kernel_size=kernel_size,
+                              stride=stride),
+            nn.BatchNorm1d(num_features=out_channels),
+            nn.ReLU(),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
+
+        return self.layers(x)
+
+class ResNetModule(nn.Module):
+    """A PyTorch implementation of the ResNet Baseline
+    From https://arxiv.org/abs/1909.04939
+    Attributes
+    ----------
+    sequence_length:
+        The size of the input sequence
+    mid_channels:
+        The 3 residual blocks will have as output channels:
+        [mid_channels, mid_channels * 2, mid_channels * 2]
+    num_pred_classes:
+        The number of output classes
+    """
+
+    def __init__(self, in_channels: int, mid_channels: int = 64,
+                 num_classes: int = 1) -> None:
+        super().__init__()
+
+        # for easier saving and loading
+        self.input_args = {
+            'in_channels': in_channels,
+            'num_classes': num_classes
+        }
+
+        self.layers = nn.Sequential(*[
+            ResNetBlock(in_channels=in_channels, out_channels=mid_channels),
+            ResNetBlock(in_channels=mid_channels, out_channels=mid_channels * 2),
+            ResNetBlock(in_channels=mid_channels * 2, out_channels=mid_channels * 2),
+
+        ])
+        self.final = nn.Linear(mid_channels * 2, num_classes)
+        self.gap = nn.AdaptiveAvgPool2d((mid_channels * 2, num_classes))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
+        x = self.layers(x)
+        # return self.gap(x)
+        return self.final(x.mean(dim=-1))
+
+class ResNetBlock(nn.Module):
+
+    def __init__(self, in_channels: int, out_channels: int) -> None:
+        super().__init__()
+
+        channels = [in_channels, out_channels, out_channels, out_channels]
+        kernel_sizes = [8, 5, 3]
+
+        self.layers = nn.Sequential(*[
+            ConvBlock(in_channels=channels[i], out_channels=channels[i + 1],
+                      kernel_size=kernel_sizes[i], stride=1) for i in range(len(kernel_sizes))
+        ])
+
+        self.match_channels = False
+        if in_channels != out_channels:
+            self.match_channels = True
+            self.residual = nn.Sequential(*[
+                Conv1dSamePadding(in_channels=in_channels, out_channels=out_channels,
+                                  kernel_size=1, stride=1),
+                nn.BatchNorm1d(num_features=out_channels)
+            ])
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
+
+        if self.match_channels:
+            return self.layers(x) + self.residual(x)
+        return self.layers(x)
+
+
+class FCNModule(nn.Module):
+    """A PyTorch implementation of the FCN Baseline
+    From https://arxiv.org/abs/1909.04939
+    Attributes
+    ----------
+    sequence_length:
+        The size of the input sequence
+    num_pred_classes:
+        The number of output classes
+    """
+
+    def __init__(self, in_channels: int, num_classes: int = 1) -> None:
+        super().__init__()
+
+        # for easier saving and loading
+        self.input_args = {
+            'in_channels': in_channels,
+            'num_classes': num_classes
+        }
+
+        self.layers = nn.Sequential(*[
+            ConvBlock(in_channels, 128, 8, 1),
+            ConvBlock(128, 256, 5, 1),
+            ConvBlock(256, 128, 3, 1),
+        ])
+        self.final = nn.Linear(128, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
+        x = self.layers(x)
+        return self.final(x.mean(dim=-1))
+
+
+class LinearModule(nn.Module):
+    """A PyTorch implementation of the Linear Baseline
+    From https://arxiv.org/abs/1909.04939
+    Attributes
+    ----------
+    sequence_length:
+        The size of the input sequence
+    num_pred_classes:
+        The number of output classes
+    """
+
+    def __init__(self, num_inputs: int, num_classes: int = 1) -> None:
+        super().__init__()
+
+        # for easier saving and loading
+        self.input_args = {
+            'num_inputs': num_inputs,
+            'num_classes': num_classes
+        }
+
+        self.layers = nn.Sequential(
+            nn.Dropout(0.1),
+            LinearBlock(num_inputs, 3000, 0.2),
+            LinearBlock(3000, 3000, 0.2),
+            LinearBlock(3000, num_classes, 0.3),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
+        return self.layers(x.view(x.shape[0], -1))
+
+
+class LinearBlock(nn.Module):
+
+    def __init__(self, input_size: int, output_size: int,
+                 dropout: float) -> None:
+        super().__init__()
+
+        self.layers = nn.Sequential(
+            nn.Linear(input_size, output_size),
+            nn.ReLU(),
+            nn.Dropout(p=dropout)
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
+
+        return self.layers(x)
+
+
+# DenseNet121
+class _DenseLayer(nn.Sequential):
+    def __init__(self, num_input_features, growth_rate, bn_size, drop_rate):
+        super(_DenseLayer, self).__init__()
+        self.add_module('norm1', nn.BatchNorm1d(num_input_features)),
+        self.add_module('relu1', nn.ReLU(inplace=True)),
+        self.add_module('conv1', nn.Conv1d(num_input_features, bn_size *
+                                           growth_rate, kernel_size=1, stride=1, bias=False)),
+        self.add_module('norm2', nn.BatchNorm1d(bn_size * growth_rate)),
+        self.add_module('relu2', nn.ReLU(inplace=True)),
+        self.add_module('conv2', nn.Conv1d(bn_size * growth_rate, growth_rate,
+                                           kernel_size=3, stride=1, padding=1, bias=False)),
+        self.drop_rate = drop_rate
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
-        out += self.shortcut(x)
-        out = F.relu(out)
-        return out
+        new_features = super(_DenseLayer, self).forward(x)
+        if self.drop_rate > 0:
+            new_features = F.dropout(new_features, p=self.drop_rate, training=self.training)
+        return torch.cat([x, new_features], 1)
 
 
-# class Bottleneck(nn.Module):
-#     expansion = 4
-#
-#     def __init__(self, in_planes, planes, stride=1):
-#         super(Bottleneck, self).__init__()
-#         self.conv1 = nn.Conv1d(in_planes, planes, kernel_size=1, bias=False)
-#         self.bn1 = nn.BatchNorm1d(planes)
-#         self.conv2 = nn.Conv1d(planes, planes, kernel_size=3,
-#                                stride=stride, padding=1, bias=False)
-#         self.bn2 = nn.BatchNorm1d(planes)
-#         self.conv3 = nn.Conv1d(planes, self.expansion *
-#                                planes, kernel_size=1, bias=False)
-#         self.bn3 = nn.BatchNorm1d(self.expansion*planes)
-#
-#         self.shortcut = nn.Sequential()
-#         if stride != 1 or in_planes != self.expansion*planes:
-#             self.shortcut = nn.Sequential(
-#                 nn.Conv1d(in_planes, self.expansion*planes,
-#                           kernel_size=1, stride=stride, bias=False),
-#                 nn.BatchNorm1d(self.expansion*planes)
-#             )
-#
-#     def forward(self, x):
-#         out = F.relu(self.bn1(self.conv1(x)))
-#         out = F.relu(self.bn2(self.conv2(out)))
-#         out = self.bn3(self.conv3(out))
-#         out += self.shortcut(x)
-#         out = F.relu(out)
-#         return out
+class _DenseBlock(nn.Sequential):
+    def __init__(self, num_layers, num_input_features, bn_size, growth_rate, drop_rate):
+        super(_DenseBlock, self).__init__()
+        for i in range(num_layers):
+            layer = _DenseLayer(num_input_features + i * growth_rate, growth_rate, bn_size, drop_rate)
+            self.add_module('denselayer%d' % (i + 1), layer)
 
 
-class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=108):
-        super(ResNet, self).__init__()
-        self.in_planes = 64
+class _Transition(nn.Sequential):
+    def __init__(self, num_input_features, num_output_features):
+        super(_Transition, self).__init__()
+        self.add_module('norm', nn.BatchNorm1d(num_input_features))
+        self.add_module('relu', nn.ReLU(inplace=True))
+        self.add_module('conv', nn.Conv1d(num_input_features, num_output_features,
+                                          kernel_size=1, stride=1, bias=False))
+        self.add_module('pool', nn.AvgPool1d(kernel_size=2, stride=2))
 
-        self.conv1 = nn.Conv1d(12, 64, kernel_size=3,
-                               stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm1d(64)
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.linear = nn.Linear(512*block.expansion, num_classes)
 
-    def _make_layer(self, block, planes, num_blocks, stride):
-        strides = [stride] + [1]*(num_blocks-1)
-        layers = []
-        for stride in strides:
-            layers.append(block(self.in_planes, planes, stride))
-            self.in_planes = planes * block.expansion
-        return nn.Sequential(*layers)
+class DenseNetModule(nn.Module):
+    def __init__(self, growth_rate, block_config,
+                 num_init_features, bn_size, drop_rate, num_classes):
+
+        super(DenseNetModule, self).__init__()
+
+        # First convolution
+        self.features = nn.Sequential(OrderedDict([
+            ('conv0', nn.Conv1d(12, num_init_features, kernel_size=7, stride=2, padding=3, bias=False)),
+            ('norm0', nn.BatchNorm1d(num_init_features)),
+            ('relu0', nn.ReLU(inplace=True)),
+            ('pool0', nn.MaxPool1d(kernel_size=3, stride=2, padding=1)),
+        ]))
+
+        # Each denseblock
+        num_features = num_init_features
+        for i, num_layers in enumerate(block_config):
+            block = _DenseBlock(num_layers=num_layers, num_input_features=num_features,
+                                bn_size=bn_size, growth_rate=growth_rate, drop_rate=drop_rate)
+            self.features.add_module('denseblock%d' % (i + 1), block)
+            num_features = num_features + num_layers * growth_rate
+            if i != len(block_config) - 1:
+                trans = _Transition(num_input_features=num_features, num_output_features=num_features // 2)
+                self.features.add_module('transition%d' % (i + 1), trans)
+                num_features = num_features // 2
+
+        # Final batch norm
+        self.features.add_module('norm5', nn.BatchNorm1d(num_features))
+
+        # Linear layer
+        self.classifier = nn.Linear(num_features, num_classes)
+
+        # Official init from torch repo.
+        for m in self.modules():
+            if isinstance(m, nn.Conv1d):
+                nn.init.kaiming_normal(m.weight.data)
+            elif isinstance(m, nn.BatchNorm1d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.bias.data.zero_()
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = F.avg_pool1d(out, 4)
-        out = out.view(out.size(0), -1)
-        out = self.linear(out)
+        features = self.features(x)
+        out = F.relu(features, inplace=True)
+        out = F.avg_pool1d(out, kernel_size=7, stride=1)
+        out = torch.mean(out, dim=2)
+        out = self.classifier(out)
         return out
 
-def ResNet34():
-    return ResNet(BasicBlock,[3,4,6,3])
 
 
-#VGG
 
-class VGGNet(nn.Module):
-    def __init__(self, net_arch, num_classes):
-        # net_arch 即为上面定义的列表: net_arch16 或 net_arch19
-        super(VGGNet, self).__init__()
-        self.num_classes = num_classes
-        layers = []
-        in_channels = 12 # 初始化通道数
-        for arch in net_arch:
-            if arch == 'M':
-                layers.append(nn.MaxPool1d(kernel_size=2, stride=2))
-            elif arch == 'M5':
-                layers.append(nn.MaxPool1d(kernel_size=3, stride=1, padding=1))
-            elif arch == "FC1":
-                layers.append(nn.Conv1d(in_channels=512, out_channels=1024, kernel_size=3, padding=6, dilation=6))
-                layers.append(nn.ReLU(inplace=True))
-            elif arch == "FC2":
-                layers.append(nn.Conv1d(1024,1024, kernel_size=1))
-                layers.append(nn.ReLU(inplace=True))
-            elif arch == "FC":
-                layers.append(nn.Conv1d(1024,self.num_classes, kernel_size=1))
-            else:
-                layers.append(nn.Conv1d(in_channels=in_channels, out_channels=arch, kernel_size=3, padding=1))
-                layers.append(nn.ReLU(inplace=True))
-                in_channels = arch
-        self.vgg = nn.ModuleList(layers)
-    def forward(self, input_data):
-        x = input_data
-        for layer in self.vgg:
-            x = layer(x)
-        out = torch.mean(x, dim=2)
-        return out

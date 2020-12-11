@@ -20,7 +20,7 @@ class SeparableConv1d(nn.Module):
 
 
 class Block(nn.Module):
-    def __init__(self,in_filters,out_filters,reps,strides,filter_size,nhead,start_with_relu=True,activation="relu",grow_first=True,dim_feedforward=1248,dropout=0.1):
+    def __init__(self,in_filters,out_filters,reps,strides,filter_size,nhead,start_with=True,activation="relu",grow_first=True,dim_feedforward=1248,dropout=0.1):
         super(Block, self).__init__()
         try:
             from torch.nn import MultiheadAttention
@@ -28,15 +28,15 @@ class Block(nn.Module):
             raise ImportError('MultiheadAttention module does not exist in PyTorch 1.1 or lower.')
 
         # Implementation of Feedforward model
-        self.linear1 = nn.Linear(filter_size, dim_feedforward)
-        self.dropout = nn.Dropout(dropout)
-        self.linear2 = nn.Linear(dim_feedforward, filter_size)
-
-        self.norm = nn.LayerNorm(filter_size)
+        # self.linear1 = nn.Linear(filter_size, dim_feedforward)
+        # self.dropout = nn.Dropout(dropout)
+        # self.linear2 = nn.Linear(dim_feedforward, filter_size)
+        #
+        # self.norm = nn.LayerNorm(filter_size)
         self.dropout1 = nn.Dropout(dropout)
-        self.dropout2 = nn.Dropout(dropout)
-
-        self.activation = _get_activation_fn(activation)
+        # self.dropout2 = nn.Dropout(dropout)
+        #
+        # self.activation = _get_activation_fn(activation)
 
         self.self_attn = MultiheadAttention(filter_size, nhead, dropout=dropout)
 
@@ -65,10 +65,12 @@ class Block(nn.Module):
             rep.append(SeparableConv1d(in_filters,out_filters,3,stride=1,padding=1,bias=False))
             rep.append(nn.BatchNorm1d(out_filters))
 
-        if not start_with_relu:
+        if not start_with:
             rep = rep[1:]
-        else:
+        elif start_with=='Relu':
             rep[0] = nn.ReLU(inplace=False)
+        else:
+            rep[0] = Act_op()
 
         if strides != 1:
             rep.append(nn.MaxPool1d(3,strides,1))
@@ -88,11 +90,14 @@ class Block(nn.Module):
 
         att = self.self_attn(x,x,x,attn_mask=None, key_padding_mask=None)[0]
         att = x + self.dropout1(att)
+        zero = torch.zeros_like(att)
+        mean = torch.mean(att).item()
+        out = torch.where(att < mean, zero, att)
 
         # feed = self.linear2(self.dropout(self.activation(self.linear1(att))))
         # feed = att + self.dropout1(feed)
 
-        return att
+        return out
 
 def _get_activation_fn(activation):
     if activation == "relu":
@@ -126,21 +131,21 @@ class Xception(nn.Module):
         self.relu2 = nn.ReLU(inplace=True)
         #do relu here
 
-        self.block1=Block(64,128,2,2,749,7,start_with_relu=False,grow_first=True, dim_feedforward=1024,dropout=0.1)
-        self.block2=Block(128,256,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1, filter_size = 375 , nhead = 5)
-        self.block3=Block(256,728,2,2,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead= 4)
+        self.block1=Block(64,128,2,2,749,7,start_with=False,grow_first=True, dim_feedforward=1024,dropout=0.1)
+        self.block2=Block(128,256,2,2,start_with='Relu',grow_first=True,dim_feedforward=1024,dropout=0.1, filter_size = 375 , nhead = 5)
+        self.block3=Block(256,728,2,2,start_with='Relu',grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead= 4)
 
-        self.block4=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
-        self.block5=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
-        self.block6=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
-        self.block7=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block4=Block(728,728,3,1,start_with='Swish',grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block5=Block(728,728,3,1,start_with='Swish',grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block6=Block(728,728,3,1,start_with='Swish',grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block7=Block(728,728,3,1,start_with='Swish',grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
 
-        self.block8=Block(728,728,3,1,start_with_relu=True,grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
-        self.block9=Block(728,728,3,1,start_with_relu=True,grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
-        self.block10=Block(728,728,3,1,start_with_relu=True,grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
-        self.block11=Block(728,728,3,1,start_with_relu=True,grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block8=Block(728,728,3,1,start_with='Swish',grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block9=Block(728,728,3,1,start_with='Swish',grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block10=Block(728,728,3,1,start_with='Swish',grow_first=True, dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block11=Block(728,728,3,1,start_with='Swish',grow_first=True,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
 
-        self.block12=Block(728,1024,2,1,start_with_relu=True,grow_first=False,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
+        self.block12=Block(728,1024,2,1,start_with='Swish',grow_first=False,dim_feedforward=1024,dropout=0.1,filter_size = 188, nhead=4)
 
         self.conv3 = SeparableConv1d(1024,1536,3,1,1)
         self.bn3 = nn.BatchNorm1d(1536)
@@ -236,7 +241,7 @@ class GceptionModule(nn.Module):
         return x
 
 class GceptionBlock(nn.Module):
-    def __init__(self,in_filters,out_filters,reps,strides=1,groups=[32,32],group_size=[4,4],start_with_relu=True,grow_first=True):
+    def __init__(self,in_filters,out_filters,reps,strides=1,groups=[32,32],group_size=[4,4],start_with=True,grow_first=True):
         super(GceptionBlock, self).__init__()
 
         if out_filters != in_filters or strides!=1:
@@ -264,10 +269,12 @@ class GceptionBlock(nn.Module):
             rep.append(GceptionModule(in_filters,out_filters,kernel_size=[3,5,7],stride=1,padding=1,bias=False,groups=groups[0],group_size=group_size[0]))
             rep.append(nn.BatchNorm1d(out_filters))
 
-        if not start_with_relu:
+        if not start_with:
             rep = rep[1:]
-        else:
+        elif start_with == 'Relu':
             rep[0] = nn.ReLU(inplace=False)
+        else:
+            rep[0] = Act_op()
 
         if strides != 1:
             rep.append(nn.MaxPool1d(3,strides,1))
@@ -306,18 +313,18 @@ class Gception(nn.Module):
         self.relu2 = nn.ReLU(inplace=True)
         #do relu here
 
-        self.block1=GceptionBlock(64,128,2,2,groups=[32,32],group_size=[4,4],start_with_relu=False,grow_first=True)
-        self.block2=GceptionBlock(128,256,2,2,groups=[32,32],group_size=[4,4],start_with_relu=True,grow_first=True)
-        self.block3=GceptionBlock(256,512,2,2,groups=[32,32],group_size=[4,4],start_with_relu=True,grow_first=True)
+        self.block1=GceptionBlock(64,128,2,2,groups=[32,32],group_size=[4,4],start_with=False,grow_first=True)
+        self.block2=GceptionBlock(128,256,2,2,groups=[32,32],group_size=[4,4],start_with='Relu',grow_first=True)
+        self.block3=GceptionBlock(256,512,2,2,groups=[32,32],group_size=[4,4],start_with='Relu',grow_first=True)
 
-        self.block4=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with_relu=True,grow_first=True)
-        self.block5=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with_relu=True,grow_first=True)
-        self.block6=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with_relu=True,grow_first=True)
-        self.block7=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with_relu=True,grow_first=True)
+        self.block4=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with='Swish',grow_first=True)
+        self.block5=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with='Swish',grow_first=True)
+        self.block6=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with='Swish',grow_first=True)
+        self.block7=GceptionBlock(512,512,3,1,groups=[32,32],group_size=[8,8],start_with='Swish',grow_first=True)
 
-        self.block8=GceptionBlock(512,768,2,2,groups=[64,64],group_size=[8,8],start_with_relu=True,grow_first=False)
+        self.block8=GceptionBlock(512,768,2,2,groups=[64,64],group_size=[8,8],start_with='Swish',grow_first=False)
 
-        self.conv3 = GceptionBlock(768,1024,3,1,groups=[64,64],group_size=[8,8],start_with_relu=True,grow_first=True)
+        self.conv3 = GceptionBlock(768,1024,3,1,groups=[64,64],group_size=[8,8],start_with='Swish',grow_first=True)
         self.bn3 = nn.BatchNorm1d(1024)
 
         self.fc = nn.Linear(1024, num_classes)
@@ -365,4 +372,12 @@ class Gception(nn.Module):
     def forward(self, input):
         x = self.features(input)
         x = self.logits(x)
+        return x
+
+class Act_op(nn.Module):
+    def __init__(self):
+        super(Act_op, self).__init__()
+
+    def forward(self, x):
+        x = x * F.sigmoid(x)
         return x

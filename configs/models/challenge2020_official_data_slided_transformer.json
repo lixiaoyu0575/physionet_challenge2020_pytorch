@@ -3,6 +3,11 @@
     "n_gpu": 1,
     "arch": {
         "args": {
+            "num_classes": 108,
+            "num_layers": 6,
+            "max_len": 3000,
+            "in_channels": 12,
+            "dropout": 0.3
         },
         "type": "Transformer"
     },

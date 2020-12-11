@@ -2,17 +2,14 @@
     "name": "challenge2020_official_data_slided_tcn",
     "n_gpu": 1,
     "arch": {
-        "args": {
-            "input_size": 12,
-            "num_channels": [32, 32, 32, 32],
-            "kernel_size": 7,
-            "dropout": 0.2,
+        "args":{
+            "num_channels": [12, 12, 12, 12],
             "num_classes": 108
         },
         "type": "TCN"
     },
     "data_loader": {
-        "type": "ChallengeDataLoader7",
+        "type": "ChallengeDataLoader2",
         "args": {
             "label_dir": "/data/ecg/challenge2020/new_data/All_data_new",
             "data_dir": "/data/ecg/challenge2020/new_data/All_data_new_resampled_to_300HZ",
