@@ -342,9 +342,9 @@ class DSANet(LightningModule):
         No special modification required for lightning, define as you normally would
         """
         sgsf_output, *_ = self.sgsf(x)
-        slsf_output, *_ = self.slsf(x)
-        sf_output = torch.cat((sgsf_output, slsf_output), 2)
-        sf_output = self.dropout(sf_output)
+        # slsf_output, *_ = self.slsf(x)
+        # sf_output = torch.cat((sgsf_output, slsf_output), 2)
+        sf_output = self.dropout(sgsf_output)
         sf_output = self.W_output1(sf_output)
 
         sf_output = torch.transpose(sf_output, 1, 2)

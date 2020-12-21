@@ -4,7 +4,8 @@
     "arch": {
         "args": {
             "in_channels": 12,
-            "num_classes": 108
+            "num_classes": 108,
+            "src_mask": "None"
         },
         "type": "Xception"
     },

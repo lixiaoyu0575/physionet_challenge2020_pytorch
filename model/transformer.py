@@ -81,6 +81,7 @@ class TransformerEncoderLayer(nn.Module):
 
         mean = torch.mean(src2).item()
         src2 = torch.where(src2 < mean, zero, src2)
+        src2 = torch.where(src2 >= mean, src*2, src2)
         # mean = np.average(src2.flatten())
         # np.where(src2 < mean, src2, float("-inf"))
         src = src + self.dropout1(src2)

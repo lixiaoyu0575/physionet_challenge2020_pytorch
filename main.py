@@ -20,21 +20,17 @@ import model.transformer as module_arch_transformer
 import model.ltae as module_arch_ltae
 import model.tae as module_arch_tae
 import model.dsanet as module_arch_dsanet
-import model.conformer as module_arch_conformer
+import model.baseline_race.conformer as module_arch_conformer
 import model.pnasnet as module_arch_pnasnet
 import model.inceptionResNet as module_arch_inceptionResNet
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
-from model.metric import ChallengeMetric, ChallengeMetric2
-from utils.dataset import load_label_files, load_labels, load_weights
+from model.metric import ChallengeMetric
 from utils.util import load_model
-from utils.gradcam import GradCam
 from utils.lr_scheduler import CosineAnnealingWarmUpRestarts, GradualWarmupScheduler
 import datetime
 import cv2
-from torchvision import models
-import random
 
 # fix random seeds for reproducibility
 SEED = 123
