@@ -62,16 +62,17 @@ class SeparableConv1d(nn.Module):
 
         self.conv1 = nn.Conv1d(in_channels,in_channels,kernel_size,stride,padding,dilation,groups=in_channels,bias=bias)
         self.pointwise = nn.Conv1d(in_channels,out_channels,1,1,0,1,1,bias=bias)
-        self.ca = ChannelAttention(out_channels, ratio= 16)
+        self.ca = ChannelAttention(in_channels, ratio= 16)
         self.sa = SpatialAttention()
         self.in_channels = in_channels
         self.out_channels = out_channels
 
     def forward(self,x):
         x = self.conv1(x)
-        if self.in_channels == self.out_channels:
-            x = self.ca(x) * x
+        # if self.in_channels == self.out_channels:
+        x = self.ca(x) * x
         x = self.pointwise(x)
+        # x = self.sa(x)*x
         return x
 
 
@@ -295,7 +296,6 @@ class Xception(nn.Module):
         att = self.attention(x)
         x = x + att
         x = self.logits(x)
-        # x = torch.cat((x, att), 1)
         x = self.fc(x)
         return x
 

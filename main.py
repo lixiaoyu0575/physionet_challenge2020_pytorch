@@ -22,7 +22,9 @@ import model.tae as module_arch_tae
 import model.dsanet as module_arch_dsanet
 import model.baseline_race.conformer as module_arch_conformer
 import model.pnasnet as module_arch_pnasnet
-import model.inceptionResNet as module_arch_inceptionResNet
+import model.baseline_race.NeuralBaseline as module_arch_NeuralBaseline
+import model.baseline_race.SEResNet as module_arch_SEResNet
+import model.baseline_race.ConvLSTM as module_arch_ConvLSTM
 from parse_config import ConfigParser
 from trainer import Trainer
 from evaluater import Evaluater
@@ -58,7 +60,9 @@ files_models = {
     "dsanet": ["DSANet"],
     "conformer": ["Conformer"],
     "pnasnet": ["PNASNet5Large"],
-    "inceptionResNet": ["InceptionModel", "ResNetModule", "VGGNet", "FCNModule","LinearModule","DenseNetModule"]
+    "NeuralBaseline": ["InceptionModel", "ResNetModule", "VGGNet", "FCNModule","LinearModule","DenseNetModule"],
+    "SEResNet":["SEResNet","SEResNeXt"],
+    "ConvLSTM":["ConvLSTM"]
 }
 
 def preprocess_image(img):

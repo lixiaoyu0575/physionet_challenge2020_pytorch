@@ -155,7 +155,6 @@ class InceptionBlock(nn.Module):
 
 
 #Resnet18
-
 class ConvBlock(nn.Module):
 
     def __init__(self, in_channels: int, out_channels: int, kernel_size: int,
@@ -206,7 +205,7 @@ class ResNetModule(nn.Module):
 
         ])
         self.final = nn.Linear(mid_channels * 2, num_classes)
-        self.gap = nn.AdaptiveAvgPool2d((mid_channels * 2, num_classes))
+        self.gap = nn.AdaptiveAvgPool1d((mid_channels * 2, num_classes))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore
         x = self.layers(x)
